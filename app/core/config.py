@@ -24,3 +24,8 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S",
 )
+
+# Model settings
+# ------------------------------------------------------------------------------
+MODEL_ID: str = config("MODEL_ID", default="gpt4all-j-v1.3-groovy")
+MODEL_WEIGHTS_DIR: str = config("MODEL_WEIGHTS_DIR", default="./models")

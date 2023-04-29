@@ -1,58 +1,16 @@
-import json
+from fastapi import APIRouter
 
-import joblib
-from fastapi import APIRouter, HTTPException
-
-from core.config import INPUT_EXAMPLE
-from services.predict import MachineLearningModelHandlerScore as model
-from models.prediction import (
-    HealthResponse,
-    MachineLearningResponse,
-    MachineLearningDataInput,
-)
+from app.core import config
+from app.core.utils import get_model
+from app.models.chat import ChatCompletionInput
+from app.models.utils import format_chat_response
 
 router = APIRouter()
 
 
-## Change this portion for other types of models
-## Add the correct type hinting when completed
-def get_prediction(data_point):
-    return model.predict(data_point, load_wrapper=joblib.load, method="predict")
+@router.post("/chat/completions")
+async def chat_completions(body: ChatCompletionInput):
+    predictions = get_model().generate(messages=body.messages, temperature=body.temperature, top_p=body.top_p, n=body.n, stream=body.stream, max_tokens=body.max_tokens,
+                                       stop=body.stop, presence_penalty=body.presence_penalty, frequence_penalty=body.frequence_penalty, logit_bias=body.logit_bias)
 
-
-@router.post(
-    "/predict",
-    response_model=MachineLearningResponse,
-    name="predict:get-data",
-)
-async def predict(data_input: MachineLearningDataInput):
-
-    if not data_input:
-        raise HTTPException(status_code=404, detail="'data_input' argument invalid!")
-    try:
-        data_point = data_input.get_np_array()
-        prediction = get_prediction(data_point)
-
-    except Exception as err:
-        raise HTTPException(status_code=500, detail=f"Exception: {err}")
-
-    return MachineLearningResponse(prediction=prediction)
-
-
-@router.get(
-    "/health",
-    response_model=HealthResponse,
-    name="health:get-data",
-)
-async def health():
-    is_health = False
-    try:
-        test_input = MachineLearningDataInput(
-            **json.loads(open(INPUT_EXAMPLE, "r").read())
-        )
-        test_point = test_input.get_np_array()
-        get_prediction(test_point)
-        is_health = True
-        return HealthResponse(status=is_health)
-    except Exception:
-        raise HTTPException(status_code=404, detail="Unhealthy")
+    return format_chat_response(model_name=config.MODEL_ID, predictions=predictions)

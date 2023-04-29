@@ -3,16 +3,22 @@ import uvicorn
 from fastapi import FastAPI
 
 from app.api.routes.api import router as api_router
+from fastapi.middleware.cors import CORSMiddleware
 from app.core.events import create_start_app_handler
-from app.core.config import API_PREFIX, DEBUG, PROJECT_NAME, VERSION
+from app.core.config import API_PREFIX, DEBUG, PROJECT_NAME
 
 
 def get_application() -> FastAPI:
-    application = FastAPI(title=PROJECT_NAME, debug=DEBUG, version=VERSION)
+    application = FastAPI(title=PROJECT_NAME, debug=DEBUG, version="0.0.1")
     application.include_router(api_router, prefix=API_PREFIX)
-    pre_load = False
-    if pre_load:
-        application.add_event_handler("startup", create_start_app_handler(application))
+    application.add_event_handler("startup", create_start_app_handler(application))
+    application.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     return application
 
 
