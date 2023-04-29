@@ -13,29 +13,26 @@ docker-compose up --build -d
 ### Run the backend with Docker
 
 ```bash
-docker run -d -v $(pwd)/models:/usr/src/app/models -p 8002:8002 --name ai_box filippopedrazzini/the_ai_box:latest 
+docker run -d -v $(pwd)/models:/usr/src/app/models -e MODEL_WEIGHTS_DIR=./models -p 8002:8002 --name ai_box filippopedrazzini/the_ai_box:latest 
 ```
 
-### LLMs
+### Tasks
 
-Models available to download
+- [ ] Expose vicuna-7b-1.1-q4
+- [ ] Expose whisper tiny. Save the weights in the dedicate folder.
+- [ ] Expose stable diffusion latest model
+- [ ] Expose emdeddings using llama or similar
+- [ ] Expose embeddings using sentence-transformers/all-MiniLM-L6-v2
+- [ ] Expose dolly-v2 or OA-30b-q4
+- [ ] Pass `DEVICE` env variable
+- [ ] Configure docker in order to handle m1 and gpu env
+- [ ] Configure dependabot for dependencies
+- [ ] Build a talk to your data use case using ai_box
 
-- GPT4ALL 7B
-- GPT4ALL 7B unfiltered
-- Vicuna 7B rev 1 
-- Vicuna 13B rev 1
-- ggml-gpt4all-j-v1.3-groovy
-- ggml-gpt4all-j-v1.2-jazzy
-- ggml-gpt4all-l13b-snoozy
-- ggml-gpt4all-j-v1.1-breezy
-- ggml-gpt4all-j
-- ggml-vicuna-7b-1.1-q4_2
-- ggml-vicuna-13b-1.1-q4_2
+### Fine Tune a model
 
-### Speech
-
-- Whisper
-
-### Images
-
-- Stable diffusion
+- https://sebastianraschka.com/blog/2023/llm-finetuning-lora.html
+- https://huggingface.co/bertin-project/bertin-alpaca-lora-7b
+- https://twitter.com/realSharonZhou/status/1651989507615645696?s=20
+- https://blog.replit.com/llm-training
+- https://magazine.sebastianraschka.com/p/finetuning-large-language-models

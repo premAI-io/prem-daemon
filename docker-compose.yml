@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: ./docker/m1/Dockerfile
     ports:
-      - "8002:8002"
-    env_file:
-      - .env
+      - 8002:8002
+    environment:
+      - MODEL_WEIGHTS_DIR=./models
     volumes:
       - ./models:/usr/src/app/models
