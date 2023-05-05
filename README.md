@@ -33,7 +33,7 @@ docker-compose up --build -d
 ```
 ## Services
 
-### Prem Chat & Embeddings
+### Prem Chat
 
 | Model                                     | Model ID                    | Memory              | Device  | Chat | Embeddings | Available |
 | ----------------------------------------- | --------------------------- | ------------------- | ------- | ---- | ---------- | --------- |
@@ -47,8 +47,6 @@ docker-compose up --build -d
 
 ```bash
 docker run -d -v ./models:/usr/src/app/models -p 8000:8000 --gpus all --name prem_chat ghcr.io/premai-io/prem-chat-{model_id}-gpu:latest
-# to check the logs
-docker logs prem_chat -f
 ```
 ### Running a single service on CPU
 
@@ -58,12 +56,12 @@ docker run -d -v $(pwd)/models:/usr/src/app/models -p 8000:8000 --platform linux
 
 ## Roadmap
 
-- [x] 😃 Prem Chat (missing #5 #6)
+- [x] 😃 Prem Chat (missing [#5](https://github.com/premAI-io/ai-box/issues/5) [#6](https://github.com/premAI-io/ai-box/issues/6))
 
-- [ ] 🎨 Prem Michelangelo (#1)
-- [ ] 💻 Prem Copilot (#2)
-- [ ] 🎵 Prem Audio (#4)
-- [ ] 📷 Prem Vision (#3)
+- [ ] 🎨 Prem Michelangelo [#1](https://github.com/premAI-io/ai-box/issues/1)
+- [ ] 💻 Prem Copilot [#2](https://github.com/premAI-io/ai-box/issues/2)
+- [ ] 🎵 Prem Audio [#4](https://github.com/premAI-io/ai-box/issues/4)
+- [ ] 📷 Prem Vision [#3](https://github.com/premAI-io/ai-box/issues/3)
 
 ## Contributing
 
