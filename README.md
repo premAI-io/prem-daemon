@@ -35,13 +35,13 @@ docker-compose up --build -d
 
 ### Prem Chat
 
-| Model                                     | Model ID                    | Memory              | Device  | Chat | Embeddings | Available |
-| ----------------------------------------- | --------------------------- | ------------------- | ------- | ---- | ---------- | --------- |
-| Vicuna 7B 4-bit                           | ggml-vicuna-7b-1.1-q4_2     | 16gb                | CPU     | Yes  | Yes        | Yes       |
-| GPT4All 4-bit                             | gpt4all-lora-quantized-ggml | 16gb                | CPU     | Yes  | Yes        | Yes       |
-| Dolly v2 12B                              |                             | 24gb                | GPU     | Yes  | No         | No        |
-| OpenAssistant Llama 30B XOR               |                             | 48gb                | GPU     | Yes  | No         | No        |
-| All-MiniLM-L6-v2                          |                             | 16gb                | GPU     | No   | Yes        | No        |
+| Model                                     | Model ID                    | Memory              | Device  | Chat | Embeddings |
+| ----------------------------------------- | --------------------------- | ------------------- | ------- | ---- | ---------- |
+| Vicuna 7B 4-bit                           | ggml-vicuna-7b-1.1-q4_2     | 16gb                | CPU     | Yes  | Yes        |
+| GPT4All 4-bit                             | gpt4all-lora-quantized-ggml | 16gb                | CPU     | Yes  | Yes        |
+| Dolly v2 12B                              |                             | 24gb                | GPU     | Yes  | No         |
+| OpenAssistant Llama 30B XOR               |                             | 48gb                | GPU     | Yes  | No         |
+| All-MiniLM-L6-v2                          |                             | 16gb                | GPU     | No   | Yes        |
 
 ### Running a single service on GPU
 
