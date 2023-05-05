@@ -5,9 +5,6 @@ on:
     branches:
       - main
 
-env:
-  IMAGE_NAME: ai-box-controller
-
 jobs:
   push:
     runs-on: ubuntu-latest
@@ -37,9 +34,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build image
-        run: >-
-          docker buildx build --push
-          --file ./Dockerfile
-          --tag ghcr.io/premai-io/$IMAGE_NAME:latest
-          --platform linux/arm64,linux/amd64 .
+      - name: Build and Push the Images
+        run: |
+          docker buildx build
+            --push
+            --file ./docker/m1/chat/llamacpp/Dockerfile
+            --build-arg="MODEL_ID=ggml-vicuna-7b-1.1-q4_2"
+            --tag ghcr.io/premai-io/prem-chat-ggml-vicuna-7b-1.1-q4_2-m1:latest
+            --platform linux/arm64,linux/amd64 .
+          docker buildx build
+            --push
+            --file ./docker/m1/chat/llamacpp/Dockerfile
+            --build-arg="MODEL_ID=gpt4all-lora-quantized-ggml"
+            --tag ghcr.io/premai-io/prem-chat-gpt4all-lora-quantized-ggml-m1:latest
+            --platform linux/arm64,linux/amd64 .

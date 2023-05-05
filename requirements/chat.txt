@@ -1,3 +1,0 @@
--r base.txt
-
-pygpt4all==1.0.1

@@ -26,5 +26,5 @@ logging.basicConfig(
 
 # Model settings
 # ------------------------------------------------------------------------------
-MODEL_ID: str = config("MODEL_ID", default="gpt4all-j-v1.3-groovy")
+MODEL_ID: str = config("MODEL_ID", default="ggml-vicuna-7b-1.1-q4_2")
 MODEL_WEIGHTS_DIR: str = config("MODEL_WEIGHTS_DIR", default="./models")

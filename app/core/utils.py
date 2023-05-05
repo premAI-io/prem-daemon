@@ -18,18 +18,6 @@ def get_models_info() -> dict:
     return {
         "data": [
             {
-                "id": "gpt4all-j-v1.3-groovy",
-                "name": "GPT-4-ALL-J v1.3 Groovy",
-                "maxLength": 12000,
-                "tokenLimit": 4000,
-                "description": "GPT-4-ALL-J v1.3 Groovy is a 1.3B parameter model trained on the Groovy dataset.",
-                "modelWeightsName": "ggml-gpt4all-j-v1.3-groovy.bin",
-                "modelWeightsPath": f"{config.MODEL_WEIGHTS_DIR}/ggml-gpt4all-j-v1.3-groovy.bin",
-                "modelWeightsUrl": "https://prem-models.s3.eu-central-1.amazonaws.com/ggml-gpt4all-j-v1.3-groovy.bin",
-                "modelWeightsSize": 3785248281,
-                "modelTypes": ["chat"],
-            },
-            {
                 "id": "ggml-vicuna-7b-1.1-q4_2",
                 "name": "Vicuna 7B 1.1 Q4",
                 "maxLength": 12000,
@@ -40,6 +28,7 @@ def get_models_info() -> dict:
                 "modelWeightsUrl": "https://prem-models.s3.eu-central-1.amazonaws.com/ggml-vicuna-7b-1.1-q4_2.bin",
                 "modelWeightsSize": 4212859520,
                 "modelTypes": ["chat", "embeddings"],
+                "modelDevice": "m1",
             },
             {
                 "id": "gpt4all-lora-quantized-ggml",
@@ -52,6 +41,7 @@ def get_models_info() -> dict:
                 "modelWeightsUrl": "https://prem-models.s3.eu-central-1.amazonaws.com/gpt4all-lora-quantized-ggml.bin",
                 "modelWeightsSize": 4212864640,
                 "modelTypes": ["chat", "embeddings"],
+                "modelDevice": "m1",
             },
         ]
     }
@@ -102,12 +92,8 @@ def download_model():
 
 
 def load_model():
-    if config.MODEL_ID in ["gpt4all-j-v1.3-groovy"]:
-        from app.services.chat import GPT4AllJBasedModel
-
-        GPT4AllJBasedModel.get_model()
-    elif config.MODEL_ID in ["gpt4all-lora-quantized-ggml", "ggml-vicuna-7b-1.1-q4_2"]:
-        from app.services.chat import LLaMACPPBasedModel
+    if config.MODEL_ID in ["gpt4all-lora-quantized-ggml", "ggml-vicuna-7b-1.1-q4_2"]:
+        from app.services.chat.llamacpp import LLaMACPPBasedModel
 
         LLaMACPPBasedModel.get_model()
     else:
@@ -115,12 +101,8 @@ def load_model():
 
 
 def get_model():
-    if config.MODEL_ID in ["gpt4all-j-v1.3-groovy"]:
-        from app.services.chat import GPT4AllJBasedModel as model
-
-        return model
-    elif config.MODEL_ID in ["gpt4all-lora-quantized-ggml", "ggml-vicuna-7b-1.1-q4_2"]:
-        from app.services.chat import LLaMACPPBasedModel as model
+    if config.MODEL_ID in ["gpt4all-lora-quantized-ggml", "ggml-vicuna-7b-1.1-q4_2"]:
+        from app.services.chat.llamacpp import LLaMACPPBasedModel as model
 
         return model
     else:
