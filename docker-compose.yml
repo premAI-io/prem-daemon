@@ -1,13 +1,11 @@
 version: "3"
 
 services:
-  controller:
+  prem_controller:
+    container_name: prem_controller
+    image: ghcr.io/premai-io/prem-controller:latest
     build:
       context: .
-      dockerfile: ./docker/m1/Dockerfile
+      dockerfile: ./docker/Dockerfile
     ports:
       - 8000:8000
-    environment:
-      - MODEL_WEIGHTS_DIR=./models
-    volumes:
-      - ./models:/usr/src/app/models

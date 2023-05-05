@@ -38,6 +38,11 @@ jobs:
         run: |
           docker buildx build \
             --push \
+            --file ./docker/Dockerfile \
+            --tag ghcr.io/premai-io/prem-controller:latest \
+            --platform linux/arm64,linux/amd64 .
+          docker buildx build \
+            --push \
             --file ./docker/m1/chat/llamacpp/Dockerfile \
             --build-arg="MODEL_ID=ggml-vicuna-7b-1.1-q4_2" \
             --tag ghcr.io/premai-io/prem-chat-ggml-vicuna-7b-1.1-q4_2-m1:latest \
