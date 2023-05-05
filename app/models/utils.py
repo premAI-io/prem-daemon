@@ -24,22 +24,3 @@ def format_chat_response(model_name: str, predictions, usage=None) -> dict:
         ],
         "usage": usage,
     }
-
-
-def format_chat_delta_response(current_timestamp, response_id, model_name: str, predictions) -> dict:
-    data = {
-        "id": response_id,
-        "model": model_name,
-        "object": "chat.completion.chunk",
-        "created": current_timestamp,
-        "choices": [
-            {
-                "index": idx,
-                "delta": message,
-                "finish_reason": "stop",
-            }
-            for idx, message in enumerate(predictions)
-        ],
-    }
-
-    return f"data: {json.dumps(data)}\n\n"

@@ -28,3 +28,27 @@ class ChatCompletionResponse(BaseModel):
     created: int = int(dt.now().timestamp())
     choices: list[dict]
     usage: dict = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+
+
+class EmbeddingsInput(BaseModel):
+    model: str
+    input: str
+    user: str = ""
+
+
+class EmbeddingObject(BaseModel):
+    object: str = "embedding"
+    index: int = 0
+    embedding: list[float]
+
+
+class EmbeddingUsage(BaseModel):
+    prompt_tokens: int = 0
+    total_tokens: int = 0
+
+
+class EmbeddingsResponse(BaseModel):
+    object: str = "list"
+    data: list[EmbeddingObject]
+    model: str = ""
+    usage: EmbeddingUsage
