@@ -2,17 +2,17 @@
 
 > Prem: A Privacy-Centric Open-Source AI Cloud Infrastructure Powered by Nostr. A cutting-edge, open-source AI platform designed with privacy at its core. Leveraging state-of-the-art Large Language Models (LLMs), Prem provides a secure and flexible environment for self-hosting AI models or utilizing our privacy-focused cloud infrastructure.
 
-## Prem AI Box
+## Prem Box
 
-The `ai-box` is the primary repository used to build and serve the different AI services. Each docker image represents a service that can be run locally, in the Prem Cloud, or in your server infrastructure. The repository is structured around two main concepts:
+The `prem-box` is the primary repository used to build and serve the different AI services. Each docker image represents a service that can be run locally, in the Prem Cloud, or in your server infrastructure. The repository is structured around two main concepts:
 
 - Controller: a simplified FastAPI web server that uses the docker engine to run the different images.
 - Worker: a single AI service exposed with a FastAPI web server using similar endpoints to those of OpenAI based on the task it is implemented to perform (e.g., `chat-completions`, `embeddings`, `images-generation`).
 The worker can be run on both GPU and CPU hardware based on the model and the user hardware availability. Multiple options are available for handling this aspect.
 
-## Prem App [Repository](https://github.com/premAI-io/ai-box)
+## [Prem App](https://github.com/premAI-io/prem-app)
 
-`prem-app` is the main interface for using `ai-box`. The frontend is integrated with both the controller and the workers to provide a pleasant experience for end-users.
+`prem-app` is the main interface for using `prem-box`. The frontend is integrated with both the controller and the workers to provide a pleasant experience for end-users.
 
 Prem App can be run locally in two different ways:
 
@@ -21,8 +21,7 @@ Prem App can be run locally in two different ways:
 
 ## Prerequisites
 
-- Mac for local deployment
-- Linux with at least a 16gb NVIDIA GPU.
+We only support two hardware configurations. For what concerns the local installation, our docker images and containers are optimized for Apple Silicon users, while for the cloud users, we support NVIDIA GPUs.
 
 ## Installation
 
@@ -57,7 +56,6 @@ docker run -d -v $(pwd)/models:/usr/src/app/models -p 8000:8000 --platform linux
 ## Roadmap
 
 - [x] 😃 Prem Chat (missing [#5](https://github.com/premAI-io/ai-box/issues/5) [#6](https://github.com/premAI-io/ai-box/issues/6))
-
 - [ ] 🎨 Prem Michelangelo [#1](https://github.com/premAI-io/ai-box/issues/1)
 - [ ] 💻 Prem Copilot [#2](https://github.com/premAI-io/ai-box/issues/2)
 - [ ] 🎵 Prem Audio [#4](https://github.com/premAI-io/ai-box/issues/4)
@@ -69,14 +67,14 @@ Depending on which component you are contributing to, you will have different ha
 
 ### Creating a new service
 
-The following steps are necessary in order to create a new service that can be exposed through `prem-box-controller`.
+The following steps are necessary in order to create a new service that can be exposed through `prem-controller`.
 
 1. Extend the models metadata in `app/core/utils.py`
 2. Create a service class extending the correct task
 3. Create the corresponding Dockerfile for all the devices supported by the model
 4. Create a `{requirements}.txt` file for the model dependencies.
 5. Write the test cases accordingly.
-6. Change the github action in order to build and push the newly created images on the registry.
+6. Change the Github action in order to build and push the newly created images on the registry.
 
 ## Acknowledgments
 
