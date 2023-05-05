@@ -1,4 +1,3 @@
-import sys
 import logging
 
 from starlette.config import Config

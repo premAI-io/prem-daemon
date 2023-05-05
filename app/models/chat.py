@@ -3,8 +3,6 @@ from datetime import datetime as dt
 
 from pydantic import BaseModel
 
-from typing import List, Optional, Union
-
 
 class ChatCompletionInput(BaseModel):
     model: str
@@ -13,11 +11,11 @@ class ChatCompletionInput(BaseModel):
     top_p: float = 1.0
     n: int = 1
     stream: bool = False
-    stop: Optional[Union[str, list]] = ""
+    stop: str | list | None = ""
     max_tokens: int = 7
     presence_penalty: float = 0.0
     frequence_penalty: float = 0.0
-    logit_bias: Optional[dict] = {}
+    logit_bias: dict | None = {}
     user: str = ""
 
 

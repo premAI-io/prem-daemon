@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
+from app.api.routes import chat, info
 from app.core import config
-from app.api.routes import info, chat
 from app.core.utils import get_model_info
 
 router = APIRouter()

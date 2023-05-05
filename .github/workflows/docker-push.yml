@@ -39,7 +39,7 @@ jobs:
 
       - name: Build image
         run: >-
-          docker buildx build --push 
-          --file ./Dockerfile 
-          --tag ghcr.io/premai-io/$IMAGE_NAME:latest 
+          docker buildx build --push
+          --file ./Dockerfile
+          --tag ghcr.io/premai-io/$IMAGE_NAME:latest
           --platform linux/arm64,linux/amd64 .

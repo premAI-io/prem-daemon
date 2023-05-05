@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
+from app.core.utils import get_model_info, get_models_info
 from app.models.info import HealthResponse
-from app.core.utils import get_models_info, get_model_info
 
 router = APIRouter()
 

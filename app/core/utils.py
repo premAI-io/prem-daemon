@@ -1,9 +1,10 @@
-import os
 import logging
+import os
 import ssl
 import urllib.request
 
 from tqdm import tqdm
+
 from app.core import config
 
 ssl_context = ssl.create_default_context()
@@ -26,7 +27,7 @@ def get_models_info() -> dict:
                 "modelWeightsPath": f"{config.MODEL_WEIGHTS_DIR}/ggml-gpt4all-j-v1.3-groovy.bin",
                 "modelWeightsUrl": "https://prem-models.s3.eu-central-1.amazonaws.com/ggml-gpt4all-j-v1.3-groovy.bin",
                 "modelWeightsSize": 3785248281,
-                "modelTypes": ["chat"]
+                "modelTypes": ["chat"],
             },
             {
                 "id": "ggml-vicuna-7b-1.1-q4_2",
@@ -38,7 +39,7 @@ def get_models_info() -> dict:
                 "modelWeightsPath": f"{config.MODEL_WEIGHTS_DIR}/ggml-vicuna-7b-1.1-q4_2.bin",
                 "modelWeightsUrl": "https://prem-models.s3.eu-central-1.amazonaws.com/ggml-vicuna-7b-1.1-q4_2.bin",
                 "modelWeightsSize": 4212859520,
-                "modelTypes": ["chat", "embeddings"]
+                "modelTypes": ["chat", "embeddings"],
             },
             {
                 "id": "gpt4all-lora-quantized-ggml",
@@ -50,7 +51,7 @@ def get_models_info() -> dict:
                 "modelWeightsPath": f"{config.MODEL_WEIGHTS_DIR}/gpt4all-lora-quantized-ggml.bin",
                 "modelWeightsUrl": "https://prem-models.s3.eu-central-1.amazonaws.com/gpt4all-lora-quantized-ggml.bin",
                 "modelWeightsSize": 4212864640,
-                "modelTypes": ["chat", "embeddings"]
+                "modelTypes": ["chat", "embeddings"],
             },
         ]
     }
@@ -76,12 +77,17 @@ def check_model_ready():
 def download_model():
     model_parameters = get_model_info(config.MODEL_ID)
 
-    logger.info(f"Downloading model weights in path {model_parameters.get('modelWeightsPath')}")
+    logger.info(
+        f"Downloading model weights in path {model_parameters.get('modelWeightsPath')}"
+    )
     with tqdm(
-        unit="B", unit_scale=True, miniters=1, desc=model_parameters.get('modelWeightsUrl').split("/")[-1]
+        unit="B",
+        unit_scale=True,
+        miniters=1,
+        desc=model_parameters.get("modelWeightsUrl").split("/")[-1],
     ) as progress_bar:
         with urllib.request.urlopen(
-            model_parameters.get('modelWeightsUrl'),
+            model_parameters.get("modelWeightsUrl"),
             context=ssl_context,
         ) as response, open(model_parameters.get("modelWeightsPath"), "wb") as out_file:
             while True:
@@ -90,15 +96,19 @@ def download_model():
                     break
                 out_file.write(chunk)
                 progress_bar.update(len(chunk))
-    logger.info(f"Downloaded model weights in path {model_parameters.get('modelWeightsPath')}")
+    logger.info(
+        f"Downloaded model weights in path {model_parameters.get('modelWeightsPath')}"
+    )
 
 
 def load_model():
     if config.MODEL_ID in ["gpt4all-j-v1.3-groovy"]:
         from app.services.chat import GPT4AllJBasedModel
+
         GPT4AllJBasedModel.get_model()
     elif config.MODEL_ID in ["gpt4all-lora-quantized-ggml", "ggml-vicuna-7b-1.1-q4_2"]:
         from app.services.chat import LLaMACPPBasedModel
+
         LLaMACPPBasedModel.get_model()
     else:
         raise ValueError("Model id not supported.")
@@ -107,9 +117,11 @@ def load_model():
 def get_model():
     if config.MODEL_ID in ["gpt4all-j-v1.3-groovy"]:
         from app.services.chat import GPT4AllJBasedModel as model
+
         return model
     elif config.MODEL_ID in ["gpt4all-lora-quantized-ggml", "ggml-vicuna-7b-1.1-q4_2"]:
         from app.services.chat import LLaMACPPBasedModel as model
+
         return model
     else:
         raise ValueError("Model id not supported.")

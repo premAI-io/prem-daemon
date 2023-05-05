@@ -1,6 +1,5 @@
 import logging
-
-from typing import Callable
+from collections.abc import Callable
 
 from fastapi import FastAPI
 
@@ -15,4 +14,5 @@ def create_start_app_handler(app: FastAPI) -> Callable:
         if not ready:
             download_model()
         load_model()
+
     return start_app
