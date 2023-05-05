@@ -7,5 +7,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile
+    environment:
+      - MODEL_ID=controller
     ports:
       - 8000:8000
