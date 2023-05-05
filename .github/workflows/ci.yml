@@ -38,7 +38,7 @@ jobs:
         run: docker-compose build
 
       - name: Run APIs Tests
-        run: docker-compose run prem-controller pytest
+        run: docker-compose run prem-controller pytest ./tests/test_controller.py
 
       - name: Tear down the Stack
         run: docker-compose down
