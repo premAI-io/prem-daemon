@@ -11,3 +11,9 @@ services:
       - MODEL_ID=controller
     ports:
       - 8000:8000
+  prem_app:
+    image: ghcr.io/premai-io/prem-app:latest
+    env_file:
+      - .env
+    ports:
+      - 5173:5173
