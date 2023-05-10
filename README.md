@@ -32,7 +32,7 @@ docker-compose up -d
 ```
 ## Services
 
-### Prem Chat
+### Prem Chat & Embeddings
 
 | Model                                     | Model ID                    | Memory              | Device  | Chat | Embeddings |
 | ----------------------------------------- | --------------------------- | ------------------- | ------- | ---- | ---------- |
@@ -53,14 +53,16 @@ docker run -d -p 8000:8000 --gpus all --name prem_chat ghcr.io/premai-io/prem-ch
 docker run -d -p 8000:8000 --platform linux/arm64 --name prem_chat ghcr.io/premai-io/prem-chat-{model_id}-m1:latest
 ```
 
-## Roadmap
+## Product Roadmap
 
-- [x] 😃 Prem Chat (missing [#6](https://github.com/premAI-io/ai-box/issues/6))
-- [ ] 📕 Prem Embeddings ([#5](https://github.com/premAI-io/ai-box/issues/5))
-- [ ] 🎨 Prem Michelangelo [#1](https://github.com/premAI-io/ai-box/issues/1)
-- [ ] 💻 Prem Copilot [#2](https://github.com/premAI-io/ai-box/issues/2)
-- [ ] 🎵 Prem Audio [#4](https://github.com/premAI-io/ai-box/issues/4)
-- [ ] 📷 Prem Vision [#3](https://github.com/premAI-io/ai-box/issues/3)
+| App                                                                        | Deadline     |
+| -------------------------------------------------------------------------- | 1st of June  |
+| 😃 Prem Chat (missing [#6](https://github.com/premAI-io/ai-box/issues/6))  | 1st of June  |
+| 📕 Prem Embeddings ([#5](https://github.com/premAI-io/ai-box/issues/5))    | 10th of June |
+| 🎨 Prem Michelangelo [#1](https://github.com/premAI-io/ai-box/issues/1)    | 17th of June |
+| 💻 Prem Copilot [#2](https://github.com/premAI-io/ai-box/issues/2)         | 24th of June |
+| 🎵 Prem Audio [#4](https://github.com/premAI-io/ai-box/issues/4)           | 1st of July  |
+|  📷 Prem Vision [#3](https://github.com/premAI-io/ai-box/issues/3)         | TBD          |
 
 ## Contributing
 
