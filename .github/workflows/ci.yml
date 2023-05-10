@@ -44,7 +44,7 @@ jobs:
 
       - name: Tear down the Stack
         run: docker-compose down
-  
+
   push:
     runs-on: ubuntu-latest
     permissions:
