@@ -58,10 +58,10 @@ docker run -d -p 8000:8000 --platform linux/arm64 --name prem_chat ghcr.io/prema
 | App                                                                        | Deadline     |
 | -------------------------------------------------------------------------- | ------------ |
 | 😃 Prem Chat (missing [#6](https://github.com/premAI-io/ai-box/issues/6))  | 1st of June  |
-| 📕 Prem Embeddings ([#5](https://github.com/premAI-io/ai-box/issues/5))    | 10th of June |
-| 🎨 Prem Michelangelo [#1](https://github.com/premAI-io/ai-box/issues/1)    | 17th of June |
-| 💻 Prem Copilot [#2](https://github.com/premAI-io/ai-box/issues/2)         | 24th of June |
-| 🎵 Prem Audio [#4](https://github.com/premAI-io/ai-box/issues/4)           | 1st of July  |
+| 📕 Prem Embeddings ([#5](https://github.com/premAI-io/ai-box/issues/5))    | 1st of June  |
+| 🎨 Prem Michelangelo [#1](https://github.com/premAI-io/ai-box/issues/1)    | 10th of June |
+| 💻 Prem Copilot [#2](https://github.com/premAI-io/ai-box/issues/2)         | 17th of June |
+| 🎵 Prem Audio [#4](https://github.com/premAI-io/ai-box/issues/4)           | 24th of June |
 |  📷 Prem Vision [#3](https://github.com/premAI-io/ai-box/issues/3)         | TBD          |
 
 ## Contributing
