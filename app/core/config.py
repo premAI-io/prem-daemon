@@ -7,7 +7,7 @@ config = Config(".env")
 
 # General APIs settings
 # ------------------------------------------------------------------------------
-API_PREFIX = "/api"
+API_PREFIX = "/api/v1"
 API_VERSION = "0.1.0"
 
 # General Project settings
@@ -23,8 +23,3 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-
-# Model settings
-# ------------------------------------------------------------------------------
-MODEL_ID: str = config("MODEL_ID", default="ggml-vicuna-7b-1.1-q4_2")
-MODEL_WEIGHTS_DIR: str = config("MODEL_WEIGHTS_DIR", default="./models")

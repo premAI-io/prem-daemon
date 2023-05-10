@@ -1,12 +1,21 @@
 from fastapi import APIRouter
 
-from app.api.routes import chat, info
-from app.core.config import MODEL_ID
-from app.core.utils import get_model_info
+from app.core.utils import get_services_info, get_service_info
+from app.models.info import HealthResponse
 
 router = APIRouter()
 
-if MODEL_ID == "controller":
-    router.include_router(info.router, tags=["info"], prefix="/v1")
-elif "chat" in get_model_info(MODEL_ID).get("modelTypes"):
-    router.include_router(chat.router, tags=["chat"], prefix="/v1")
+
+@router.get("/", response_model=HealthResponse, name="health:get-data")
+async def health():
+    return HealthResponse(status=True)
+
+
+@router.get("/services/")
+async def get_models():
+    return get_services_info()
+
+
+@router.get("/services/{service_id}")
+async def get_model(service_id: str):
+    return get_service_info(service_id)

@@ -4,11 +4,7 @@ services:
   prem_controller:
     container_name: prem_controller
     image: ghcr.io/premai-io/prem-controller:latest
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile
-    environment:
-      - MODEL_ID=controller
+    build: .
     ports:
       - 8000:8000
   prem_app:

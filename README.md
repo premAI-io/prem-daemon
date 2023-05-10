@@ -28,7 +28,7 @@ We only support two hardware configurations. For what concerns the local install
 ### LFG
 
 ```bash
-docker-compose up --build -d
+docker-compose up -d
 ```
 ## Services
 
@@ -36,8 +36,8 @@ docker-compose up --build -d
 
 | Model                                     | Model ID                    | Memory              | Device  | Chat | Embeddings |
 | ----------------------------------------- | --------------------------- | ------------------- | ------- | ---- | ---------- |
-| Vicuna 7B 4-bit                           | ggml-vicuna-7b-1.1-q4_2     | 16gb                | CPU     | Yes  | Yes        |
-| GPT4All 4-bit                             | gpt4all-lora-quantized-ggml | 16gb                | CPU     | Yes  | Yes        |
+| Vicuna 7B 4-bit                           | vicuna-7b-q4                | 16gb                | CPU     | Yes  | Yes        |
+| GPT4All 4-bit                             | gpt4all-lora-q4             | 16gb                | CPU     | Yes  | Yes        |
 | Dolly v2 12B                              |                             | 24gb                | GPU     | Yes  | No         |
 | OpenAssistant Llama 30B XOR               |                             | 48gb                | GPU     | Yes  | No         |
 | All-MiniLM-L6-v2                          |                             | 16gb                | GPU     | No   | Yes        |
@@ -45,17 +45,18 @@ docker-compose up --build -d
 ### Running a single service on GPU
 
 ```bash
-docker run -d -v ./models:/usr/src/app/models -p 8000:8000 --gpus all --name prem_chat ghcr.io/premai-io/prem-chat-{model_id}-gpu:latest
+docker run -d -p 8000:8000 --gpus all --name prem_chat ghcr.io/premai-io/prem-chat-{model_id}-gpu:latest
 ```
 ### Running a single service on CPU
 
 ```bash
-docker run -d -v $(pwd)/models:/usr/src/app/models -p 8000:8000 --platform linux/arm64 --name prem_chat ghcr.io/premai-io/prem-chat-{model_id}-m1:latest
+docker run -d -p 8000:8000 --platform linux/arm64 --name prem_chat ghcr.io/premai-io/prem-chat-{model_id}-m1:latest
 ```
 
 ## Roadmap
 
-- [x] 😃 Prem Chat (missing [#5](https://github.com/premAI-io/ai-box/issues/5) [#6](https://github.com/premAI-io/ai-box/issues/6))
+- [x] 😃 Prem Chat (missing [#6](https://github.com/premAI-io/ai-box/issues/6))
+- [ ] 📕 Prem Embeddings ([#5](https://github.com/premAI-io/ai-box/issues/5))
 - [ ] 🎨 Prem Michelangelo [#1](https://github.com/premAI-io/ai-box/issues/1)
 - [ ] 💻 Prem Copilot [#2](https://github.com/premAI-io/ai-box/issues/2)
 - [ ] 🎵 Prem Audio [#4](https://github.com/premAI-io/ai-box/issues/4)
