@@ -56,7 +56,7 @@ docker run -d -p 8000:8000 --platform linux/arm64 --name prem_chat ghcr.io/prema
 ## Product Roadmap
 
 | App                                                                        | Deadline     |
-| -------------------------------------------------------------------------- | 1st of June  |
+| -------------------------------------------------------------------------- | ------------ |
 | 😃 Prem Chat (missing [#6](https://github.com/premAI-io/ai-box/issues/6))  | 1st of June  |
 | 📕 Prem Embeddings ([#5](https://github.com/premAI-io/ai-box/issues/5))    | 10th of June |
 | 🎨 Prem Michelangelo [#1](https://github.com/premAI-io/ai-box/issues/1)    | 17th of June |
