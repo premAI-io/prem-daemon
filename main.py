@@ -2,9 +2,9 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes.api import router as api_router
 from app.core.config import API_PREFIX, DEBUG, PROJECT_NAME
 from app.core.events import create_start_app_handler
+from app.routes import router as api_router
 
 
 def get_application() -> FastAPI:
