@@ -73,10 +73,10 @@ Coming soon...
 
 ### Features
 
-- [ ] Finetuning capabilities ([#9])
-- [ ] Data augmentation ([#10])
-- [ ] Prem Wallet ([#11])
-- [ ] Mobile App ([#14])
+- [ ] Finetuning capabilities [#9]
+- [ ] Data augmentation [#10]
+- [ ] Prem Wallet [#11]
+- [ ] Mobile App [#14]
 
 ## Contributing
 
