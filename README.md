@@ -25,7 +25,7 @@ We only support two hardware configurations. For what concerns the local install
 
 ## Installation
 
-### LFG
+### LFG 🚀
 
 ```bash
 docker-compose up -d
@@ -71,20 +71,28 @@ docker run -d -p 8000:8000 --platform linux/arm64 --name prem_chat ghcr.io/prema
 
 Coming soon...
 
+### Features
+
+- [ ] Finetuning capabilities ([#9])
+- [ ] Data augmentation ([#10])
+- [ ] Prem Wallet ([#11])
+- [ ] Mobile App ([#14])
+
 ## Contributing
 
 Depending on which component you are contributing to, you will have different hardware requirements. In order to run certain models you need at least 48gb of VRAM, which makes it difficult for a common developer to contribute in terms of these models. On the other hand, a lot of components can be run easily on consumer hardware. In that case, our suggestion is to write test cases accordingly and end-to-end test the app with the deployment command.
 
-### Creating a new service
+## Product Documentation
 
-The following steps are necessary in order to create a new service that can be exposed through `prem-controller`.
+### FAQ
 
-1. Extend the models metadata in `app/core/utils.py`
-2. Create a service class extending the correct task
-3. Create the corresponding Dockerfile for all the devices supported by the model
-4. Create a `{requirements}.txt` file for the model dependencies.
-5. Write the test cases accordingly.
-6. Change the Github action in order to build and push the newly created images on the registry.
+**How to install Docker Desktop?**
+
+**How to free some space?**
+
+**Which Hardware do I need to run Prem?**
+
+**Trobleshooting**
 
 ## Acknowledgments
 
