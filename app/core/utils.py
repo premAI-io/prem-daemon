@@ -6,11 +6,46 @@ import requests
 logger = logging.getLogger(__name__)
 
 APPS = [
-    {"id": "chat", "name": "Prem Chat", "playground": True},
-    {"id": "embeddings", "name": "Prem Embeddings", "playground": False},
-    {"id": "store", "name": "Prem Store", "playground": False},
-    {"id": "copilot", "name": "Prem Copilot", "playground": False},
-    {"id": "michelangelo", "name": "Prem Michelangelo", "playground": True},
+    {
+        "id": "chat",
+        "name": "Prem Chat",
+        "playground": True,
+        "documentation": """
+        # Prem Chat
+        """,
+    },
+    {
+        "id": "embeddings",
+        "name": "Prem Embeddings",
+        "playground": False,
+        "documentation": """
+        # Prem Chat
+        """,
+    },
+    {
+        "id": "store",
+        "name": "Prem Store",
+        "playground": False,
+        "documentation": """
+        # Prem Chat
+        """,
+    },
+    {
+        "id": "copilot",
+        "name": "Prem Copilot",
+        "playground": False,
+        "documentation": """
+        # Prem Chat
+        """,
+    },
+    {
+        "id": "michelangelo",
+        "name": "Prem Michelangelo",
+        "playground": True,
+        "documentation": """
+        # Prem Chat
+        """,
+    },
 ]
 
 SERVICES = []
