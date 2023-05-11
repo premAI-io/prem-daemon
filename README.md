@@ -73,10 +73,10 @@ Coming soon...
 
 ### Features
 
-- [ ] Finetuning capabilities [#9]
-- [ ] Data augmentation [#10]
-- [ ] Prem Wallet [#11]
-- [ ] Mobile App [#14]
+- [ ] Finetuning capabilities [#9](https://github.com/premAI-io/ai-box/issues/9)
+- [ ] Data augmentation [#10](https://github.com/premAI-io/ai-box/issues/10)
+- [ ] Prem Wallet [#11](https://github.com/premAI-io/ai-box/issues/11)
+- [ ] Mobile App [#14](https://github.com/premAI-io/ai-box/issues/14)
 
 ## Contributing
 
