@@ -23,6 +23,10 @@ Prem App can be run locally in two different ways:
 
 `prem-registry` contains all the manifests of all the services that `prem-box` exposes. `prem-box` fetches the metadata information from https://prem-registry.fly.dev/manifests/, which is a simple python webserver in order to expose the information of all the services in the repository. In order to submit a new service, please follow the instructions listed [here](https://github.com/premAI-io/prem-registry#packaging-a-service-for-prem-registry).
 
+## [Prem Services](https://github.com/premAI-io/prem-services)
+
+`prem-services` contains the services released by the core team. Each folder contains one or multiple services based on the model that has been exposed. We plan to create a cookiecutter template for an initial scaffolding.
+
 ## Prerequisites
 
 We only support two hardware configurations. For what concerns the local installation, our docker images and containers are optimized for Apple Silicon users, while for the cloud users, we support NVIDIA GPUs.
