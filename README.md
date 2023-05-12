@@ -1,14 +1,15 @@
 # Prem ❤️
 
-> Prem: A Privacy-Centric Open-Source AI Cloud Infrastructure Powered by Nostr. A cutting-edge, open-source AI platform designed with privacy at its core. Leveraging state-of-the-art Large Language Models (LLMs), Prem provides a secure and flexible environment for self-hosting AI models or utilizing our privacy-focused cloud infrastructure.
+> Prem: A Privacy-Centric Open-Source AI Cloud Infrastructure Powered by Nostr. Leveraging state-of-the-art Large Language Models (LLMs), Prem provides a secure and flexible environment for self-hosting AI models quickly and efficiently.
 
 ## Prem Box
 
-The `prem-box` is the primary repository used to build and serve the different AI services. Each docker image represents a service that can be run locally, in the Prem Cloud, or in your server infrastructure. The repository is structured around two main concepts:
+The `prem-box` is the primary repository used to build and serve the different AI services. Each docker image represents a service that can be run locally, in the Prem Cloud, or in your server infrastructure. The Prem architecture is structured around two main concepts:
 
-- Controller: a simplified FastAPI web server that uses the docker engine to run the different images.
-- Worker: a single AI service exposed with a FastAPI web server using similar endpoints to those of OpenAI based on the task it is implemented to perform (e.g., `chat-completions`, `embeddings`, `images-generation`).
-The worker can be run on both GPU and CPU hardware based on the model and the user hardware availability. Multiple options are available for handling this aspect.
+- Controller: a simple FastAPI web server that uses the docker engine to run and manage the different images.
+- Service: a single AI service that exposes certain endpoints based on a predefined scaffolding given by it's service type (or App).
+
+The service can be run both on GPU and CPU hardware based on the model and the user hardware availability. Multiple options are available in order to handle this aspect.
 
 ## [Prem App](https://github.com/premAI-io/prem-app)
 
@@ -16,7 +17,7 @@ The worker can be run on both GPU and CPU hardware based on the model and the us
 
 Prem App can be run locally in two different ways:
 
-- Desktop: You can download the .dmg and install the app on your Mac. [Download it here.](https://google.com)
+- Desktop: You can download the .dmg and install the app on your Mac. [Download it here.](https://github.com/premAI-io/prem-app)
 - Docker: Using docker-compose. Check the instructions in the #Installation section.
 
 ## [Prem Registry](https://github.com/premAI-io/prem-registry)
