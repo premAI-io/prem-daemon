@@ -19,6 +19,10 @@ Prem App can be run locally in two different ways:
 - Desktop: You can download the .dmg and install the app on your Mac. [Download it here.](https://google.com)
 - Docker: Using docker-compose. Check the instructions in the #Installation section.
 
+## [Prem Registry](https://github.com/premAI-io/prem-registry)
+
+`prem-registry` contains all the manifests of all the services that `prem-box` exposes. `prem-box` fetches the metadata information from https://prem-registry.fly.dev/manifests/, which is a simple python webserver in order to expose the information of all the services in the repository. In order to submit a new service, please follow the instructions listed [here](https://github.com/premAI-io/prem-registry#packaging-a-service-for-prem-registry).
+
 ## Prerequisites
 
 We only support two hardware configurations. For what concerns the local installation, our docker images and containers are optimized for Apple Silicon users, while for the cloud users, we support NVIDIA GPUs.
