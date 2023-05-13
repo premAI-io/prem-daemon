@@ -1,3 +1,5 @@
+import shutil
+
 from app.core import utils
 
 
@@ -43,6 +45,7 @@ def format_stats(value):
 
 
 def get_docker_stats(container_name: str):
+    total, used, _ = shutil.disk_usage("/")
     client = utils.get_docker_client()
     container = client.containers.get(container_name)
     value = container.stats(stream=False)
@@ -52,4 +55,7 @@ def get_docker_stats(container_name: str):
         "memory_usage": memory_usage,
         "memory_limit": memory_limit,
         "memory_percentage": memory_percentage,
+        "storage_percentage": (used / total) * 100,
+        "storage_usage": used // (2**30),
+        "storage_limit": total // (2**30),
     }
