@@ -27,6 +27,8 @@ class ServiceResponse(BaseModel):
     apps: list[str]
     dockerImage: str
     defaultPort: int
+    running: bool
+    downloaded: bool
 
 
 class AppResponse(BaseModel):
