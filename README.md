@@ -1,5 +1,7 @@
 # Prem ❤️
 
+<img width="1500" alt="CoverLogoIllustration" src="https://github.com/premAI-io/prem-box/assets/29598954/4e7db524-f120-4d0a-b202-2fe12363699a">
+
 > Prem: A Privacy-Centric Open-Source AI Cloud Infrastructure Powered by Nostr. Leveraging state-of-the-art Large Language Models (LLMs), Prem provides a secure and flexible environment for self-hosting AI models quickly and efficiently.
 
 ## Prem Box
