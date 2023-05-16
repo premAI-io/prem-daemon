@@ -2,6 +2,8 @@
 
 > Prem: A Privacy-Centric Open-Source AI Cloud Infrastructure Powered by Nostr. Leveraging state-of-the-art Large Language Models (LLMs), Prem provides a secure and flexible environment for self-hosting AI models quickly and efficiently.
 
+<img width="1500" alt="CoverLogoIllustration2" src="https://github.com/premAI-io/prem-box/assets/29598954/d1e9a6a8-8e12-4ba9-865a-ac101a17e0a0">
+
 ## Prem Box
 
 The `prem-box` is the primary repository used to build and serve the different AI services. Each docker image represents a service that can be run locally, in the Prem Cloud, or in your server infrastructure. The Prem architecture is structured around two main concepts:
