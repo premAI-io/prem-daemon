@@ -13,6 +13,7 @@ APPS = [
         "documentation": """
         # Prem Chat
         """,
+        "icon": "/assets/apps/chat.svg",
     },
     {
         "id": "embeddings",
@@ -21,6 +22,7 @@ APPS = [
         "documentation": """
         # Prem Chat
         """,
+        "icon": "/assets/apps/embeddings.svg",
     },
     {
         "id": "store",
@@ -29,6 +31,7 @@ APPS = [
         "documentation": """
         # Prem Chat
         """,
+        "icon": "/assets/apps/store.svg",
     },
     {
         "id": "copilot",
@@ -37,6 +40,7 @@ APPS = [
         "documentation": """
         # Prem Chat
         """,
+        "icon": "/assets/apps/copilot.svg",
     },
     {
         "id": "michelangelo",
@@ -45,6 +49,7 @@ APPS = [
         "documentation": """
         # Prem Chat
         """,
+        "icon": "/assets/apps/michelangelo.svg",
     },
 ]
 

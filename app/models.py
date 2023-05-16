@@ -34,6 +34,9 @@ class ServiceResponse(BaseModel):
 class AppResponse(BaseModel):
     id: str
     name: str
+    playground: bool
+    documentation: str
+    icon: str
 
 
 class ContainerStatsResponse(BaseModel):
