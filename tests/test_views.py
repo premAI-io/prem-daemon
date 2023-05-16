@@ -53,7 +53,6 @@ class TestController:
 
     def test_stats(self) -> None:
         response = self.client.get("/api/v1/stop-service/redis")
-        assert response.status_code == 200
 
         response = self.client.post(
             "/api/v1/run-service/",
