@@ -22,8 +22,7 @@ def get_services(app_id: str = None) -> dict:
             if container.name == service["id"]:
                 service["running"] = True
         for image in images:
-            print(image.tags)
-            if image.tags[0] == service["dockerImage"]:
+            if len(image.tags) > 0 and image.tags[0] == service["dockerImage"]:
                 service["downloaded"] = True
         rich_services.append(service)
 
@@ -39,12 +38,12 @@ def get_service_by_id(service_id: str) -> dict:
     for service in utils.SERVICES:
         if service["id"] == service_id:
             service["running"] = False
-            service["downlaoded"] = False
+            service["downloaded"] = False
             for container in containers:
                 if container.name == service["id"]:
                     service["running"] = True
             for image in images:
-                if image.tags[0] == service["dockerImage"]:
+                if len(image.tags) > 0 and image.tags[0] == service["dockerImage"]:
                     service["downloaded"] = True
             return service
 

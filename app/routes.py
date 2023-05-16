@@ -185,14 +185,14 @@ async def stats_by_service(service_id: str):
 
     try:
         stats = services.get_docker_stats(service_object["id"])
+        stats["id"] = service_object["id"]
+        return stats
     except Exception as error:
         logger.error(error)
         raise HTTPException(
             status_code=400,
             detail={"message": f"Failed to remove image {error}"},
         ) from error
-    stats["id"] = service_object["id"]
-    return stats
 
 
 @router.get("/stats/", response_model=list[models.ContainerStatsResponse])
@@ -201,8 +201,8 @@ async def stats():
     for service in utils.SERVICES:
         try:
             stats = services.get_docker_stats(service["id"])
+            stats["id"] = service["id"]
+            results.append(stats)
         except Exception as error:
             logger.error(error)
-        stats["id"] = service["id"]
-        results.append(stats)
     return results

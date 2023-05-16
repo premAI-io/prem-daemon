@@ -9,6 +9,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 8000:8000
+
   prem_app:
     image: ghcr.io/premai-io/prem-app:latest
     env_file:
