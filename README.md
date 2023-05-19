@@ -43,15 +43,7 @@ docker-compose up -d
 ```
 ## Services
 
-### Prem Chat & Embeddings
-
-| Model                                     | Model ID                    | Memory              | Device  | Chat | Embeddings |
-| ----------------------------------------- | --------------------------- | ------------------- | ------- | ---- | ---------- |
-| Vicuna 7B 4-bit                           | vicuna-7b-q4                | 16gb                | CPU     | Yes  | Yes        |
-| GPT4All 4-bit                             | gpt4all-lora-q4             | 16gb                | CPU     | Yes  | Yes        |
-| Dolly v2 12B                              |                             | 24gb                | GPU     | Yes  | No         |
-| OpenAssistant Llama 30B XOR               |                             | 48gb                | GPU     | Yes  | No         |
-| All-MiniLM-L6-v2                          |                             | 16gb                | GPU     | No   | Yes        |
+For a complete list of Apps and Services available in Prem Box, please check out our Prem Regisry at https://premai-io.github.io/prem-registry/.
 
 ### Running a single service on GPU
 
@@ -66,7 +58,7 @@ docker run -d -p 8000:8000 --platform linux/arm64 --name prem_chat ghcr.io/prema
 
 ## Product Roadmap
 
-### Services
+### Apps & Services
 
 | App                                                                        | Deadline     |
 | -------------------------------------------------------------------------- | ------------ |
