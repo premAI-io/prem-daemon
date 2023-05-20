@@ -69,6 +69,9 @@ docker run -d -p 8000:8000 --platform linux/arm64 --name prem_chat ghcr.io/prema
 | 💻 Prem Copilot [#2](https://github.com/premAI-io/ai-box/issues/2)         | 17th of June |
 | 🎵 Prem Audio [#4](https://github.com/premAI-io/ai-box/issues/4)           | 24th of June |
 | 📷 Prem Vision [#3](https://github.com/premAI-io/ai-box/issues/3)          | TBD          |
+| 📖 Prem Summary [#24](https://github.com/premAI-io/ai-box/issues/24)       | TBD          |
+| 🖼️ Prem Upscaler [#25](https://github.com/premAI-io/ai-box/issues/25)      | TBD          |
+| 📹 Prem Video [#26](https://github.com/premAI-io/ai-box/issues/26)         | TBD          |
 
 ### Pipelines
 
