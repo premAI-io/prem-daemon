@@ -117,3 +117,5 @@ Thank You ❤️
 - [whisper](https://github.com/openai/whisper)
 - [bark](https://github.com/bark-simulator/bark)
 - [salesforce](https://github.com/salesforce/CodeT5)
+- [redis](https://redis.com/solutions/use-cases/vector-database/)
+- [qdrant](https://github.com/qdrant/qdrant)
