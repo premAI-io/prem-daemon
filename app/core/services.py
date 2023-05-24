@@ -53,13 +53,43 @@ def get_apps():
 
 
 def get_docker_stats(container_name: str):
-    total, used, _ = shutil.disk_usage("/")
     client = utils.get_docker_client()
     container = client.containers.get(container_name)
     value = container.stats(stream=False)
     cpu_percentage, memory_usage, memory_limit, memory_percentage = utils.format_stats(
         value
     )
+    return {
+        "cpu_percentage": cpu_percentage,
+        "memory_usage": memory_usage,
+        "memory_limit": memory_limit,
+        "memory_percentage": memory_percentage,
+    }
+
+
+def get_docker_stats_all():
+    total, used, _ = shutil.disk_usage("/")
+    client = utils.get_docker_client()
+
+    cpu_percentage = 0
+    memory_usage = 0
+    memory_limit = 0
+    memory_percentage = 0
+
+    containers = client.containers.list()
+    for container in containers:
+        value = container.stats(stream=False)
+        (
+            c_cpu_percentage,
+            c_memory_usage,
+            c_memory_limit,
+            c_memory_percentage,
+        ) = utils.format_stats(value)
+        cpu_percentage += c_cpu_percentage
+        memory_usage += c_memory_usage
+        memory_percentage += c_memory_percentage
+        memory_limit = c_memory_limit
+
     return {
         "cpu_percentage": cpu_percentage,
         "memory_usage": memory_usage,

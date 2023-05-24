@@ -206,3 +206,13 @@ async def stats():
         except Exception as error:
             logger.error(error)
     return results
+
+
+@router.get("/stats-all/", response_model=models.OSStatsResponse)
+async def stats_all():
+    try:
+        stats = services.get_docker_stats_all()
+    except Exception as error:
+        logger.error(error)
+        stats = {}
+    return stats

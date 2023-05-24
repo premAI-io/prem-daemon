@@ -63,10 +63,15 @@ class TestController:
         response = self.client.get("/api/v1/stats/")
         assert response.status_code == 200
 
+        response = self.client.get("/api/v1/stats-all/")
+        assert response.status_code == 200
+
         response = self.client.get("/api/v1/stop-service/redis")
         assert response.status_code == 200
 
     def test_stats_by_service(self) -> None:
+        response = self.client.get("/api/v1/stop-service/redis")
+
         response = self.client.post(
             "/api/v1/run-service/",
             json={"id": "redis"},

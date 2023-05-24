@@ -45,3 +45,13 @@ class ContainerStatsResponse(BaseModel):
     memory_usage: float
     memory_limit: float
     memory_percentage: float
+
+
+class OSStatsResponse(BaseModel):
+    cpu_percentage: float
+    memory_usage: float
+    memory_limit: float
+    memory_percentage: float
+    storage_usage: float
+    storage_limit: float
+    storage_percentage: float
