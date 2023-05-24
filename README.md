@@ -59,32 +59,20 @@ docker run -d -p 8000:8000 --platform linux/arm64 --name prem_chat ghcr.io/prema
 
 ## Product Roadmap
 
-### Apps & Services
+If you wanna know which services we support for each interface, please refer to Prem Registry https://premai-io.github.io/prem-registry/.
 
-| App                                                                        | Deadline     |
+| Interfaces                                                                 | Deadline     |
 | -------------------------------------------------------------------------- | ------------ |
-| 😃 Prem Chat (missing [#6](https://github.com/premAI-io/ai-box/issues/6))  | 1st of June  |
-| 📕 Prem Embeddings [#5](https://github.com/premAI-io/ai-box/issues/5)      | 1st of June  |
+| 😃 Prem Chat                                                               | 1st of June  |
+| 📕 Prem Embeddings                                                         | 1st of June  |
 | 🏛️ Prem Store                                                              | 1st of June  |
-| 🎨 Prem Michelangelo [#1](https://github.com/premAI-io/ai-box/issues/1)    | 10th of June |
-| 💻 Prem Copilot [#2](https://github.com/premAI-io/ai-box/issues/2)         | 17th of June |
+| 🎨 Prem Michelangelo                                                       | 10th of June |
+| 💻 Prem Copilot                                                            | 17th of June |
 | 🎵 Prem Audio [#4](https://github.com/premAI-io/ai-box/issues/4)           | 24th of June |
 | 📷 Prem Vision [#3](https://github.com/premAI-io/ai-box/issues/3)          | TBD          |
 | 📖 Prem Summary [#24](https://github.com/premAI-io/ai-box/issues/24)       | TBD          |
 | 🖼️ Prem Upscaler [#25](https://github.com/premAI-io/ai-box/issues/25)      | TBD          |
 | 📹 Prem Video [#26](https://github.com/premAI-io/ai-box/issues/26)         | TBD          |
-
-### Pipelines
-
-Coming soon...
-
-### Features
-
-- [ ] Finetuning capabilities [#9](https://github.com/premAI-io/ai-box/issues/9)
-- [ ] Data augmentation [#10](https://github.com/premAI-io/ai-box/issues/10)
-- [ ] Prem Wallet [#11](https://github.com/premAI-io/ai-box/issues/11)
-- [ ] Mobile App [#14](https://github.com/premAI-io/ai-box/issues/14)
-- [ ] Plugins [#16](https://github.com/premAI-io/prem-box/issues/16)
 
 ## Contributing
 
