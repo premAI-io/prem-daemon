@@ -1,7 +1,9 @@
 import logging
+import os
 
 import docker
 import requests
+import torch
 
 logger = logging.getLogger(__name__)
 
@@ -97,9 +99,13 @@ def get_docker_client():
     return docker.from_env()
 
 
+def is_gpu_available() -> bool:
+    return torch.cuda.is_available()
+
+
 def get_services():
     global SERVICES
-    response = requests.get("https://prem-registry.fly.dev/manifests/")
+    response = requests.get(os.getenv("PREM_REGISTRY_URL"))
     SERVICES = response.json()
 
 

@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  prem_controller:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
