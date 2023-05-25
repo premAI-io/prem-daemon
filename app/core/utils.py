@@ -101,6 +101,8 @@ def get_services():
     global SERVICES
     response = requests.get("https://prem-registry.fly.dev/manifests/")
     SERVICES = response.json()
+    for service in SERVICES:
+        service["icon"] = f"https://prem-registry.fly.dev{service['icon']}"
 
 
 def format_stats(value):
