@@ -2,7 +2,6 @@ import os
 
 import sentry_sdk
 import uvicorn
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -10,9 +9,6 @@ from fastapi.staticfiles import StaticFiles
 from app.core.config import API_PREFIX, DEBUG, PROJECT_NAME
 from app.core.events import create_start_app_handler
 from app.routes import router as api_router
-
-load_dotenv()
-
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_DSN"),

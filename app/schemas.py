@@ -29,6 +29,7 @@ class ServiceResponse(BaseModel):
     defaultPort: int
     running: bool
     downloaded: bool
+    supported: bool
 
 
 class AppResponse(BaseModel):

@@ -1,11 +1,13 @@
 import logging
-import os
 
 import docker
 import requests
 import torch
 
+from app.core.config import PREM_REGISTRY_URL
+
 logger = logging.getLogger(__name__)
+
 
 APPS = [
     {
@@ -105,10 +107,20 @@ def is_gpu_available() -> bool:
 
 def get_services():
     global SERVICES
-    response = requests.get(os.getenv("PREM_REGISTRY_URL"))
+    response = requests.get(f"{PREM_REGISTRY_URL}/manifests/")
     SERVICES = response.json()
     for service in SERVICES:
-        service["icon"] = f"https://prem-registry.fly.dev{service['icon']}"
+        if is_gpu_available() and "gpu" in service["dockerImages"]:
+            service["dockerImage"] = service["dockerImages"]["gpu"]["image"]
+            service["supported"] = True
+        elif "cpu" in service["dockerImages"]:
+            service["dockerImage"] = service["dockerImages"]["cpu"]["image"]
+            service["supported"] = True
+        else:
+            service["dockerImage"] = ""
+            service["supported"] = False
+        service["icon"] = f"{PREM_REGISTRY_URL}{service['icon']}"
+        service["apps"] = service["interfaces"]
 
 
 def format_stats(value):
