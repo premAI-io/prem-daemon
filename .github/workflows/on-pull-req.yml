@@ -72,5 +72,5 @@ jobs:
           docker buildx build \
             --push \
             --file ./Dockerfile \
-            --tag ghcr.io/premai-io/prem-controller:pr-${{ github.event.pull_request.number }} \
+            --tag ghcr.io/premai-io/premd:pr-${{ github.event.pull_request.number }} \
             --platform linux/arm64,linux/amd64 .
