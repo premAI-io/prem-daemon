@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, HTTPException
 
-from app import models
+from app import schemas
 from app.core import services, utils
 
 logger = logging.getLogger(__name__)
@@ -10,26 +10,26 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get("/", response_model=models.HealthResponse)
+@router.get("/", response_model=schemas.HealthResponse)
 async def health():
-    return models.HealthResponse(status=True)
+    return schemas.HealthResponse(status=True)
 
 
-@router.get("/apps/", response_model=list[models.AppResponse])
+@router.get("/apps/", response_model=list[schemas.AppResponse])
 async def apps():
     return services.get_apps()
 
 
-@router.get("/services/", response_model=list[models.ServiceResponse])
+@router.get("/services/", response_model=list[schemas.ServiceResponse])
 async def services_all():
     return services.get_services()
 
 
 @router.get(
     "/services/{service_id}",
-    response_model=models.ServiceResponse,
+    response_model=schemas.ServiceResponse,
     responses={
-        400: {"model": models.ErrorResponse, "description": "Service not found."}
+        400: {"model": schemas.ErrorResponse, "description": "Service not found."}
     },
 )
 async def service_by_id(service_id: str):
@@ -39,17 +39,17 @@ async def service_by_id(service_id: str):
     return service_object
 
 
-@router.get("/services-by-app/{app_id}", response_model=list[models.ServiceResponse])
+@router.get("/services-by-app/{app_id}", response_model=list[schemas.ServiceResponse])
 async def services_by_app(app_id: str):
     return services.get_services(app_id)
 
 
 @router.get(
     "/download-service/{service_id}",
-    response_model=models.SuccessResponse,
+    response_model=schemas.SuccessResponse,
     responses={
         400: {
-            "model": models.ErrorResponse,
+            "model": schemas.ErrorResponse,
             "description": "Failed to download image or service not found.",
         }
     },
@@ -76,15 +76,15 @@ async def download_service(service_id: str):
 
 @router.post(
     "/run-service/",
-    response_model=models.SuccessResponse,
+    response_model=schemas.SuccessResponse,
     responses={
         400: {
-            "model": models.ErrorResponse,
+            "model": schemas.ErrorResponse,
             "description": "Failed to start container or service not found.",
         }
     },
 )
-async def run_service(body: models.ServiceInput):
+async def run_service(body: schemas.ServiceInput):
     service_object = services.get_service_by_id(body.id)
     if service_object is None:
         raise HTTPException(
@@ -116,10 +116,10 @@ async def run_service(body: models.ServiceInput):
 
 @router.get(
     "/stop-service/{service_id}",
-    response_model=models.SuccessResponse,
+    response_model=schemas.SuccessResponse,
     responses={
         400: {
-            "model": models.ErrorResponse,
+            "model": schemas.ErrorResponse,
             "description": "Failed to stop container or service not found.",
         }
     },
@@ -167,10 +167,10 @@ async def remove_service(service_id):
 
 @router.get(
     "/stats/{service_id}",
-    response_model=models.ContainerStatsResponse,
+    response_model=schemas.ContainerStatsResponse,
     responses={
         400: {
-            "model": models.ErrorResponse,
+            "model": schemas.ErrorResponse,
             "description": "Failed to get stats or service not found.",
         }
     },
@@ -195,7 +195,7 @@ async def stats_by_service(service_id: str):
         ) from error
 
 
-@router.get("/stats/", response_model=list[models.ContainerStatsResponse])
+@router.get("/stats/", response_model=list[schemas.ContainerStatsResponse])
 async def stats():
     results = []
     for service in utils.SERVICES:
@@ -208,7 +208,7 @@ async def stats():
     return results
 
 
-@router.get("/stats-all/", response_model=models.OSStatsResponse)
+@router.get("/stats-all/", response_model=schemas.OSStatsResponse)
 async def stats_all():
     try:
         stats = services.get_docker_stats_all()
