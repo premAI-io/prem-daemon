@@ -9,9 +9,6 @@ on:
   pull_request:
     branches: ["main"]
 
-  push:
-    branches: ["main"]
-
 jobs:
   linter:
     runs-on: ubuntu-latest
@@ -75,5 +72,5 @@ jobs:
           docker buildx build \
             --push \
             --file ./Dockerfile \
-            --tag ghcr.io/premai-io/prem-controller:latest \
+            --tag ghcr.io/premai-io/prem-controller:pr-${{ github.event.pull_request.number }} \
             --platform linux/arm64,linux/amd64 .
