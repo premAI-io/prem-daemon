@@ -38,8 +38,8 @@ jobs:
 
       - name: Build & push prem
         run:  >-
-          docker buildx build --push 
+          docker buildx build --push
           --file .Dockerfile
-          --tag ghcr.io/premai-io/premd:latest 
-          --tag ghcr.io/premai-io/premd:${{ steps.next_tag.outputs.tag }}  
+          --tag ghcr.io/premai-io/premd:latest
+          --tag ghcr.io/premai-io/premd:${{ steps.next_tag.outputs.tag }}
           --platform linux/arm64,linux/amd64 .
