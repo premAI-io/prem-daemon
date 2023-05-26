@@ -61,18 +61,18 @@ docker run -d -p 8000:8000 --platform linux/arm64 --name prem_chat ghcr.io/prema
 
 If you wanna know which services we support for each interface, please refer to Prem Registry https://premai-io.github.io/prem-registry/.
 
-| Interfaces            | Deadline     |
-| --------------------- | ------------ |
-| 😃 Prem Chat          | 1st of June  |
-| 📕 Prem Embeddings    | 1st of June  |
-| 🏛️ Prem Store         | 1st of June  |
-| 🎨 Prem Michelangelo  | 10th of June |
-| 💻 Prem Copilot       | 17th of June |
-| 🎵 Prem Audio         | 24th of June |
-| 📷 Prem Vision        | TBD          |
-| 📖 Prem Summary       | TBD          |
-| 🖼️ Prem Upscaler      | TBD          |
-| 📹 Prem Video         | TBD          |
+| Interfaces            |
+| --------------------- |
+| 😃 Prem Chat          |
+| 📕 Prem Embeddings    |
+| 🏛️ Prem Store         |
+| 🎨 Prem Michelangelo  |
+| 💻 Prem Copilot       |
+| 🎵 Prem Audio         |
+| 📷 Prem Vision        |
+| 📖 Prem Summary       |
+| 🖼️ Prem Upscaler      |
+| 📹 Prem Video         |
 
 ## Contributing
 
