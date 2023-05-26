@@ -61,22 +61,37 @@ docker run -d -p 8000:8000 --platform linux/arm64 --name prem_chat ghcr.io/prema
 
 If you wanna know which services we support for each interface, please refer to Prem Registry https://premai-io.github.io/prem-registry/.
 
-| Interfaces            |
-| --------------------- |
-| 😃 Prem Chat          |
-| 📕 Prem Embeddings    |
-| 🏛️ Prem Store         |
-| 🎨 Prem Michelangelo  |
-| 💻 Prem Copilot       |
-| 🎵 Prem Audio         |
-| 📷 Prem Vision        |
-| 📖 Prem Summary       |
-| 🖼️ Prem Upscaler      |
-| 📹 Prem Video         |
+### Interfaces
+
+- [x] 😃 Prem Chat
+- [x] 📕 Prem Embeddings
+- [x] 🏛️ Prem Store
+- [ ] 🎨 Prem Michelangelo
+- [ ] 💻 Prem Copilot
+- [ ] 🎵 Prem Audio
+- [ ] 📷 Prem Vision
+- [ ] 📖 Prem Summary
+- [ ] 🖼️ Prem Upscaler
+- [ ] 📹 Prem Video
 
 ## Contributing
 
-Depending on which component you are contributing to, you will have different hardware requirements. In order to run certain models you need at least 48gb of VRAM, which makes it difficult for a common developer to contribute in terms of these models. On the other hand, a lot of components can be run easily on consumer hardware. In that case, our suggestion is to write test cases accordingly and end-to-end test the app with the deployment command.
+### Getting Started
+
+```bash
+# create a python virtual environment and activate it
+virtualenv venv -p=3.10
+source ./venv/bin/activate
+
+# install the necessary dependencies
+pip install -r requirements.txt
+
+# configure pre-commit hooks
+pre-commit install
+
+# run the webserver
+python main.py
+```
 
 ## Product Documentation
 
