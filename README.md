@@ -1,12 +1,9 @@
-# Prem ❤️
+# 🏃Prem
+<img width="1500" alt="CoverOnlyLogoGradient" src="https://github.com/premAI-io/prem-daemon/assets/29598954/fd8fd553-b9c2-48b4-966d-cf933853d651">
 
-> Prem: A Privacy-Centric Open-Source AI Cloud Infrastructure Powered by Nostr. Leveraging state-of-the-art Large Language Models (LLMs), Prem provides a secure and flexible environment for self-hosting AI models quickly and efficiently.
+## Prem Daemon
 
-<img width="1500" alt="CoverOnlyLogoGradient" src="https://github.com/premAI-io/prem-box/assets/29598954/fd8fd553-b9c2-48b4-966d-cf933853d651">
-
-## Prem Box
-
-The `prem-box` is the primary repository used to build and serve the different AI services. Each docker image represents a service that can be run locally, in the Prem Cloud, or in your server infrastructure. The Prem architecture is structured around three main concepts:
+The `prem-daemon` is the primary repository used to build and serve the different AI services. Each docker image represents a service that can be run locally, in the Prem Cloud, or in your server infrastructure. The Prem architecture is structured around three main concepts:
 
 - Controller: a simple FastAPI web server that uses the docker engine to run and manage the different images.
 - Interface: defintion in terms of REST API that is used to constraint how a service should behave in terms of request and response in order to use it with a common interface.
@@ -16,7 +13,7 @@ The service can be run both on GPU and CPU hardware based on the model and the u
 
 ## [Prem App](https://github.com/premAI-io/prem-app)
 
-`prem-app` is the main interface for using `prem-box`. The frontend is integrated with both the controller and the workers to provide a pleasant experience for end-users.
+`prem-app` is the main interface for using `prem-daemon`. The frontend is integrated with both the controller and the workers to provide a pleasant experience for end-users.
 
 Prem App can be run locally in two different ways:
 
@@ -25,7 +22,7 @@ Prem App can be run locally in two different ways:
 
 ## [Prem Registry](https://github.com/premAI-io/prem-registry)
 
-`prem-registry` contains all the manifests of all the services that `prem-box` exposes. `prem-box` fetches the metadata information from https://prem-registry.fly.dev/manifests/, which is a simple python webserver in order to expose the information of all the services in the repository. In order to submit a new service, please follow the instructions listed [here](https://github.com/premAI-io/prem-registry#packaging-a-service-for-prem-registry).
+`prem-registry` contains all the manifests of all the services that `prem-daemon` exposes. `prem-daemon` fetches the metadata information from https://prem-registry.fly.dev/manifests/, which is a simple python webserver in order to expose the information of all the services in the repository. In order to submit a new service, please follow the instructions listed [here](https://github.com/premAI-io/prem-registry#packaging-a-service-for-prem-registry).
 
 ## [Prem Services](https://github.com/premAI-io/prem-services)
 
@@ -44,7 +41,7 @@ docker-compose up -d
 ```
 ## Services
 
-For a complete list of Apps and Services available in Prem Box, please check out our Prem Regisry at https://premai-io.github.io/prem-registry/.
+For a complete list of Apps and Services available in the Prem Daemon, please check out our Prem Regisry at https://premai-io.github.io/prem-registry/.
 
 ### Running a single service on GPU
 
