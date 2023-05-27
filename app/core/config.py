@@ -19,7 +19,8 @@ API_VERSION = "0.1.0"
 # Prem Registry
 # ------------------------------------------------------------------------------
 PREM_REGISTRY_URL: str = config(
-    "PREM_REGISTRY_URL", default="https://raw.githubusercontent.com/premAI-io/prem-registry/main/manifests.json"
+    "PREM_REGISTRY_URL",
+    default="https://raw.githubusercontent.com/premAI-io/prem-registry/main/manifests.json",
 )
 
 # Logging
