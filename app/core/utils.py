@@ -107,7 +107,7 @@ def is_gpu_available() -> bool:
 
 def get_services():
     global SERVICES
-    response = requests.get(f"{PREM_REGISTRY_URL}/manifests/")
+    response = requests.get(PREM_REGISTRY_URL)
     SERVICES = response.json()
     for service in SERVICES:
         if is_gpu_available() and "gpu" in service["dockerImages"]:
@@ -119,7 +119,7 @@ def get_services():
         else:
             service["dockerImage"] = ""
             service["supported"] = False
-        service["icon"] = f"{PREM_REGISTRY_URL}{service['icon']}"
+        service["icon"] = service["icon"]
         service["apps"] = service["interfaces"]
 
 
