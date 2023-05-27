@@ -15,7 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-       # get current  tag
       - name: tag
         id: next_tag
         run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
@@ -39,7 +38,7 @@ jobs:
       - name: Build & push prem
         run:  >-
           docker buildx build --push
-          --file .Dockerfile
+          --file Dockerfile
           --tag ghcr.io/premai-io/premd:latest
           --tag ghcr.io/premai-io/premd:${{ steps.next_tag.outputs.tag }}
           --platform linux/arm64,linux/amd64 .
