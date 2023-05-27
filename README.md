@@ -76,7 +76,7 @@ If you wanna know which services we support for each interface, please refer to 
 
 ## Contributing
 
-### Getting Started
+### Running the webserver locally
 
 ```bash
 # create a python virtual environment and activate it
@@ -90,7 +90,14 @@ pip install -r requirements.txt
 pre-commit install
 
 # run the webserver
+cp .env.example .env
 python main.py
+```
+
+### Running the test cases
+
+```bash
+pytest
 ```
 
 ## Product Documentation
