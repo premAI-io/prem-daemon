@@ -9,8 +9,8 @@ class TestController:
         [event() for event in app.router.on_startup]
         self.client = TestClient(app)
 
-    def test_apps(self) -> None:
-        response = self.client.get("/v1/apps/")
+    def test_interfaces(self) -> None:
+        response = self.client.get("/v1/interfaces/")
         assert response.status_code == 200
 
     def test_services(self) -> None:
@@ -21,8 +21,8 @@ class TestController:
         response = self.client.get("/v1/services/vicuna-7b-q4")
         assert response.status_code == 200
 
-    def test_services_by_app(self) -> None:
-        response = self.client.get("/v1/services-by-app/chat")
+    def test_services_by_interface(self) -> None:
+        response = self.client.get("/v1/services-by-interface/chat")
         assert response.status_code == 200
 
     def test_download_remove_service(self) -> None:

@@ -15,7 +15,7 @@ async def health():
     return schemas.HealthResponse(status=True)
 
 
-@router.get("/apps/", response_model=list[schemas.AppResponse])
+@router.get("/interfaces/", response_model=list[schemas.InterfaceResponse])
 async def apps():
     return services.get_apps()
 
@@ -39,9 +39,12 @@ async def service_by_id(service_id: str):
     return service_object
 
 
-@router.get("/services-by-app/{app_id}", response_model=list[schemas.ServiceResponse])
-async def services_by_app(app_id: str):
-    return services.get_services(app_id)
+@router.get(
+    "/services-by-interface/{interface_id}",
+    response_model=list[schemas.ServiceResponse],
+)
+async def services_by_interface(interface_id: str):
+    return services.get_services(interface_id)
 
 
 @router.get(

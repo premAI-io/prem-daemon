@@ -3,16 +3,20 @@ import shutil
 from app.core import utils
 
 
-def get_services(app_id: str = None) -> dict:
+def get_services(interface_id: str = None) -> dict:
     docker_client = utils.get_docker_client()
 
     images = docker_client.images.list()
     containers = docker_client.containers.list()
 
-    if app_id is None:
+    if interface_id is None:
         services = utils.SERVICES
     else:
-        services = [service for service in utils.SERVICES if app_id in service["apps"]]
+        services = [
+            service
+            for service in utils.SERVICES
+            if interface_id in service["interfaces"]
+        ]
 
     rich_services = []
     for service in services:

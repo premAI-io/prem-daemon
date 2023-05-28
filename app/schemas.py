@@ -24,7 +24,7 @@ class ServiceResponse(BaseModel):
     documentation: str
     icon: str
     modelInfo: dict
-    apps: list[str]
+    interfaces: list[str]
     dockerImage: str
     defaultPort: int
     running: bool
@@ -32,7 +32,7 @@ class ServiceResponse(BaseModel):
     supported: bool
 
 
-class AppResponse(BaseModel):
+class InterfaceResponse(BaseModel):
     id: str
     name: str
     playground: bool

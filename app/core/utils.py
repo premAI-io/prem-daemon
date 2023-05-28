@@ -120,7 +120,6 @@ def get_services():
             service["dockerImage"] = ""
             service["supported"] = False
         service["icon"] = service["icon"]
-        service["apps"] = service["interfaces"]
 
 
 def format_stats(value):
