@@ -9,7 +9,7 @@
             "maxLength": 12000,
             "tokenLimit": 4000,
             "weightsSize": 4212859520,
-            "memoryRequirements": "8gb",
+            "memoryRequirements": 8192,
             "inferenceTime": "5 tokens per second"
         },
         "interfaces": [
@@ -33,7 +33,7 @@
             "maxLength": 12000,
             "tokenLimit": 4000,
             "weightsSize": 4212859520,
-            "memoryRequirements": "12",
+            "memoryRequirements": 12288,
             "inferenceTime": "5 tokens per second"
         },
         "interfaces": [
@@ -57,7 +57,7 @@
             "maxLength": 12000,
             "tokenLimit": 4000,
             "weightsSize": 4212859520,
-            "memoryRequirements": "100",
+            "memoryRequirements": 102400,
             "inferenceTime": "5 tokens per second"
         },
         "interfaces": [
