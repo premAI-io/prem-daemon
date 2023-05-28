@@ -1,9 +1,12 @@
+import subprocess
+
 import logging
 
 import docker
 import requests
 import torch
 
+import xml.etree.ElementTree as ET
 from app.core.config import PREM_REGISTRY_URL
 
 logger = logging.getLogger(__name__)
@@ -139,3 +142,22 @@ def format_stats(value):
     memory_limit = round(value["memory_stats"]["limit"] / (1024 * 1024), 2)
     memory_percentage = round(memory_usage / memory_limit, 2) * 100
     return cpu_percentage, memory_usage, memory_limit, memory_percentage
+
+
+def get_gpu_info():
+    nvidia_smi_xml = subprocess.check_output(['nvidia-smi', '-q', '-x']).decode()
+
+    root = ET.fromstring(nvidia_smi_xml)
+
+    gpu = root.find("gpu")
+
+    gpu_name = gpu.find("product_name").text
+    total_memory = gpu.find("fb_memory_usage/total").text
+    used_memory = gpu.find("fb_memory_usage/used").text
+
+    total_memory_value = int(total_memory[:-4])
+    used_memory_value = int(used_memory[:-4])
+
+    mem_percentage = (used_memory_value / total_memory_value) * 100
+
+    return gpu_name, total_memory_value, used_memory_value, mem_percentage

@@ -126,3 +126,14 @@ def get_free_port(default_port: int = 8000):
     for port in range(default_port, 9000):
         if port not in allocated_ports:
             return port
+
+def get_gpu_stats_all():
+    if utils.is_gpu_available():
+        gpu_name, total_memory, used_memory, memory_percentage = utils.get_gpu_info()
+        return {
+            "gpu_name" : gpu_name,
+            "total_memory" : total_memory,
+            "used_memory" : used_memory,
+            "memory_percentage" : memory_percentage
+        }
+    return {}

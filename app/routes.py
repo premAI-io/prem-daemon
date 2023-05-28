@@ -279,3 +279,12 @@ async def stats_all():
         logger.error(error)
         stats = {}
     return stats
+
+@router.get("/gpu-stats-all/", response_model=schemas.GPUStatsResponse)
+async def gpu_stats_all():
+    try:
+        stats = services.get_gpu_stats_all()
+    except Exception as error:
+        logger.error(error)
+        stats = {}
+    return stats

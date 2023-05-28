@@ -60,3 +60,9 @@ class OSStatsResponse(BaseModel):
     storage_usage: float
     storage_limit: float
     storage_percentage: float
+
+class GPUStatsResponse(BaseModel):
+    gpu_name: str
+    total_memory: float
+    used_memory: float
+    memory_percentage: float
