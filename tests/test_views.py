@@ -29,6 +29,9 @@ class TestController:
         response = self.client.get("/v1/download-service/redis-vector-db")
         assert response.status_code == 200
 
+        response = self.client.get("/v1/download-service-stream/redis-vector-db")
+        assert response.status_code == 200
+
         response = self.client.get("/v1/remove-service/redis-vector-db")
         assert response.status_code == 200
 

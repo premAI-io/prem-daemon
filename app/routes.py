@@ -96,7 +96,7 @@ async def download_service_stream(service_id: str):
         ):
             yield (json.dumps(line) + "\n")
 
-    return StreamingResponse(generator(), media_type="application/json")
+    return StreamingResponse(generator(), media_type="text/event-stream")
 
 
 @router.post(
