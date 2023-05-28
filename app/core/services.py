@@ -49,6 +49,10 @@ def get_service_by_id(service_id: str) -> dict:
                     service["runningPort"] = list(container.ports.values())[0][0][
                         "HostPort"
                     ]
+                    try:
+                        service["volumeName"] = container.attrs["Mounts"][0]["Name"]
+                    except Exception:
+                        service["volumeName"] = None
             for image in images:
                 if len(image.tags) > 0 and image.tags[0] == service["dockerImage"]:
                     service["downloaded"] = True

@@ -28,6 +28,8 @@ class ServiceResponse(BaseModel):
     dockerImage: str
     defaultPort: int
     runningPort: int = None
+    volumePath: str = None
+    volumeName: str = None
     running: bool
     downloaded: bool
     supported: bool

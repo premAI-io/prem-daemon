@@ -120,6 +120,30 @@ async def run_service(body: schemas.ServiceInput):
     free_port = services.get_free_port(service_object["defaultPort"])
 
     client = utils.get_docker_client()
+
+    if "volumePath" in service_object:
+        try:
+            volume_name = f"prem-{service_object['id']}-data"
+            volume = client.volumes.create(name=volume_name)
+            client.containers.run(
+                service_object["dockerImage"],
+                detach=True,
+                ports={f"{service_object['defaultPort']}/tcp": free_port},
+                name=service_object["id"],
+                volumes={
+                    volume.id: {"bind": service_object["volumePath"], "mode": "rw"}
+                },
+            )
+            return {
+                "message": f"Service started successfully. Container running on port {free_port}."
+            }
+        except Exception as error:
+            logger.error(error)
+            raise HTTPException(
+                status_code=400,
+                detail={"message": f"Failed to create volume {error}"},
+            ) from error
+
     try:
         client.containers.run(
             service_object["dockerImage"],
@@ -188,6 +212,20 @@ async def remove_service(service_id):
             detail={"message": f"Failed to remove image {error}"},
         ) from error
     return {"message": f"Service {service_object['id']} removed successfully."}
+
+
+@router.get("/remove-volume/{volume_name}")
+async def remove_volume(volume_name):
+    client = utils.get_docker_client()
+    try:
+        client.volumes.get(volume_name).remove(force=True)
+    except Exception as error:
+        logger.error(error)
+        raise HTTPException(
+            status_code=400,
+            detail={"message": f"Failed to remove image {error}"},
+        ) from error
+    return {"message": f"Volume {volume_name} removed successfully."}
 
 
 @router.get(
