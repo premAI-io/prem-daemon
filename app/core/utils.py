@@ -1,12 +1,11 @@
-import subprocess
-
 import logging
+import subprocess
+import xml.etree.ElementTree as ET
 
 import docker
 import requests
 import torch
 
-import xml.etree.ElementTree as ET
 from app.core.config import PREM_REGISTRY_URL
 
 logger = logging.getLogger(__name__)
@@ -145,7 +144,7 @@ def format_stats(value):
 
 
 def get_gpu_info():
-    nvidia_smi_xml = subprocess.check_output(['nvidia-smi', '-q', '-x']).decode()
+    nvidia_smi_xml = subprocess.check_output(["nvidia-smi", "-q", "-x"]).decode()
 
     root = ET.fromstring(nvidia_smi_xml)
 

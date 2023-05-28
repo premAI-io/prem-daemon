@@ -280,6 +280,7 @@ async def stats_all():
         stats = {}
     return stats
 
+
 @router.get("/gpu-stats-all/", response_model=schemas.GPUStatsResponse)
 async def gpu_stats_all():
     try:
