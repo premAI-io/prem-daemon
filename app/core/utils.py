@@ -34,7 +34,7 @@ APPS = [
 
         All the services compatible with Prem Embeddings interface expose an API with the following endpoints:
 
-        - `/api/v1/embeddings/`
+        - `/v1/embeddings/`
 
         Check the OpenAPI documentation at the link http://{service}:{port}/docs for more information.
 

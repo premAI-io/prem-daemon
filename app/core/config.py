@@ -13,7 +13,7 @@ PROJECT_NAME: str = config("PROJECT_NAME", default="Prem Box")
 
 # APIs
 # ------------------------------------------------------------------------------
-API_PREFIX = "/api/v1"
+API_PREFIX = "/v1"
 API_VERSION = "0.1.0"
 
 # Prem Registry
