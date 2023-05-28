@@ -49,6 +49,7 @@ class ContainerStatsResponse(BaseModel):
     memory_usage: float
     memory_limit: float
     memory_percentage: float
+    image_size: float
 
 
 class OSStatsResponse(BaseModel):

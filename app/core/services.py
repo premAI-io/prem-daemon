@@ -75,6 +75,7 @@ def get_docker_stats(container_name: str):
         "memory_usage": memory_usage,
         "memory_limit": memory_limit,
         "memory_percentage": memory_percentage,
+        "image_size": round(container.image.attrs["Size"] / 1000 / 1024 / 1024, 2),
     }
 
 
@@ -106,7 +107,7 @@ def get_docker_stats_all():
         "memory_usage": memory_usage,
         "memory_limit": memory_limit,
         "memory_percentage": memory_percentage,
-        "storage_percentage": (used / total) * 100,
+        "storage_percentage": round((used / total) * 100 * 100, 2),
         "storage_usage": used // (2**30),
         "storage_limit": total // (2**30),
     }

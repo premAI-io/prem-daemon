@@ -135,13 +135,7 @@ def format_stats(value):
         (cpu_delta / system_delta) * value["cpu_stats"]["online_cpus"] * 100
     )
 
-    memory_usage = value["memory_stats"]["usage"] / (
-        1024 * 1024
-    )  # Convert bytes to MiB
-    memory_limit = value["memory_stats"]["limit"] / (
-        1024 * 1024 * 1024
-    )  # Convert bytes to GiB
-    memory_percentage = (
-        memory_usage * 1024 / memory_limit
-    ) * 100  # Convert MiB to GiB for percentage calculation
+    memory_usage = round(value["memory_stats"]["usage"] / (1024 * 1024), 2)
+    memory_limit = round(value["memory_stats"]["limit"] / (1024 * 1024), 2)
+    memory_percentage = round(memory_usage / memory_limit, 2) * 100
     return cpu_percentage, memory_usage, memory_limit, memory_percentage
