@@ -103,3 +103,18 @@ def get_docker_stats_all():
         "storage_usage": used // (2**30),
         "storage_limit": total // (2**30),
     }
+
+
+def get_free_port(default_port: int = 8000):
+    client = utils.get_docker_client()
+    containers = client.containers.list()
+
+    allocated_ports = []
+    for container in containers:
+        allocated_ports.extend(
+            int(value[0]["HostPort"]) for value in container.ports.values()
+        )
+
+    for port in range(default_port, 9000):
+        if port not in allocated_ports:
+            return port

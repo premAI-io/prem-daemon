@@ -95,14 +95,14 @@ async def run_service(body: schemas.ServiceInput):
             detail={"message": "Service not found."},
         )
 
+    free_port = services.get_free_port(service_object["defaultPort"])
+
     client = utils.get_docker_client()
     try:
         client.containers.run(
             service_object["dockerImage"],
             detach=True,
-            ports={
-                f"{service_object['defaultPort']}/tcp": service_object["defaultPort"]
-            },
+            ports={f"{service_object['defaultPort']}/tcp": free_port},
             name=service_object["id"],
         )
     except Exception as error:
