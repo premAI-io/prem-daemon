@@ -1,6 +1,8 @@
+import json
 import logging
 
 from fastapi import APIRouter, HTTPException
+from starlette.responses import StreamingResponse
 
 from app import schemas
 from app.core import services, utils
@@ -74,7 +76,27 @@ async def download_service(service_id: str):
             status_code=400,
             detail={"message": f"Failed to download image {error}"},
         ) from error
-    return {"message": "Image downloaded successfully."}
+    return {"message": "Download image successfully."}
+
+
+@router.get("/download-service-stream/{service_id}")
+async def download_service_stream(service_id: str):
+    service_object = services.get_service_by_id(service_id)
+    if service_object is None:
+        raise HTTPException(
+            status_code=400,
+            detail={"message": "Service not found."},
+        )
+
+    client = utils.get_docker_client()
+
+    def generator():
+        for line in client.api.pull(
+            service_object["dockerImage"], stream=True, decode=True
+        ):
+            yield (json.dumps(line) + "\n")
+
+    return StreamingResponse(generator(), media_type="application/json")
 
 
 @router.post(
