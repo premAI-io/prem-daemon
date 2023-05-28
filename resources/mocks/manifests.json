@@ -1,0 +1,108 @@
+[
+    {
+        "id": "chat-mock-small",
+        "name": "Chat Mock Small",
+        "icon": "",
+        "description": "Hello World.",
+        "documentation": "Hello World",
+        "modelInfo": {
+            "maxLength": 12000,
+            "tokenLimit": 4000,
+            "weightsSize": 4212859520,
+            "memoryRequirements": "8gb",
+            "inferenceTime": "5 tokens per second"
+        },
+        "interfaces": [
+            "chat",
+            "embeddings"
+        ],
+        "dockerImages": {
+            "cpu": {
+                "image": "ghcr.io/premai-io/chat-mock:latest"
+            }
+        },
+        "defaultPort": 8000
+    },
+    {
+        "id": "chat-mock-medium",
+        "name": "Chat Mock Medium",
+        "icon": "",
+        "description": "Hello World.",
+        "documentation": "Hello World",
+        "modelInfo": {
+            "maxLength": 12000,
+            "tokenLimit": 4000,
+            "weightsSize": 4212859520,
+            "memoryRequirements": "12",
+            "inferenceTime": "5 tokens per second"
+        },
+        "interfaces": [
+            "chat",
+            "embeddings"
+        ],
+        "dockerImages": {
+            "cpu": {
+                "image": "ghcr.io/premai-io/chat-mock:latest"
+            }
+        },
+        "defaultPort": 8000
+    },
+    {
+        "id": "chat-mock-large",
+        "name": "Chat Mock Large",
+        "icon": "",
+        "description": "Hello World.",
+        "documentation": "Hello World",
+        "modelInfo": {
+            "maxLength": 12000,
+            "tokenLimit": 4000,
+            "weightsSize": 4212859520,
+            "memoryRequirements": "100",
+            "inferenceTime": "5 tokens per second"
+        },
+        "interfaces": [
+            "chat",
+            "embeddings"
+        ],
+        "dockerImages": {
+            "cpu": {
+                "image": "ghcr.io/premai-io/chat-mock:latest"
+            }
+        },
+        "defaultPort": 8000
+    },
+    {
+        "id": "qdrant",
+        "name": "Qdrant",
+        "description": "Qdrant is a vector similarity search engine designed for storing, searching, and managing points along with their respective payloads. Built with an emphasis on extensive filtering, it is particularly beneficial for neural network matching, semantic-based matching, and faceted search. Qdrant offers various deployment options including local mode, on-premise server deployment, and Qdrant Cloud, each catering to different use-case scenarios. [Learn More](https://qdrant.tech/documentation/)",
+        "documentation": "<h1>Documentation</h1>\n<h2>Description</h2>\n<p>Qdrant is a vector similarity search engine designed for storing, searching, and managing points along with their respective payloads. Built with an emphasis on extensive filtering, it is particularly beneficial for neural network matching, semantic-based matching, and faceted search. Qdrant offers various deployment options including local mode, on-premise server deployment, and Qdrant Cloud, each catering to different use-case scenarios. <a href=\"https://qdrant.tech/documentation/\">Learn More</a></p>\n<h2>Hardware Requirements</h2>\n<h2>Example Usage</h2>\n<h2>Fine Tuning Instructions &amp; Cost</h2>\n<h2>Inference Benchmarks</h2>",
+        "interfaces": [
+            "store"
+        ],
+        "icon": "https://raw.githubusercontent.com/premAI-io/prem-registry/main/store-qdrant/logo.svg",
+        "modelInfo": {},
+        "dockerImages": {
+            "cpu": {
+                "image": "qdrant/qdrant:v1.0.3"
+            }
+        },
+        "defaultPort": 6333
+    },
+    {
+        "id": "redis",
+        "name": "Redis",
+        "description": "Redis, short for Remote Dictionary Server, serves as a multifunctional in-memory data structure store. It functions as a distributed key-value database, cache, and message broker, all operating in-memory for high-speed data access. With optional durability, Redis ensures data persistence despite potential system failures. [Learn More](https://redis.com/solutions/use-cases/vector-database/)",
+        "documentation": "<h1>Documentation</h1>\n<h2>Description</h2>\n<p>Redis, short for Remote Dictionary Server, serves as a multifunctional in-memory data structure store. It functions as a distributed key-value database, cache, and message broker, all operating in-memory for high-speed data access. With optional durability, Redis ensures data persistence despite potential system failures. <a href=\"https://redis.com/solutions/use-cases/vector-database/\">Learn More</a></p>\n<h2>Hardware Requirements</h2>\n<h2>Example Usage</h2>\n<h2>Fine Tuning Instructions &amp; Cost</h2>\n<h2>Inference Benchmarks</h2>",
+        "interfaces": [
+            "store"
+        ],
+        "icon": "https://raw.githubusercontent.com/premAI-io/prem-registry/main/store-redis/logo.svg",
+        "modelInfo": {},
+        "dockerImages": {
+            "cpu": {
+                "image": "redis/redis-stack-server:latest"
+            }
+        },
+        "defaultPort": 6379
+    }
+]

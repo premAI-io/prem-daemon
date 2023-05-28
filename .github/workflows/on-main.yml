@@ -1,22 +1,17 @@
-name: "Publish prem docker image"
+name: "Publish prem mock images"
 
 on:
   push:
-    tags:
-      - "*"
+    branches: ["main"]
 
 jobs:
-  push:
+  push-mocks:
     runs-on: ubuntu-latest
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: tag
-        id: next_tag
-        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -37,7 +32,6 @@ jobs:
       - name: Build & push prem
         run:  >-
           docker buildx build --push
-          --file Dockerfile
-          --tag ghcr.io/premai-io/premd:latest
-          --tag ghcr.io/premai-io/premd:${{ steps.next_tag.outputs.tag }}
-          --platform linux/arm64,linux/amd64 .
+          --file ./resources/mocks/generic/Dockerfile
+          --tag ghcr.io/premai-io/chat-mock:latest
+          --platform linux/arm64,linux/amd64 ./resources/mocks/generic
