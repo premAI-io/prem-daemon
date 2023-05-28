@@ -91,6 +91,14 @@ cp .env.example .env
 python main.py
 ```
 
+### Mock Registry
+
+In order to use the mock registry, you can specify the `REGISTRY_URL` environment variable as following:
+
+```bash
+PREM_REGISTRY_URL=https://raw.githubusercontent.com/premAI-io/prem-daemon/main/resources/mocks/manifests.json
+```
+
 ### Running the test cases
 
 ```bash
