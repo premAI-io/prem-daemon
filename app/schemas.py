@@ -27,6 +27,7 @@ class ServiceResponse(BaseModel):
     interfaces: list[str]
     dockerImage: str
     defaultPort: int
+    runningPort: int = None
     running: bool
     downloaded: bool
     supported: bool

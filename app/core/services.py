@@ -46,6 +46,9 @@ def get_service_by_id(service_id: str) -> dict:
             for container in containers:
                 if container.name == service["id"]:
                     service["running"] = True
+                    service["runningPort"] = list(container.ports.values())[0][0][
+                        "HostPort"
+                    ]
             for image in images:
                 if len(image.tags) > 0 and image.tags[0] == service["dockerImage"]:
                     service["downloaded"] = True
