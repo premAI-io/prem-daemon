@@ -113,7 +113,7 @@ async def run_service(body: schemas.ServiceInput):
         ) from error
 
     return {
-        "message": f"Service started successfully. Container running on port {service_object['defaultPort']}."
+        "message": f"Service started successfully. Container running on port {free_port}."
     }
 
 
