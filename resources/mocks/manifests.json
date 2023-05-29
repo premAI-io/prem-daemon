@@ -18,7 +18,7 @@
         ],
         "dockerImages": {
             "cpu": {
-                "image": "ghcr.io/premai-io/chat-mock:latest"
+                "image": "ghcr.io/premai-io/chat-mock-small:latest"
             }
         },
         "defaultPort": 8000
@@ -42,7 +42,7 @@
         ],
         "dockerImages": {
             "cpu": {
-                "image": "ghcr.io/premai-io/chat-mock:latest"
+                "image": "ghcr.io/premai-io/chat-mock-medium:latest"
             }
         },
         "defaultPort": 8000
@@ -66,7 +66,7 @@
         ],
         "dockerImages": {
             "cpu": {
-                "image": "ghcr.io/premai-io/chat-mock:latest"
+                "image": "ghcr.io/premai-io/chat-mock-large:latest"
             }
         },
         "defaultPort": 8000

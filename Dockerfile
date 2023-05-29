@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt --upgrade pip
 
 COPY . .
 
-CMD python main.py
+CMD gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app

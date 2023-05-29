@@ -33,5 +33,7 @@ jobs:
         run:  >-
           docker buildx build --push
           --file ./resources/mocks/generic/Dockerfile
-          --tag ghcr.io/premai-io/chat-mock:latest
+          --tag ghcr.io/premai-io/chat-mock-small:latest
+          --tag ghcr.io/premai-io/chat-mock-medium:latest
+          --tag ghcr.io/premai-io/chat-mock-large:latest
           --platform linux/arm64,linux/amd64 ./resources/mocks/generic

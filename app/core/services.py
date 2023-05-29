@@ -67,18 +67,24 @@ def get_apps():
 
 
 def get_docker_stats(container_name: str):
+    total, _, _ = shutil.disk_usage("/")
+
     client = utils.get_docker_client()
     container = client.containers.get(container_name)
     value = container.stats(stream=False)
     cpu_percentage, memory_usage, memory_limit, memory_percentage = utils.format_stats(
         value
     )
+    storage_usage = container.image.attrs["Size"]
+
     return {
-        "cpu_percentage": cpu_percentage,
-        "memory_usage": memory_usage,
-        "memory_limit": memory_limit,
+        "cpu_percentage": round(cpu_percentage, 2),
+        "memory_usage": round(memory_usage / 1024, 2),
+        "memory_limit": round(memory_limit, 2),
         "memory_percentage": memory_percentage,
-        "image_size": round(container.image.attrs["Size"] / 1000 / 1024 / 1024, 2),
+        "storage_percentage": round((storage_usage / total) * 100, 2),
+        "storage_usage": round(storage_usage // (2**30), 2),
+        "storage_limit": total // (2**30),
     }
 
 
