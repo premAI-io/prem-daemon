@@ -106,11 +106,11 @@ def get_docker_stats_all():
         memory_limit = c_memory_limit
 
     return {
-        "cpu_percentage": cpu_percentage,
-        "memory_usage": memory_usage,
-        "memory_limit": memory_limit,
+        "cpu_percentage": round(cpu_percentage, 2),
+        "memory_usage": round(memory_usage / 1024, 2),
+        "memory_limit": round(memory_limit / 1024, 2),
         "memory_percentage": memory_percentage,
-        "storage_percentage": round((used / total) * 100 * 100, 2),
+        "storage_percentage": round((used / total) * 100, 2),
         "storage_usage": used // (2**30),
         "storage_limit": total // (2**30),
     }
