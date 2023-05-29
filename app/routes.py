@@ -116,50 +116,17 @@ async def run_service(body: schemas.ServiceInput):
             status_code=400,
             detail={"message": "Service not found."},
         )
-
-    free_port = services.get_free_port(service_object["defaultPort"])
-
-    client = utils.get_docker_client()
-
-    if "volumePath" in service_object:
-        try:
-            volume_name = f"prem-{service_object['id']}-data"
-            volume = client.volumes.create(name=volume_name)
-            client.containers.run(
-                service_object["dockerImage"],
-                detach=True,
-                ports={f"{service_object['defaultPort']}/tcp": free_port},
-                name=service_object["id"],
-                volumes={
-                    volume.id: {"bind": service_object["volumePath"], "mode": "rw"}
-                },
-            )
-            return {
-                "message": f"Service started successfully. Container running on port {free_port}."
-            }
-        except Exception as error:
-            logger.error(error)
-            raise HTTPException(
-                status_code=400,
-                detail={"message": f"Failed to create volume {error}"},
-            ) from error
-
-    try:
-        client.containers.run(
-            service_object["dockerImage"],
-            detach=True,
-            ports={f"{service_object['defaultPort']}/tcp": free_port},
-            name=service_object["id"],
-        )
-    except Exception as error:
-        logger.error(error)
+    port = services.run_container_with_retries(service_object)
+    if port is None:
         raise HTTPException(
             status_code=400,
-            detail={"message": f"Failed to start container {error}"},
-        ) from error
+            detail={
+                "message": f"Failed to create container for {service_object['id']}"
+            },
+        )
 
     return {
-        "message": f"Service started successfully. Container running on port {free_port}."
+        "message": f"Service started successfully. Container running on port {port}."
     }
 
 

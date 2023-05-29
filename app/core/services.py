@@ -1,6 +1,9 @@
+import logging
 import shutil
 
 from app.core import utils
+
+logger = logging.getLogger(__name__)
 
 
 def get_services(interface_id: str = None) -> dict:
@@ -113,22 +116,35 @@ def get_docker_stats_all():
     }
 
 
-def get_free_port(default_port: int = 8000):
+def run_container_with_retries(service_object):
     client = utils.get_docker_client()
-    containers = client.containers.list()
-
-    allocated_ports = []
-    for container in containers:
+    port = service_object["defaultPort"] + 1
+    for _ in range(10):
         try:
-            allocated_ports.extend(
-                int(value[0]["HostPort"]) for value in container.ports.values()
-            )
-        except Exception:
-            pass
-
-    for port in range(default_port, 9000):
-        if port not in allocated_ports:
+            if "volumePath" in service_object:
+                volume_name = f"prem-{service_object['id']}-data"
+                volume = client.volumes.create(name=volume_name)
+                client.containers.run(
+                    service_object["dockerImage"],
+                    detach=True,
+                    ports={f"{service_object['defaultPort']}/tcp": port},
+                    name=service_object["id"],
+                    volumes={
+                        volume.id: {"bind": service_object["volumePath"], "mode": "rw"}
+                    },
+                )
+            else:
+                client.containers.run(
+                    service_object["dockerImage"],
+                    detach=True,
+                    ports={f"{service_object['defaultPort']}/tcp": port},
+                    name=service_object["id"],
+                )
             return port
+        except Exception as error:
+            logger.error(f"Failed to start {error}")
+            port += 1
+    return None
 
 
 def get_gpu_stats_all():
