@@ -119,9 +119,12 @@ def get_free_port(default_port: int = 8000):
 
     allocated_ports = []
     for container in containers:
-        allocated_ports.extend(
-            int(value[0]["HostPort"]) for value in container.ports.values()
-        )
+        try:
+            allocated_ports.extend(
+                int(value[0]["HostPort"]) for value in container.ports.values()
+            )
+        except Exception:
+            pass
 
     for port in range(default_port, 9000):
         if port not in allocated_ports:
