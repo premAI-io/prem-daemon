@@ -152,8 +152,8 @@ def get_gpu_stats_all():
         gpu_name, total_memory, used_memory, memory_percentage = utils.get_gpu_info()
         return {
             "gpu_name": gpu_name,
-            "total_memory": total_memory,
-            "used_memory": used_memory,
+            "total_memory": round(total_memory / 1024, 2),
+            "used_memory": round(used_memory / 1024, 2),
             "memory_percentage": memory_percentage,
         }
     return {}
