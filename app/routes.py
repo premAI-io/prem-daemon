@@ -148,11 +148,17 @@ async def download_service_stream_sse(service_id: str, request: Request):
 )
 async def run_service(body: schemas.ServiceInput):
     service_object = services.get_service_by_id(body.id)
+    if service_object["running"]:
+        return {
+            "message": f"Service already running on port {service_object['runningPort']}."
+        }
+
     if service_object is None:
         raise HTTPException(
             status_code=400,
             detail={"message": "Service not found."},
         )
+
     port = services.run_container_with_retries(service_object)
     if port is None:
         raise HTTPException(
