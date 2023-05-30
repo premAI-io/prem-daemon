@@ -1,6 +1,7 @@
 import json
 import logging
 
+import docker
 from fastapi import APIRouter, HTTPException
 from starlette.responses import StreamingResponse
 
@@ -152,6 +153,9 @@ async def stop_service(service_id: str):
     try:
         client.containers.get(service_object["id"]).remove(force=True)
     except Exception as error:
+        if isinstance(error, docker.errors.ImageNotFound):
+            logger.warning(error)
+            return {"message": f"Container {service_object['id']} not found."}
         logger.error(error)
         raise HTTPException(
             status_code=400,
@@ -173,7 +177,9 @@ async def remove_service(service_id):
     try:
         client.images.remove(service_object["dockerImage"], force=True)
     except Exception as error:
-        logger.error(error)
+        if isinstance(error, docker.errors.ImageNotFound):
+            logger.warning(error)
+            return {"message": f"Image {service_object['dockerImage']} not found."}
         raise HTTPException(
             status_code=400,
             detail={"message": f"Failed to remove image {error}"},
@@ -193,6 +199,19 @@ async def remove_volume(volume_name):
             detail={"message": f"Failed to remove image {error}"},
         ) from error
     return {"message": f"Volume {volume_name} removed successfully."}
+
+
+@router.get("/system-prune/")
+async def system_prune():
+    try:
+        services.system_prune()
+    except Exception as error:
+        logger.error(error)
+        raise HTTPException(
+            status_code=400,
+            detail={"message": f"Failed to prune docker {error}"},
+        ) from error
+    return {"message": "System pruned successfully."}
 
 
 @router.get(

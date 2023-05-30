@@ -1,6 +1,8 @@
 import logging
 import shutil
 
+import docker
+
 from app.core import utils
 
 logger = logging.getLogger(__name__)
@@ -125,27 +127,33 @@ def get_docker_stats_all():
 def run_container_with_retries(service_object):
     client = utils.get_docker_client()
     port = service_object["defaultPort"] + 1
+
+    if utils.is_gpu_available():
+        device_requests = [
+            docker.types.DeviceRequest(device_ids=["all"], capabilities=[["gpu"]])
+        ]
+    else:
+        device_requests = []
+
+    if "volumePath" in service_object:
+        try:
+            volume_name = f"prem-{service_object['id']}-data"
+            volume = client.volumes.create(name=volume_name)
+            volumes = {volume.id: {"bind": service_object["volumePath"], "mode": "rw"}}
+        except Exception as error:
+            logger.error(f"Failed to create volume {error}")
+            volumes = {}
+
     for _ in range(10):
         try:
-            if "volumePath" in service_object:
-                volume_name = f"prem-{service_object['id']}-data"
-                volume = client.volumes.create(name=volume_name)
-                client.containers.run(
-                    service_object["dockerImage"],
-                    detach=True,
-                    ports={f"{service_object['defaultPort']}/tcp": port},
-                    name=service_object["id"],
-                    volumes={
-                        volume.id: {"bind": service_object["volumePath"], "mode": "rw"}
-                    },
-                )
-            else:
-                client.containers.run(
-                    service_object["dockerImage"],
-                    detach=True,
-                    ports={f"{service_object['defaultPort']}/tcp": port},
-                    name=service_object["id"],
-                )
+            client.containers.run(
+                service_object["dockerImage"],
+                detach=True,
+                ports={f"{service_object['defaultPort']}/tcp": port},
+                name=service_object["id"],
+                volumes=volumes,
+                device_requests=device_requests,
+            )
             return port
         except Exception as error:
             logger.error(f"Failed to start {error}")
@@ -163,3 +171,11 @@ def get_gpu_stats_all():
             "memory_percentage": memory_percentage,
         }
     return {}
+
+
+def system_prune():
+    client = utils.get_docker_client()
+    client.containers.prune()
+    client.volumes.prune()
+    client.images.prune()
+    client.networks.prune()
