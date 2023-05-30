@@ -26,6 +26,7 @@ class ServiceResponse(BaseModel):
     modelInfo: dict
     interfaces: list[str]
     dockerImage: str
+    dockerImageSize: int
     defaultPort: int
     runningPort: int = None
     volumePath: str = None

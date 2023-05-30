@@ -2,7 +2,8 @@ import json
 import logging
 
 import docker
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
+from sse_starlette.sse import EventSourceResponse
 from starlette.responses import StreamingResponse
 
 from app import schemas
@@ -98,6 +99,41 @@ async def download_service_stream(service_id: str):
             yield (json.dumps(line) + "\n")
 
     return StreamingResponse(generator(), media_type="text/event-stream")
+
+
+async def generator(service_object, request):
+    total_downloaded = 0
+    layer_id = None
+
+    client = utils.get_docker_client()
+    for line in client.api.pull(
+        service_object["dockerImage"], stream=True, decode=True
+    ):
+        if layer_id is None:
+            total_downloaded += line.get("progressDetail", {}).get("total", 0)
+            layer_id = line.get("id", None)
+
+        if line.get("progressDetail", {}).get("total", 0) == line.get(
+            "progressDetail", {}
+        ).get("current", 0):
+            layer_id = None
+
+        line["percentage"] = round(
+            (total_downloaded / service_object["dockerImageSize"]) * 100, 2
+        )
+        yield (json.dumps(line) + "\n")
+
+
+@router.get("/download-service-stream-sse/{service_id}")
+async def download_service_stream_sse(service_id: str, request: Request):
+    service_object = services.get_service_by_id(service_id)
+    if service_object is None:
+        raise HTTPException(
+            status_code=400,
+            detail={"message": "Service not found."},
+        )
+    event_generator = generator(service_object, request)
+    return EventSourceResponse(event_generator)
 
 
 @router.post(

@@ -72,6 +72,75 @@
         "defaultPort": 8000
     },
     {
+        "id": "embeddings-mock-small",
+        "name": "Embeddings Mock Small",
+        "icon": "",
+        "description": "Hello World.",
+        "documentation": "Hello World",
+        "modelInfo": {
+            "maxLength": 12000,
+            "tokenLimit": 4000,
+            "weightsSize": 4212859520,
+            "memoryRequirements": 8192,
+            "inferenceTime": "5 tokens per second"
+        },
+        "interfaces": [
+            "embeddings"
+        ],
+        "dockerImages": {
+            "cpu": {
+                "image": "ghcr.io/premai-io/embeddings-mock-small:latest"
+            }
+        },
+        "defaultPort": 8000
+    },
+    {
+        "id": "embeddings-mock-medium",
+        "name": "Embeddings Mock Medium",
+        "icon": "",
+        "description": "Hello World.",
+        "documentation": "Hello World",
+        "modelInfo": {
+            "maxLength": 12000,
+            "tokenLimit": 4000,
+            "weightsSize": 4212859520,
+            "memoryRequirements": 12288,
+            "inferenceTime": "5 tokens per second"
+        },
+        "interfaces": [
+            "embeddings"
+        ],
+        "dockerImages": {
+            "cpu": {
+                "image": "ghcr.io/premai-io/embeddings-mock-medium:latest"
+            }
+        },
+        "defaultPort": 8000
+    },
+    {
+        "id": "embeddings-mock-large",
+        "name": "Embeddings Mock Large",
+        "icon": "",
+        "description": "Hello World.",
+        "documentation": "Hello World",
+        "modelInfo": {
+            "maxLength": 12000,
+            "tokenLimit": 4000,
+            "weightsSize": 4212859520,
+            "memoryRequirements": 102400,
+            "inferenceTime": "5 tokens per second"
+        },
+        "interfaces": [
+            "embeddings"
+        ],
+        "dockerImages": {
+            "cpu": {
+                "image": "ghcr.io/premai-io/embeddings-mock-large:latest"
+            }
+        },
+        "defaultPort": 8000
+    },
+    {
         "id": "qdrant",
         "name": "Qdrant",
         "description": "Qdrant is a vector similarity search engine designed for storing, searching, and managing points along with their respective payloads. Built with an emphasis on extensive filtering, it is particularly beneficial for neural network matching, semantic-based matching, and faceted search. Qdrant offers various deployment options including local mode, on-premise server deployment, and Qdrant Cloud, each catering to different use-case scenarios. [Learn More](https://qdrant.tech/documentation/)",

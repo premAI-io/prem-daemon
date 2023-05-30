@@ -36,4 +36,7 @@ jobs:
           --tag ghcr.io/premai-io/chat-mock-small:latest
           --tag ghcr.io/premai-io/chat-mock-medium:latest
           --tag ghcr.io/premai-io/chat-mock-large:latest
+          --tag ghcr.io/premai-io/embeddings-mock-small:latest
+          --tag ghcr.io/premai-io/embeddings-mock-medium:latest
+          --tag ghcr.io/premai-io/embeddings-mock-large:latest
           --platform linux/arm64,linux/amd64 ./resources/mocks/generic

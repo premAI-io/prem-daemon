@@ -114,12 +114,15 @@ def get_services():
     for service in SERVICES:
         if is_gpu_available() and "gpu" in service["dockerImages"]:
             service["dockerImage"] = service["dockerImages"]["gpu"]["image"]
+            service["dockerImageSize"] = service["dockerImages"]["gpu"]["size"]
             service["supported"] = True
         elif "cpu" in service["dockerImages"]:
             service["dockerImage"] = service["dockerImages"]["cpu"]["image"]
+            service["dockerImageSize"] = service["dockerImages"]["cpu"]["size"]
             service["supported"] = True
         else:
             service["dockerImage"] = ""
+            service["dockerImageSize"] = 0
             service["supported"] = False
         service["icon"] = service["icon"]
 

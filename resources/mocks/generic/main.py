@@ -105,7 +105,7 @@ async def embeddings(body: EmbeddingsInput):
 
 
 def get_application() -> FastAPI:
-    application = FastAPI(title="prem-chat", debug=True, version="0.0.1")
+    application = FastAPI(title="Prem Mocks", debug=True, version="0.0.1")
     application.include_router(router, prefix="/api/v1")
     application.add_middleware(
         CORSMiddleware,
