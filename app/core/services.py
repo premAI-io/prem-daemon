@@ -135,6 +135,7 @@ def run_container_with_retries(service_object):
     else:
         device_requests = []
 
+    volumes = {}
     if "volumePath" in service_object:
         try:
             volume_name = f"prem-{service_object['id']}-data"
@@ -142,7 +143,6 @@ def run_container_with_retries(service_object):
             volumes = {volume.id: {"bind": service_object["volumePath"], "mode": "rw"}}
         except Exception as error:
             logger.error(f"Failed to create volume {error}")
-            volumes = {}
 
     for _ in range(10):
         try:
