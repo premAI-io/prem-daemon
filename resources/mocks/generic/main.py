@@ -1,10 +1,13 @@
+import json
 import logging
+import time
 import uuid
 from datetime import datetime as dt
 
 import uvicorn
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
 logging.basicConfig(
@@ -15,7 +18,7 @@ logging.basicConfig(
 
 
 class ChatCompletionInput(BaseModel):
-    model: str
+    model: str | None
     messages: list[dict]
     temperature: float = 1.0
     top_p: float = 1.0
@@ -74,8 +77,39 @@ async def health():
     return HealthResponse(status=True)
 
 
+async def generate_chunk_based_response():
+    chunks = [
+        {
+            "id": "chat",
+            "object": "chat.completion.chunk",
+            "created": 1680533987,
+            "model": "gpt-4-all",
+            "choices": [
+                {"delta": {"content": "Hello "}, "index": 0, "finish_reason": None}
+            ],
+        },
+        {
+            "id": "chat",
+            "object": "chat.completion.chunk",
+            "created": 1680533987,
+            "model": "gpt-4-all",
+            "choices": [
+                {"delta": {"content": "World"}, "index": 0, "finish_reason": None}
+            ],
+        },
+    ]
+    for chunk in chunks:
+        yield f"event: completion\ndata: {json.dumps(chunk)}\n\n"
+        time.sleep(1)
+    yield "event: done\ndata: [DONE]\n\n"
+
+
 @router.post("/chat/completions", response_model=ChatCompletionResponse)
 async def chat_completions(body: ChatCompletionInput):
+    if body.stream:
+        return StreamingResponse(
+            generate_chunk_based_response(), media_type="text/event-stream"
+        )
     return {
         "id": str(uuid.uuid4()),
         "model": "chat-mock",

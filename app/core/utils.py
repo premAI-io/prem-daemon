@@ -38,7 +38,7 @@ All the services compatible with Prem Embeddings interface expose an API with th
 
 - `/v1/embeddings/`
 
-Check the OpenAPI documentation at the link http://{service}:{port}/docs for more information.
+Check the OpenAPI documentation at the link `http://{service}:{port}/docs` for more information.
 
 """,  # noqa E501
         "icon": "/assets/apps/embeddings.svg",

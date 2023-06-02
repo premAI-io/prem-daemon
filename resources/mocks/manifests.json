@@ -10,7 +10,8 @@
             "tokenLimit": 4000,
             "weightsSize": 4212859520,
             "memoryRequirements": 8192,
-            "inferenceTime": "5 tokens per second"
+            "inferenceTime": "5 tokens per second",
+            "streaming": true
         },
         "interfaces": [
             "chat",
