@@ -126,6 +126,12 @@ def get_docker_stats_all():
 
 def run_container_with_retries(service_object):
     client = utils.get_docker_client()
+
+    try:
+        client.containers.get(service_object["id"]).remove(force=True)
+    except Exception:
+        logger.info("No stale containers running.")
+
     port = service_object["defaultPort"] + 1
 
     if utils.is_gpu_available():
