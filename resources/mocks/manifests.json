@@ -20,7 +20,7 @@
         "dockerImages": {
             "cpu": {
                 "size": 145095981,
-                "image": "ghcr.io/premai-io/chat-mock-small:latest"
+                "image": "ghcr.io/premai-io/chat-mock-small:0.0.1"
             }
         },
         "defaultPort": 8000
@@ -45,7 +45,7 @@
         "dockerImages": {
             "cpu": {
                 "size": 145095981,
-                "image": "ghcr.io/premai-io/chat-mock-medium:latest"
+                "image": "ghcr.io/premai-io/chat-mock-medium:0.0.1"
             }
         },
         "defaultPort": 8000
@@ -70,7 +70,7 @@
         "dockerImages": {
             "cpu": {
                 "size": 145095981,
-                "image": "ghcr.io/premai-io/chat-mock-large:latest"
+                "image": "ghcr.io/premai-io/chat-mock-large:0.0.1"
             }
         },
         "defaultPort": 8000
@@ -94,7 +94,7 @@
         "dockerImages": {
             "cpu": {
                 "size": 145095981,
-                "image": "ghcr.io/premai-io/embeddings-mock-small:latest"
+                "image": "ghcr.io/premai-io/embeddings-mock-small:0.0.1"
             }
         },
         "defaultPort": 8000
@@ -118,7 +118,7 @@
         "dockerImages": {
             "cpu": {
                 "size": 145095981,
-                "image": "ghcr.io/premai-io/embeddings-mock-medium:latest"
+                "image": "ghcr.io/premai-io/embeddings-mock-medium:0.0.1"
             }
         },
         "defaultPort": 8000
@@ -142,7 +142,7 @@
         "dockerImages": {
             "cpu": {
                 "size": 145095981,
-                "image": "ghcr.io/premai-io/embeddings-mock-large:latest"
+                "image": "ghcr.io/premai-io/embeddings-mock-large:0.0.1"
             }
         },
         "defaultPort": 8000
