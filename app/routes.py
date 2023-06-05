@@ -206,6 +206,27 @@ async def stop_service(service_id: str):
     return {"message": f"Service {service_object['id']} successfully."}
 
 
+@router.get(
+    "/stop-all-services/",
+    response_model=schemas.SuccessResponse,
+    responses={
+        400: {
+            "model": schemas.ErrorResponse,
+            "description": "Failed to stop container or service not found.",
+        }
+    },
+)
+async def stop_all_services():
+    try:
+        services.stop_all_running_services()
+    except Exception as error:
+        raise HTTPException(
+            status_code=400,
+            detail={"message": f"Failed to stop container {error}"},
+        ) from error
+    return {"message": "All services stopped successfully."}
+
+
 @router.get("/remove-service/{service_id}")
 async def remove_service(service_id):
     service_object = services.get_service_by_id(service_id)

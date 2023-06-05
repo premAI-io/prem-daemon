@@ -1,5 +1,6 @@
 import logging
 import shutil
+from functools import lru_cache
 
 import docker
 
@@ -10,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 def get_services(interface_id: str = None) -> dict:
     docker_client = utils.get_docker_client()
+
+    free_memory, total_memory = get_system_memory()
 
     images = docker_client.images.list()
     containers = docker_client.containers.list()
@@ -27,12 +30,28 @@ def get_services(interface_id: str = None) -> dict:
     for service in services:
         service["running"] = False
         service["downloaded"] = False
+        service["enoughMemory"] = True
+        service["enoughSystemMemory"] = True
+
+        if (
+            "memoryRequirements" in service["modelInfo"]
+            and free_memory * 1024 < service["modelInfo"]["memoryRequirements"]
+        ):
+            service["enoughMemory"] = False
+
+        if (
+            "memoryRequirements" in service["modelInfo"]
+            and total_memory * 1024 < service["modelInfo"]["memoryRequirements"]
+        ):
+            service["enoughSystemMemory"] = False
+
         for container in containers:
             if container.name == service["id"]:
                 service["running"] = True
         for image in images:
-            if len(image.tags) > 0 and image.tags[0] == service["dockerImage"]:
+            if len(image.tags) > 0:
                 service["downloaded"] = True
+                service["needsUpdate"] = service["dockerImage"] not in image.tags
         rich_services.append(service)
 
     return rich_services
@@ -41,6 +60,8 @@ def get_services(interface_id: str = None) -> dict:
 def get_service_by_id(service_id: str) -> dict:
     docker_client = utils.get_docker_client()
 
+    free_memory, total_memory = get_system_memory()
+
     images = docker_client.images.list()
     containers = docker_client.containers.list()
 
@@ -48,6 +69,21 @@ def get_service_by_id(service_id: str) -> dict:
         if service["id"] == service_id:
             service["running"] = False
             service["downloaded"] = False
+            service["enoughMemory"] = True
+            service["enoughSystemMemory"] = True
+
+            if (
+                "memoryRequirements" in service["modelInfo"]
+                and free_memory * 1024 < service["modelInfo"]["memoryRequirements"]
+            ):
+                service["enoughMemory"] = False
+
+            if (
+                "memoryRequirements" in service["modelInfo"]
+                and total_memory * 1024 < service["modelInfo"]["memoryRequirements"]
+            ):
+                service["enoughSystemMemory"] = False
+
             for container in containers:
                 if container.name == service["id"]:
                     service["running"] = True
@@ -59,9 +95,21 @@ def get_service_by_id(service_id: str) -> dict:
                     except Exception:
                         service["volumeName"] = None
             for image in images:
-                if len(image.tags) > 0 and image.tags[0] == service["dockerImage"]:
+                if len(image.tags) > 0:
                     service["downloaded"] = True
+                    service["needsUpdate"] = service["dockerImage"] not in image.tags
             return service
+
+
+def stop_all_running_services():
+    client = utils.get_docker_client()
+    containers = client.containers.list()
+    services = get_services()
+
+    for container in containers:
+        if container.name in [service["id"] for service in services]:
+            logger.info(f"Stopping container {container.name}")
+            container.remove(force=True)
 
 
 def get_apps():
@@ -129,8 +177,8 @@ def run_container_with_retries(service_object):
 
     try:
         client.containers.get(service_object["id"]).remove(force=True)
-    except Exception:
-        logger.info("No stale containers running.")
+    except Exception as error:
+        logger.info(f"Failed to remove container {error}.")
 
     port = service_object["defaultPort"] + 1
 
@@ -154,12 +202,14 @@ def run_container_with_retries(service_object):
         try:
             client.containers.run(
                 service_object["dockerImage"],
+                auto_remove=True,
                 detach=True,
                 ports={f"{service_object['defaultPort']}/tcp": port},
                 name=service_object["id"],
                 volumes=volumes,
                 device_requests=device_requests,
             )
+            get_system_memory.cache_clear()
             return port
         except Exception as error:
             logger.error(f"Failed to start {error}")
@@ -185,3 +235,15 @@ def system_prune():
     client.volumes.prune()
     client.images.prune()
     client.networks.prune()
+
+
+@lru_cache(maxsize=None)
+def get_system_memory():
+    if utils.is_gpu_available():
+        gpu_values = get_gpu_stats_all()
+        free_memory = gpu_values["total_memory"] - gpu_values["used_memory"]
+        return free_memory, gpu_values["total_memory"]
+    else:
+        values = get_docker_stats_all()
+        free_memory = values["memory_limit"] - values["memory_usage"]
+        return free_memory, values["memory_limit"]
