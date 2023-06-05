@@ -33,7 +33,10 @@ class ServiceResponse(BaseModel):
     volumeName: str = None
     running: bool
     downloaded: bool
+    needsUpdate: bool = False
     supported: bool
+    enoughMemory: bool = True
+    enoughSystemMemory: bool = True
 
 
 class InterfaceResponse(BaseModel):
