@@ -127,6 +127,10 @@ def get_services():
         service["icon"] = service["icon"]
 
 
+def get_apps():
+    return APPS
+
+
 def format_stats(value):
     cpu_delta = (
         value["cpu_stats"]["cpu_usage"]["total_usage"]
