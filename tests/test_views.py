@@ -36,6 +36,9 @@ class TestController:
         assert response.status_code == 200
 
     def test_run_stop_service(self) -> None:
+        response = self.client.get("/v1/download-service/redis-vector-db")
+        assert response.status_code == 200
+
         response = self.client.post(
             "/v1/run-service/",
             json={"id": "redis-vector-db"},
@@ -61,6 +64,9 @@ class TestController:
         assert response.status_code == 200
 
     def test_run_stop_all_services(self) -> None:
+        response = self.client.get("/v1/download-service/redis-vector-db")
+        assert response.status_code == 200
+
         response = self.client.post(
             "/v1/run-service/",
             json={"id": "redis-vector-db"},
@@ -75,6 +81,9 @@ class TestController:
 
     def test_stats(self) -> None:
         response = self.client.get("/v1/stop-service/redis-vector-db")
+
+        response = self.client.get("/v1/download-service/redis-vector-db")
+        assert response.status_code == 200
 
         response = self.client.post(
             "/v1/run-service/",
@@ -96,6 +105,9 @@ class TestController:
 
     def test_stats_by_service(self) -> None:
         response = self.client.get("/v1/stop-service/redis-vector-db")
+
+        response = self.client.get("/v1/download-service/redis-vector-db")
+        assert response.status_code == 200
 
         response = self.client.post(
             "/v1/run-service/",

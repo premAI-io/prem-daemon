@@ -60,6 +60,7 @@ def get_services(interface_id: str = None) -> dict:
             service["downloaded"] = True
             if service["dockerImage"] not in service_tags:
                 service["needsUpdate"] = True
+                service["downloadedDockerImage"] = service_tags[0]
             else:
                 service["needsUpdate"] = False
                 service["downloadedDockerImage"] = service["dockerImage"]
@@ -120,6 +121,7 @@ def get_service_by_id(service_id: str) -> dict:
                 service["downloaded"] = True
                 if service["dockerImage"] not in service_tags:
                     service["needsUpdate"] = True
+                    service["downloadedDockerImage"] = service_tags[0]
                 else:
                     service["needsUpdate"] = False
                     service["downloadedDockerImage"] = service["dockerImage"]
