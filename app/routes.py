@@ -21,7 +21,7 @@ async def health():
 
 @router.get("/interfaces/", response_model=list[schemas.InterfaceResponse])
 async def apps():
-    return services.get_apps()
+    return utils.get_apps()
 
 
 @router.get("/services/", response_model=list[schemas.ServiceResponse])
@@ -323,7 +323,7 @@ async def stats():
 @router.get("/stats-all/", response_model=schemas.OSStatsResponse)
 async def stats_all():
     try:
-        stats = services.get_docker_stats_all()
+        stats = services.get_system_stats_all()
     except Exception as error:
         logger.error(error)
         stats = {}

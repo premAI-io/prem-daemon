@@ -3,6 +3,7 @@ import shutil
 from functools import lru_cache
 
 import docker
+import psutil
 
 from app.core import utils
 
@@ -112,66 +113,6 @@ def stop_all_running_services():
             container.remove(force=True)
 
 
-def get_apps():
-    return utils.APPS
-
-
-def get_docker_stats(container_name: str):
-    total, _, _ = shutil.disk_usage("/")
-
-    client = utils.get_docker_client()
-    container = client.containers.get(container_name)
-    value = container.stats(stream=False)
-    cpu_percentage, memory_usage, memory_limit, memory_percentage = utils.format_stats(
-        value
-    )
-    storage_usage = container.image.attrs["Size"]
-
-    return {
-        "cpu_percentage": round(cpu_percentage, 2),
-        "memory_usage": round(memory_usage / 1024, 2),
-        "memory_limit": round(memory_limit, 2),
-        "memory_percentage": memory_percentage,
-        "storage_percentage": round((storage_usage / total) * 100, 2),
-        "storage_usage": round(storage_usage // (2**30), 2),
-        "storage_limit": total // (2**30),
-    }
-
-
-def get_docker_stats_all():
-    total, used, _ = shutil.disk_usage("/")
-    client = utils.get_docker_client()
-
-    cpu_percentage = 0
-    memory_usage = 0
-    memory_limit = 0
-    memory_percentage = 0
-
-    containers = client.containers.list()
-    for container in containers:
-        value = container.stats(stream=False)
-        (
-            c_cpu_percentage,
-            c_memory_usage,
-            c_memory_limit,
-            c_memory_percentage,
-        ) = utils.format_stats(value)
-        cpu_percentage += c_cpu_percentage
-        memory_usage += c_memory_usage
-        memory_percentage += c_memory_percentage
-        memory_limit = c_memory_limit
-
-    return {
-        "cpu_percentage": round(cpu_percentage, 2),
-        "memory_usage": round(memory_usage / 1024, 2),
-        "memory_limit": round(memory_limit / 1024, 2),
-        "memory_percentage": memory_percentage,
-        "storage_percentage": round((used / total) * 100, 2),
-        "storage_usage": used // (2**30),
-        "storage_limit": total // (2**30),
-    }
-
-
 def run_container_with_retries(service_object):
     client = utils.get_docker_client()
 
@@ -217,6 +158,48 @@ def run_container_with_retries(service_object):
     return None
 
 
+def get_docker_stats(container_name: str):
+    total, _, _ = shutil.disk_usage("/")
+
+    client = utils.get_docker_client()
+    container = client.containers.get(container_name)
+    value = container.stats(stream=False)
+    cpu_percentage, memory_usage, memory_limit, memory_percentage = utils.format_stats(
+        value
+    )
+    storage_usage = container.image.attrs["Size"]
+
+    return {
+        "cpu_percentage": round(cpu_percentage, 2),
+        "memory_usage": round(memory_usage / 1024, 2),
+        "memory_limit": round(memory_limit, 2),
+        "memory_percentage": memory_percentage,
+        "storage_percentage": round((storage_usage / total) * 100, 2),
+        "storage_usage": round(storage_usage // (2**30), 2),
+        "storage_limit": total // (2**30),
+    }
+
+
+def get_system_stats_all():
+    total, used, _ = shutil.disk_usage("/")
+
+    memory_info = psutil.virtual_memory()
+    memory_limit = memory_info.total / (1024.0**3)
+    memory_usage = memory_info.used / (1024.0**3)
+
+    cpu_percentage = psutil.cpu_percent(interval=1)
+
+    return {
+        "cpu_percentage": round(cpu_percentage, 2),
+        "memory_usage": round(memory_usage, 2),
+        "memory_limit": round(memory_limit, 2),
+        "memory_percentage": round(memory_info.percent, 2),
+        "storage_percentage": round((used / total) * 100, 2),
+        "storage_usage": used // (2**30),
+        "storage_limit": total // (2**30),
+    }
+
+
 def get_gpu_stats_all():
     if utils.is_gpu_available():
         gpu_name, total_memory, used_memory, memory_percentage = utils.get_gpu_info()
@@ -244,6 +227,6 @@ def get_system_memory():
         free_memory = gpu_values["total_memory"] - gpu_values["used_memory"]
         return free_memory, gpu_values["total_memory"]
     else:
-        values = get_docker_stats_all()
+        values = get_system_stats_all()
         free_memory = values["memory_limit"] - values["memory_usage"]
         return free_memory, values["memory_limit"]
