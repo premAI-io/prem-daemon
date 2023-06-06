@@ -52,12 +52,20 @@ def get_services(interface_id: str = None) -> dict:
 
         service_image = service["dockerImage"].split(":")[0]
 
+        service_tags = []
         for image in images:
             if len(image.tags) > 0 and service_image == image.tags[0].split(":")[0]:
-                service["downloaded"] = True
+                service_tags.append(image.tags[0])
 
-            if service["downloaded"] and service["dockerImage"] not in image.tags:
+        if len(service_tags) > 0:
+            service["downloaded"] = True
+            if service["dockerImage"] not in service_tags:
                 service["needsUpdate"] = True
+            else:
+                service["needsUpdate"] = False
+                service["downloadedDockerImage"] = service["dockerImage"]
+        else:
+            service["downloaded"] = False
 
         rich_services.append(service)
 
