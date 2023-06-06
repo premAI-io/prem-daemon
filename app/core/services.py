@@ -1,6 +1,5 @@
 import logging
 import shutil
-from functools import lru_cache
 
 import docker
 import psutil
@@ -13,7 +12,7 @@ logger = logging.getLogger(__name__)
 def get_services(interface_id: str = None) -> dict:
     docker_client = utils.get_docker_client()
 
-    free_memory, total_memory = get_system_memory()
+    free_memory, total_memory = get_free_total_memory()
 
     images = docker_client.images.list()
     containers = docker_client.containers.list()
@@ -49,10 +48,25 @@ def get_services(interface_id: str = None) -> dict:
         for container in containers:
             if container.name == service["id"]:
                 service["running"] = True
+
+        service_image = service["dockerImage"].split(":")[0]
+
+        service_tags = []
         for image in images:
-            if len(image.tags) > 0:
-                service["downloaded"] = True
-                service["needsUpdate"] = service["dockerImage"] not in image.tags
+            if len(image.tags) > 0 and service_image == image.tags[0].split(":")[0]:
+                service_tags.append(image.tags[0])
+
+        if len(service_tags) > 0:
+            service["downloaded"] = True
+            if service["dockerImage"] not in service_tags:
+                service["needsUpdate"] = True
+                service["downloadedDockerImage"] = service_tags[0]
+            else:
+                service["needsUpdate"] = False
+                service["downloadedDockerImage"] = service["dockerImage"]
+        else:
+            service["downloaded"] = False
+
         rich_services.append(service)
 
     return rich_services
@@ -61,7 +75,7 @@ def get_services(interface_id: str = None) -> dict:
 def get_service_by_id(service_id: str) -> dict:
     docker_client = utils.get_docker_client()
 
-    free_memory, total_memory = get_system_memory()
+    free_memory, total_memory = get_free_total_memory()
 
     images = docker_client.images.list()
     containers = docker_client.containers.list()
@@ -95,10 +109,24 @@ def get_service_by_id(service_id: str) -> dict:
                         service["volumeName"] = container.attrs["Mounts"][0]["Name"]
                     except Exception:
                         service["volumeName"] = None
+
+            service_image = service["dockerImage"].split(":")[0]
+
+            service_tags = []
             for image in images:
-                if len(image.tags) > 0:
-                    service["downloaded"] = True
-                    service["needsUpdate"] = service["dockerImage"] not in image.tags
+                if len(image.tags) > 0 and service_image == image.tags[0].split(":")[0]:
+                    service_tags.append(image.tags[0])
+
+            if len(service_tags) > 0:
+                service["downloaded"] = True
+                if service["dockerImage"] not in service_tags:
+                    service["needsUpdate"] = True
+                    service["downloadedDockerImage"] = service_tags[0]
+                else:
+                    service["needsUpdate"] = False
+                    service["downloadedDockerImage"] = service["dockerImage"]
+            else:
+                service["downloaded"] = False
             return service
 
 
@@ -142,7 +170,7 @@ def run_container_with_retries(service_object):
     for _ in range(10):
         try:
             client.containers.run(
-                service_object["dockerImage"],
+                service_object["downloadedDockerImage"],
                 auto_remove=True,
                 detach=True,
                 ports={f"{service_object['defaultPort']}/tcp": port},
@@ -150,7 +178,6 @@ def run_container_with_retries(service_object):
                 volumes=volumes,
                 device_requests=device_requests,
             )
-            get_system_memory.cache_clear()
             return port
         except Exception as error:
             logger.error(f"Failed to start {error}")
@@ -220,8 +247,7 @@ def system_prune():
     client.networks.prune()
 
 
-@lru_cache(maxsize=None)
-def get_system_memory():
+def get_free_total_memory():
     if utils.is_gpu_available():
         gpu_values = get_gpu_stats_all()
         free_memory = gpu_values["total_memory"] - gpu_values["used_memory"]

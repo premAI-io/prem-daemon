@@ -33,6 +33,7 @@ class ServiceResponse(BaseModel):
     volumeName: str = None
     running: bool
     downloaded: bool
+    downloadedDockerImage: str = None
     needsUpdate: bool = False
     supported: bool
     enoughMemory: bool = True
