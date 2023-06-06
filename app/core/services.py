@@ -1,6 +1,5 @@
 import logging
 import shutil
-from functools import lru_cache
 
 import docker
 import psutil
@@ -13,7 +12,7 @@ logger = logging.getLogger(__name__)
 def get_services(interface_id: str = None) -> dict:
     docker_client = utils.get_docker_client()
 
-    free_memory, total_memory = get_system_memory()
+    free_memory, total_memory = get_free_total_memory()
 
     images = docker_client.images.list()
     containers = docker_client.containers.list()
@@ -75,7 +74,7 @@ def get_services(interface_id: str = None) -> dict:
 def get_service_by_id(service_id: str) -> dict:
     docker_client = utils.get_docker_client()
 
-    free_memory, total_memory = get_system_memory()
+    free_memory, total_memory = get_free_total_memory()
 
     images = docker_client.images.list()
     containers = docker_client.containers.list()
@@ -177,7 +176,6 @@ def run_container_with_retries(service_object):
                 volumes=volumes,
                 device_requests=device_requests,
             )
-            get_system_memory.cache_clear()
             return port
         except Exception as error:
             logger.error(f"Failed to start {error}")
@@ -247,8 +245,7 @@ def system_prune():
     client.networks.prune()
 
 
-@lru_cache(maxsize=None)
-def get_system_memory():
+def get_free_total_memory():
     if utils.is_gpu_available():
         gpu_values = get_gpu_stats_all()
         free_memory = gpu_values["total_memory"] - gpu_values["used_memory"]
