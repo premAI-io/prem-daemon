@@ -49,10 +49,16 @@ def get_services(interface_id: str = None) -> dict:
         for container in containers:
             if container.name == service["id"]:
                 service["running"] = True
+
+        service_image = service["dockerImage"].split(":")[0]
+
         for image in images:
-            if len(image.tags) > 0:
+            if len(image.tags) > 0 and service_image == image.tags[0].split(":")[0]:
                 service["downloaded"] = True
-                service["needsUpdate"] = service["dockerImage"] not in image.tags
+
+            if service["downloaded"] and service["dockerImage"] not in image.tags:
+                service["needsUpdate"] = True
+
         rich_services.append(service)
 
     return rich_services
@@ -95,10 +101,23 @@ def get_service_by_id(service_id: str) -> dict:
                         service["volumeName"] = container.attrs["Mounts"][0]["Name"]
                     except Exception:
                         service["volumeName"] = None
+
+            service_image = service["dockerImage"].split(":")[0]
+
+            service_tags = []
             for image in images:
-                if len(image.tags) > 0:
-                    service["downloaded"] = True
-                    service["needsUpdate"] = service["dockerImage"] not in image.tags
+                if len(image.tags) > 0 and service_image == image.tags[0].split(":")[0]:
+                    service_tags.append(image.tags[0])
+
+            if len(service_tags) > 0:
+                service["downloaded"] = True
+                if service["dockerImage"] not in service_tags:
+                    service["needsUpdate"] = True
+                else:
+                    service["needsUpdate"] = False
+                    service["downloadedDockerImage"] = service["dockerImage"]
+            else:
+                service["downloaded"] = False
             return service
 
 
@@ -142,7 +161,7 @@ def run_container_with_retries(service_object):
     for _ in range(10):
         try:
             client.containers.run(
-                service_object["dockerImage"],
+                service_object["downloadedDockerImage"],
                 auto_remove=True,
                 detach=True,
                 ports={f"{service_object['defaultPort']}/tcp": port},
