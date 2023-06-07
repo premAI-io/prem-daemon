@@ -103,24 +103,25 @@ async def download_service_stream(service_id: str):
 
 async def generator(service_object, request):
     total_downloaded = 0
-    layer_id = None
+    partial_downloaded = 0
 
     client = utils.get_docker_client()
     for line in client.api.pull(
         service_object["dockerImage"], stream=True, decode=True
     ):
-        if layer_id is None:
-            total_downloaded += line.get("progressDetail", {}).get("total", 0)
-            layer_id = line.get("id", None)
+        if (
+            len(line.get("progressDetail", {}).keys()) == 0
+            and line.get("status") == "Download complete"
+        ):
+            total_downloaded += partial_downloaded
+            partial_downloaded = 0
 
-        if line.get("progressDetail", {}).get("total", 0) == line.get(
-            "progressDetail", {}
-        ).get("current", 0):
-            layer_id = None
+        partial_downloaded = line.get("progressDetail", {}).get("total", 0)
 
         line["percentage"] = round(
             (total_downloaded / service_object["dockerImageSize"]) * 100, 2
         )
+        print(line)
         yield (json.dumps(line) + "\n")
 
 
