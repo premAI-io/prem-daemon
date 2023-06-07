@@ -149,7 +149,7 @@ def run_container_with_retries(service_object):
     except Exception as error:
         logger.info(f"Failed to remove container {error}.")
 
-    port = service_object["defaultPort"]
+    port = service_object["defaultExternalPort"]
 
     if utils.is_gpu_available():
         device_requests = [
