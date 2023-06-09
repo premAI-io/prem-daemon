@@ -86,13 +86,13 @@ In the `settings.json` file of your VSCode, add the following lines:
         "icon": "/assets/apps/copilot.svg",
     },
     {
-        "id": "michelangelo",
-        "name": "Prem Michelangelo",
+        "id": "diffusion",
+        "name": "Prem Diffusion",
         "playground": True,
         "documentation": """
-        # Prem Michelangelo
+        # Prem Diffusion
         """,
-        "icon": "/assets/apps/michelangelo.svg",
+        "icon": "/assets/apps/diffusion.svg",
     },
 ]
 
