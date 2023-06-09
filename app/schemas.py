@@ -39,6 +39,8 @@ class ServiceResponse(BaseModel):
     supported: bool
     enoughMemory: bool = True
     enoughSystemMemory: bool = True
+    beta: bool = False
+    coming_soon: bool = False
 
 
 class InterfaceResponse(BaseModel):
