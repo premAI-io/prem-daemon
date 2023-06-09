@@ -33,9 +33,13 @@ def get_services(interface_id: str = None) -> dict:
         service["enoughMemory"] = True
         service["enoughSystemMemory"] = True
 
+        for container in containers:
+            if container.name == service["id"]:
+                service["running"] = True
+
         if (
             "memoryRequirements" in service["modelInfo"]
-            and free_memory * 1024 < service["modelInfo"]["memoryRequirements"]
+            and free_memory * 1024 < service["modelInfo"]["memoryRequirements"] and not service["running"]
         ):
             service["enoughMemory"] = False
 
@@ -44,10 +48,6 @@ def get_services(interface_id: str = None) -> dict:
             and total_memory * 1024 < service["modelInfo"]["memoryRequirements"]
         ):
             service["enoughSystemMemory"] = False
-
-        for container in containers:
-            if container.name == service["id"]:
-                service["running"] = True
 
         service_image = service["dockerImage"].split(":")[0]
 
@@ -87,18 +87,6 @@ def get_service_by_id(service_id: str) -> dict:
             service["enoughMemory"] = True
             service["enoughSystemMemory"] = True
 
-            if (
-                "memoryRequirements" in service["modelInfo"]
-                and free_memory * 1024 < service["modelInfo"]["memoryRequirements"]
-            ):
-                service["enoughMemory"] = False
-
-            if (
-                "memoryRequirements" in service["modelInfo"]
-                and total_memory * 1024 < service["modelInfo"]["memoryRequirements"]
-            ):
-                service["enoughSystemMemory"] = False
-
             for container in containers:
                 if container.name == service["id"]:
                     service["running"] = True
@@ -109,6 +97,18 @@ def get_service_by_id(service_id: str) -> dict:
                         service["volumeName"] = container.attrs["Mounts"][0]["Name"]
                     except Exception:
                         service["volumeName"] = None
+
+            if (
+                "memoryRequirements" in service["modelInfo"]
+                and free_memory * 1024 < service["modelInfo"]["memoryRequirements"] and not service["running"]
+            ):
+                service["enoughMemory"] = False
+
+            if (
+                "memoryRequirements" in service["modelInfo"]
+                and total_memory * 1024 < service["modelInfo"]["memoryRequirements"]
+            ):
+                service["enoughSystemMemory"] = False
 
             service_image = service["dockerImage"].split(":")[0]
 
