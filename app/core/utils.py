@@ -32,13 +32,24 @@ APPS = [
 
 Prem Embeddings are all the services used to transform unstructured text in a vector representation. A vector representation is a vector of numbers that represents the most important features of the text. For example, a sentence can be represented as a vector of numbers. The vector is obtained using a neural network that is trained to extract the most important features of the sentence. Embeddings are used in many NLP tasks, such as text classification, text clustering, text similarity, and so on. In order to give memory to ChatGPT, we need to transform the text in a vector representation and store them in a vectorstore for later retrieval.
 
-## Installation & Usage
+All the services compatible with Prem Embeddings interface expose an API that can be used directly with Langchain python library. You can find the library [here](https://python.langchain.com/en/latest/index.html).
 
-All the services compatible with Prem Embeddings interface expose an API with the following endpoints:
+## Getting Started
 
-- `/v1/embeddings/`
+```python
+import os
 
-Check the OpenAPI documentation at the link `http://{service}:{port}/docs` for more information.
+from langchain.embeddings import OpenAIEmbeddings
+
+os.environ["OPENAI_API_KEY"] = "random-string"
+
+# assuming the service is running on localhost
+embeddings = OpenAIEmbeddings(openai_api_base="http://localhost:8000/api/v1")
+
+text = "Prem is an easy to use open source AI platform."
+query_result = embeddings.embed_query(text)
+doc_result = embeddings.embed_documents([text])
+```
 
 """,  # noqa E501
         "icon": "/assets/apps/embeddings.svg",
@@ -56,7 +67,7 @@ Prem Store are all the services that expose a vector database. A vector database
 
 ## Installation & Usage
 
-We don't have a standard interface for what concerns Prem Store. However, we suggest to connect with Prem Store services using Langchain python library. You can find the library [here](https://python.langchain.com/en/latest/index.html).
+We don't have a standard interface for what concerns Prem Store. However, we suggest to connect to the services using [Langchain](https://python.langchain.com/en/latest/index.html) python library or [Llama Index](https://gpt-index.readthedocs.io/en/latest/index.html).
 """,  # noqa E501
         "icon": "/assets/apps/store.svg",
     },
