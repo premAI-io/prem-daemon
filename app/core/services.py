@@ -39,7 +39,8 @@ def get_services(interface_id: str = None) -> dict:
 
         if (
             "memoryRequirements" in service["modelInfo"]
-            and free_memory * 1024 < service["modelInfo"]["memoryRequirements"] and not service["running"]
+            and free_memory * 1024 < service["modelInfo"]["memoryRequirements"]
+            and not service["running"]
         ):
             service["enoughMemory"] = False
 
@@ -100,7 +101,8 @@ def get_service_by_id(service_id: str) -> dict:
 
             if (
                 "memoryRequirements" in service["modelInfo"]
-                and free_memory * 1024 < service["modelInfo"]["memoryRequirements"] and not service["running"]
+                and free_memory * 1024 < service["modelInfo"]["memoryRequirements"]
+                and not service["running"]
             ):
                 service["enoughMemory"] = False
 
