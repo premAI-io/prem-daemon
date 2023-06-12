@@ -99,11 +99,29 @@ In the `settings.json` file of your VSCode, add the following lines:
     {
         "id": "diffusion",
         "name": "Prem Diffusion",
-        "playground": True,
+        "playground": False,
         "documentation": """
         # Prem Diffusion
         """,
         "icon": "/assets/apps/diffusion.svg",
+    },
+    {
+        "id": "text-to-audio",
+        "name": "Prem Text to Audio",
+        "playground": False,
+        "documentation": """
+        # Prem Text to Audio
+        """,
+        "icon": "/assets/apps/tta.svg",
+    },
+    {
+        "id": "audio-to-text",
+        "name": "Prem Audio to Text",
+        "playground": False,
+        "documentation": """
+        # Prem Audio to Text
+        """,
+        "icon": "/assets/apps/att.svg",
     },
 ]
 
