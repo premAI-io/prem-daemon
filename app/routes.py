@@ -121,7 +121,6 @@ async def generator(service_object, request):
         line["percentage"] = round(
             (total_downloaded / service_object["dockerImageSize"]) * 100, 2
         )
-        print(line)
         yield (json.dumps(line) + "\n")
 
 
