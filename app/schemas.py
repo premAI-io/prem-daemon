@@ -40,7 +40,7 @@ class ServiceResponse(BaseModel):
     enoughMemory: bool = True
     enoughSystemMemory: bool = True
     beta: bool = False
-    coming_soon: bool = False
+    comingSoon: bool = False
 
 
 class InterfaceResponse(BaseModel):

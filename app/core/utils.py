@@ -55,11 +55,11 @@ doc_result = embeddings.embed_documents([text])
         "icon": "/assets/apps/embeddings.svg",
     },
     {
-        "id": "store",
-        "name": "Prem Store",
+        "id": "vector-store",
+        "name": "Prem Vector Store",
         "playground": False,
         "documentation": """
-# Prem Store
+# Prem Vector Store
 
 ## Description
 
@@ -97,13 +97,31 @@ In the `settings.json` file of your VSCode, add the following lines:
         "icon": "/assets/apps/copilot.svg",
     },
     {
-        "id": "diffusion",
-        "name": "Prem Diffusion",
-        "playground": True,
+        "id": "diffuser",
+        "name": "Prem Diffuser",
+        "playground": False,
         "documentation": """
-        # Prem Diffusion
+        # Prem Diffuser
         """,
-        "icon": "/assets/apps/diffusion.svg",
+        "icon": "/assets/apps/diffuser.svg",
+    },
+    {
+        "id": "text-to-audio",
+        "name": "Prem Text to Audio",
+        "playground": False,
+        "documentation": """
+        # Prem Text to Audio
+        """,
+        "icon": "/assets/apps/tta.svg",
+    },
+    {
+        "id": "audio-to-text",
+        "name": "Prem Audio to Text",
+        "playground": False,
+        "documentation": """
+        # Prem Audio to Text
+        """,
+        "icon": "/assets/apps/att.svg",
     },
 ]
 
