@@ -41,6 +41,6 @@ jobs:
           --tag ghcr.io/premai-io/premd:latest
           --tag ghcr.io/premai-io/premd:${{ steps.next_tag.outputs.tag }}
           --platform linux/arm64,linux/amd64 .
-          
+
       - name: Release
         uses: softprops/action-gh-release@v1
