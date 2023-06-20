@@ -72,13 +72,13 @@ We don't have a standard interface for what concerns Prem Store. However, we sug
         "icon": "/assets/apps/store.svg",
     },
     {
-        "id": "copilot",
-        "name": "Prem Copilot",
+        "id": "coder",
+        "name": "Prem Coder",
         "playground": False,
         "documentation": """
-# Prem Copilot
+# Prem Coder
 
-All the services exposed using Prem Copilot interface can be used using the official Github Copilot extension. You can find the extension [here](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot).
+All the services exposed using Prem Coder interface can be used using the official Github Copilot extension. You can find the extension [here](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot).
 
 ## Installation
 
@@ -92,9 +92,9 @@ In the `settings.json` file of your VSCode, add the following lines:
 }
 ```
 
-> Make sure to point to the correct port of the Prem Copilot service.
+> Make sure to point to the correct port of the Prem Coder service.
 """,  # noqa E501
-        "icon": "/assets/apps/copilot.svg",
+        "icon": "/assets/apps/coder.svg",
     },
     {
         "id": "diffuser",
