@@ -99,7 +99,7 @@ In the `settings.json` file of your VSCode, add the following lines:
     {
         "id": "diffuser",
         "name": "Prem Diffuser",
-        "playground": False,
+        "playground": True,
         "documentation": """
         # Prem Diffuser
         """,
@@ -108,7 +108,7 @@ In the `settings.json` file of your VSCode, add the following lines:
     {
         "id": "text-to-audio",
         "name": "Prem Text to Audio",
-        "playground": False,
+        "playground": True,
         "documentation": """
         # Prem Text to Audio
         """,
@@ -117,7 +117,7 @@ In the `settings.json` file of your VSCode, add the following lines:
     {
         "id": "audio-to-text",
         "name": "Prem Audio to Text",
-        "playground": False,
+        "playground": True,
         "documentation": """
         # Prem Audio to Text
         """,
