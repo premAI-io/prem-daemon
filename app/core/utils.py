@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 APPS = [
     {
         "id": "chat",
-        "name": "Prem Chat",
+        "name": "Chat",
         "playground": True,
         "documentation": """
-# Prem Chat
+# Chat
         """,
         "icon": "/assets/apps/chat.svg",
     },
@@ -26,11 +26,11 @@ APPS = [
         "name": "Prem Embeddings",
         "playground": False,
         "documentation": """
-# Prem Embeddings
+# Embeddings
 
 ## Description
 
-Prem Embeddings are all the services used to transform unstructured text in a vector representation. A vector representation is a vector of numbers that represents the most important features of the text. For example, a sentence can be represented as a vector of numbers. The vector is obtained using a neural network that is trained to extract the most important features of the sentence. Embeddings are used in many NLP tasks, such as text classification, text clustering, text similarity, and so on. In order to give memory to ChatGPT, we need to transform the text in a vector representation and store them in a vectorstore for later retrieval.
+Embeddings are all the services used to transform unstructured text in a vector representation. A vector representation is a vector of numbers that represents the most important features of the text. For example, a sentence can be represented as a vector of numbers. The vector is obtained using a neural network that is trained to extract the most important features of the sentence. Embeddings are used in many NLP tasks, such as text classification, text clustering, text similarity, and so on. In order to give memory to ChatGPT, we need to transform the text in a vector representation and store them in a vectorstore for later retrieval.
 
 All the services compatible with Prem Embeddings interface expose an API that can be used directly with Langchain python library. You can find the library [here](https://python.langchain.com/en/latest/index.html).
 
@@ -56,14 +56,14 @@ doc_result = embeddings.embed_documents([text])
     },
     {
         "id": "vector-store",
-        "name": "Prem Vector Store",
+        "name": "Vector Store",
         "playground": False,
         "documentation": """
-# Prem Vector Store
+# Vector Store
 
 ## Description
 
-Prem Store are all the services that expose a vector database. A vector database is used to store embeddings. An embedding is a vector representation of a piece of data. For example, a sentence can be represented as a vector of numbers. The vector is obtained using a neural network that is trained to extract the most important features of the sentence.
+Vector Store are all the services that expose a vector database. A vector database is used to store embeddings. An embedding is a vector representation of a piece of data. For example, a sentence can be represented as a vector of numbers. The vector is obtained using a neural network that is trained to extract the most important features of the sentence.
 
 ## Installation & Usage
 
@@ -73,10 +73,10 @@ We don't have a standard interface for what concerns Prem Store. However, we sug
     },
     {
         "id": "coder",
-        "name": "Prem Coder",
+        "name": "Coder",
         "playground": False,
         "documentation": """
-# Prem Coder
+# Coder
 
 All the services exposed using Prem Coder interface can be used using the official Github Copilot extension. You can find the extension [here](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot).
 
@@ -98,7 +98,7 @@ In the `settings.json` file of your VSCode, add the following lines:
     },
     {
         "id": "diffuser",
-        "name": "Prem Diffuser",
+        "name": "Diffuser",
         "playground": True,
         "documentation": """
         # Prem Diffuser
@@ -107,7 +107,7 @@ In the `settings.json` file of your VSCode, add the following lines:
     },
     {
         "id": "text-to-audio",
-        "name": "Prem Text to Audio",
+        "name": "Text to Audio",
         "playground": True,
         "documentation": """
         # Prem Text to Audio
@@ -116,7 +116,7 @@ In the `settings.json` file of your VSCode, add the following lines:
     },
     {
         "id": "audio-to-text",
-        "name": "Prem Audio to Text",
+        "name": "Audio to Text",
         "playground": True,
         "documentation": """
         # Prem Audio to Text
