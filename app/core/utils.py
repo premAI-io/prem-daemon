@@ -23,7 +23,7 @@ APPS = [
     },
     {
         "id": "embeddings",
-        "name": "Prem Embeddings",
+        "name": "Embeddings",
         "playground": False,
         "documentation": """
 # Embeddings
@@ -78,21 +78,14 @@ We don't have a standard interface for what concerns Prem Store. However, we sug
         "documentation": """
 # Coder
 
-All the services exposed using Prem Coder interface can be used using the official Github Copilot extension. You can find the extension [here](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot).
-
 ## Installation
 
-In the `settings.json` file of your VSCode, add the following lines:
+In order to use Coder, you will need to use Tabby extension. You can find the extension [here](https://marketplace.visualstudio.com/items?itemName=TabbyML.vscode-tabby).
 
-```json
-    "github.copilot.advanced": {
-    "debug.overrideEngine": "codegen",
-    "debug.testOverrideProxyUrl": "http://localhost:18080",
-    "debug.overrideProxyUrl": "http://localhost:18080"
-}
-```
+When the service is running and the extension installed, you can use the command: `Tabby: Set URL of Tabby Server` to connect the extension to your service.
 
-> Make sure to point to the correct port of the Prem Coder service.
+> We plan to support the official Github Copilot extension in the future.
+
 """,  # noqa E501
         "icon": "/assets/apps/coder.svg",
     },
