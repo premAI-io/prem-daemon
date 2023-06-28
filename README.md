@@ -67,6 +67,8 @@ PREM_REGISTRY_URL=https://raw.githubusercontent.com/premAI-io/prem-registry/dev/
 
 Prem is fully open source, you can specify whatever url you prefer that contains a json file in the same format as Prem Registry and the services will be handled accordingly.
 
+You just need to run `premd` with `PREM_REGISTRY_URL` env variable.
+
 ### Running the test cases
 
 ```bash
