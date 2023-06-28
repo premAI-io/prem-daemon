@@ -63,6 +63,10 @@ PREM_REGISTRY_URL=https://raw.githubusercontent.com/premAI-io/prem-registry/dev/
 
 > The mock registry is not fully tested. Few interfaces could be broken.
 
+### Custom Registry
+
+Prem is fully open source, you can specify whatever url you prefer that contains a json file in the same format as Prem Registry and the services will be handled accordingly.
+
 ### Running the test cases
 
 ```bash
