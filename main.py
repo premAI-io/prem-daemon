@@ -17,7 +17,12 @@ sentry_sdk.init(
 
 
 def get_application() -> FastAPI:
-    application = FastAPI(title=PROJECT_NAME, debug=DEBUG, version="0.0.1")
+    application = FastAPI(
+        title=PROJECT_NAME,
+        debug=DEBUG,
+        version="0.0.1",
+        description="Swagger Documentation for Prem Daemon APIs.",
+    )
     application.mount(
         "/assets/apps", StaticFiles(directory="./app/assets/"), name="apps"
     )
