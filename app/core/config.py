@@ -10,9 +10,8 @@ load_dotenv(override=True)
 # ------------------------------------------------------------------------------
 DEBUG: bool = os.getenv("DEBUG", False)
 SECRET_KEY: Secret = Secret(os.getenv("SECRET_KEY", ""))
-
-PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Prem Box")
-
+PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Prem Daemon")
+ 
 # APIs
 # ------------------------------------------------------------------------------
 API_PREFIX = "/v1"
