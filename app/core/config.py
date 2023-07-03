@@ -9,7 +9,7 @@ config = Config(".env")
 # ------------------------------------------------------------------------------
 DEBUG: bool = config("DEBUG", cast=bool, default=False)
 SECRET_KEY: Secret = config("SECRET_KEY", cast=Secret, default="")
-PROJECT_NAME: str = config("PROJECT_NAME", default="Prem Box")
+PROJECT_NAME: str = config("PROJECT_NAME", default="Prem Daemon")
 
 # APIs
 # ------------------------------------------------------------------------------
