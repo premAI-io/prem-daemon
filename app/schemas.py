@@ -41,6 +41,7 @@ class ServiceResponse(BaseModel):
     enoughSystemMemory: bool = True
     beta: bool = False
     comingSoon: bool = False
+    envVariables: list[str] = None
 
 
 class InterfaceResponse(BaseModel):

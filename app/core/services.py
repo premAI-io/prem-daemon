@@ -169,6 +169,10 @@ def run_container_with_retries(service_object):
         except Exception as error:
             logger.error(f"Failed to create volume {error}")
 
+    env_variables = []
+    if "envVariables" in service_object:
+        env_variables = service_object["envVariables"]
+
     for _ in range(10):
         try:
             client.containers.run(
@@ -178,6 +182,7 @@ def run_container_with_retries(service_object):
                 ports={f"{service_object['defaultPort']}/tcp": port},
                 name=service_object["id"],
                 volumes=volumes,
+                environment=env_variables,
                 device_requests=device_requests,
             )
             return port
