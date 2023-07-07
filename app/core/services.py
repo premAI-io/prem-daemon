@@ -161,21 +161,20 @@ def run_container_with_retries(service_object):
         device_requests = []
 
     volumes = {}
-    if "volumePath" in service_object:
+    if volume_path := service_object.get("volumePath"):
         try:
             volume_name = f"prem-{service_object['id']}-data"
             volume = client.volumes.create(name=volume_name)
-            volumes = {volume.id: {"bind": service_object["volumePath"], "mode": "rw"}}
+            volumes = {volume.id: {"bind": volume_path, "mode": "rw"}}
         except Exception as error:
             logger.error(f"Failed to create volume {error}")
 
-    env_variables = []
-    if "envVariables" in service_object:
-        env_variables = service_object["envVariables"]
+    env_variables = service_object.get("envVariables", [])
+    exec_commands = service_object.get("execCommands", [])
 
     for _ in range(10):
         try:
-            client.containers.run(
+            container = client.containers.run(
                 service_object["downloadedDockerImage"],
                 auto_remove=True,
                 detach=True,
@@ -185,6 +184,10 @@ def run_container_with_retries(service_object):
                 environment=env_variables,
                 device_requests=device_requests,
             )
+            logger.info(f"Started container {container.name}")
+
+            for command in exec_commands:
+                container.exec_run(command)
             return port
         except Exception as error:
             logger.error(f"Failed to start {error}")
