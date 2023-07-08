@@ -13,16 +13,31 @@ class SuccessResponse(BaseModel):
     message: str
 
 
+class RunServiceInput(BaseModel):
+    id: str
+
+
 class ServiceInput(BaseModel):
     id: str
+    name: str
+    modelInfo: dict
+    interfaces: list[str]
+    dockerImages: dict
+    defaultPort: int
+    defaultExternalPort: int
+    runningPort: int = None
+    volumePath: str = None
+    volumeName: str = None
+    envVariables: list[str] = None
+    promptTemplate: str = None
 
 
 class ServiceResponse(BaseModel):
     id: str
     name: str
-    description: str
-    documentation: str
-    icon: str
+    description: str = None
+    documentation: str = None
+    icon: str = None
     modelInfo: dict
     interfaces: list[str]
     dockerImage: str
@@ -43,6 +58,14 @@ class ServiceResponse(BaseModel):
     comingSoon: bool = False
     envVariables: list[str] = None
     promptTemplate: str = None
+
+
+class RegistryInput(BaseModel):
+    url: str
+
+
+class RegistryResponse(BaseModel):
+    url: str
 
 
 class InterfaceResponse(BaseModel):

@@ -9,6 +9,63 @@ from app.core import utils
 logger = logging.getLogger(__name__)
 
 
+def get_service_object(service, containers, images, free_memory, total_memory):
+    service["running"] = False
+    service["downloaded"] = False
+    service["enoughMemory"] = True
+    service["enoughSystemMemory"] = True
+
+    for container in containers:
+        if container.name == service["id"]:
+            service["running"] = True
+
+    if (
+        "memoryRequirements" in service["modelInfo"]
+        and free_memory * 1024 < service["modelInfo"]["memoryRequirements"]
+        and not service["running"]
+    ):
+        service["enoughMemory"] = False
+
+    if (
+        "memoryRequirements" in service["modelInfo"]
+        and total_memory * 1024 < service["modelInfo"]["memoryRequirements"]
+    ):
+        service["enoughSystemMemory"] = False
+
+    if utils.is_gpu_available() and "gpu" in service["dockerImages"]:
+        service["dockerImage"] = service["dockerImages"]["gpu"]["image"]
+        service["dockerImageSize"] = service["dockerImages"]["gpu"]["size"]
+        service["supported"] = True
+    elif "cpu" in service["dockerImages"]:
+        service["dockerImage"] = service["dockerImages"]["cpu"]["image"]
+        service["dockerImageSize"] = service["dockerImages"]["cpu"]["size"]
+        service["supported"] = True
+    else:
+        service["dockerImage"] = ""
+        service["dockerImageSize"] = 0
+        service["supported"] = False
+
+    service_image = service["dockerImage"].split(":")[0]
+
+    service_tags = []
+    for image in images:
+        if len(image.tags) > 0 and service_image == image.tags[0].split(":")[0]:
+            service_tags.append(image.tags[0])
+
+    if len(service_tags) > 0:
+        service["downloaded"] = True
+        if service["dockerImage"] not in service_tags:
+            service["needsUpdate"] = True
+            service["downloadedDockerImage"] = service_tags[0]
+        else:
+            service["needsUpdate"] = False
+            service["downloadedDockerImage"] = service["dockerImage"]
+    else:
+        service["downloaded"] = False
+
+    return service
+
+
 def get_services(interface_id: str = None) -> dict:
     docker_client = utils.get_docker_client()
 
@@ -17,119 +74,40 @@ def get_services(interface_id: str = None) -> dict:
     images = docker_client.images.list()
     containers = docker_client.containers.list()
 
-    if interface_id is None:
-        services = utils.SERVICES
-    else:
-        services = [
-            service
-            for service in utils.SERVICES
-            if interface_id in service["interfaces"]
-        ]
-
     rich_services = []
-    for service in services:
-        service["running"] = False
-        service["downloaded"] = False
-        service["enoughMemory"] = True
-        service["enoughSystemMemory"] = True
-
-        for container in containers:
-            if container.name == service["id"]:
-                service["running"] = True
-
-        if (
-            "memoryRequirements" in service["modelInfo"]
-            and free_memory * 1024 < service["modelInfo"]["memoryRequirements"]
-            and not service["running"]
-        ):
-            service["enoughMemory"] = False
-
-        if (
-            "memoryRequirements" in service["modelInfo"]
-            and total_memory * 1024 < service["modelInfo"]["memoryRequirements"]
-        ):
-            service["enoughSystemMemory"] = False
-
-        service_image = service["dockerImage"].split(":")[0]
-
-        service_tags = []
-        for image in images:
-            if len(image.tags) > 0 and service_image == image.tags[0].split(":")[0]:
-                service_tags.append(image.tags[0])
-
-        if len(service_tags) > 0:
-            service["downloaded"] = True
-            if service["dockerImage"] not in service_tags:
-                service["needsUpdate"] = True
-                service["downloadedDockerImage"] = service_tags[0]
-            else:
-                service["needsUpdate"] = False
-                service["downloadedDockerImage"] = service["dockerImage"]
-        else:
-            service["downloaded"] = False
-
-        rich_services.append(service)
+    for service in utils.SERVICES:
+        if interface_id is None or interface_id in service["interfaces"]:
+            service_object = get_service_object(
+                service=service,
+                containers=containers,
+                images=images,
+                free_memory=free_memory,
+                total_memory=total_memory,
+            )
+            rich_services.append(service_object)
 
     return rich_services
 
 
 def get_service_by_id(service_id: str) -> dict:
-    docker_client = utils.get_docker_client()
-
-    free_memory, total_memory = get_free_total_memory()
-
-    images = docker_client.images.list()
-    containers = docker_client.containers.list()
-
-    for service in utils.SERVICES:
+    for service in get_services():
         if service["id"] == service_id:
-            service["running"] = False
-            service["downloaded"] = False
-            service["enoughMemory"] = True
-            service["enoughSystemMemory"] = True
-
-            for container in containers:
-                if container.name == service["id"]:
-                    service["running"] = True
-                    service["runningPort"] = list(container.ports.values())[0][0][
-                        "HostPort"
-                    ]
-                    try:
-                        service["volumeName"] = container.attrs["Mounts"][0]["Name"]
-                    except Exception:
-                        service["volumeName"] = None
-
-            if (
-                "memoryRequirements" in service["modelInfo"]
-                and free_memory * 1024 < service["modelInfo"]["memoryRequirements"]
-                and not service["running"]
-            ):
-                service["enoughMemory"] = False
-
-            if (
-                "memoryRequirements" in service["modelInfo"]
-                and total_memory * 1024 < service["modelInfo"]["memoryRequirements"]
-            ):
-                service["enoughSystemMemory"] = False
-
-            service_image = service["dockerImage"].split(":")[0]
-
-            service_tags = []
-            for image in images:
-                if len(image.tags) > 0 and service_image == image.tags[0].split(":")[0]:
-                    service_tags.append(image.tags[0])
-
-            if len(service_tags) > 0:
-                service["downloaded"] = True
-                if service["dockerImage"] not in service_tags:
-                    service["needsUpdate"] = True
-                    service["downloadedDockerImage"] = service_tags[0]
-                else:
-                    service["needsUpdate"] = False
-                    service["downloadedDockerImage"] = service["dockerImage"]
-            else:
-                service["downloaded"] = False
             return service
+
+
+def add_service(data: dict):
+    utils.SERVICES.append(data)
+    return get_service_by_id(data["id"])
+
+
+def get_registries():
+    return utils.REGISTRIES
+
+
+def add_registry(url: str):
+    utils.REGISTRIES.append(url)
+    utils.add_services_from_registry(url)
+    return url
 
 
 def stop_all_running_services():

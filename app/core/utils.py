@@ -6,12 +6,13 @@ import docker
 import requests
 import torch
 
-from app.core.config import PREM_REGISTRY_URL
+from app.core import config
 
 logger = logging.getLogger(__name__)
 
-
-APPS = [
+SERVICES = []
+REGISTRIES = [config.PREM_REGISTRY_URL]
+INTERFACES = [
     {
         "id": "chat",
         "name": "Chat",
@@ -118,8 +119,6 @@ When the service is running and the extension installed, you can use the command
     },
 ]
 
-SERVICES = []
-
 
 def get_docker_client():
     return docker.from_env()
@@ -129,28 +128,14 @@ def is_gpu_available() -> bool:
     return torch.cuda.is_available()
 
 
-def get_services():
+def add_services_from_registry(url: str):
     global SERVICES
-    response = requests.get(PREM_REGISTRY_URL)
-    SERVICES = response.json()
-    for service in SERVICES:
-        if is_gpu_available() and "gpu" in service["dockerImages"]:
-            service["dockerImage"] = service["dockerImages"]["gpu"]["image"]
-            service["dockerImageSize"] = service["dockerImages"]["gpu"]["size"]
-            service["supported"] = True
-        elif "cpu" in service["dockerImages"]:
-            service["dockerImage"] = service["dockerImages"]["cpu"]["image"]
-            service["dockerImageSize"] = service["dockerImages"]["cpu"]["size"]
-            service["supported"] = True
-        else:
-            service["dockerImage"] = ""
-            service["dockerImageSize"] = 0
-            service["supported"] = False
-        service["icon"] = service["icon"]
+    response = requests.get(url)
+    SERVICES.extend(response.json())
 
 
-def get_apps():
-    return APPS
+def get_interfaces():
+    return INTERFACES
 
 
 def format_stats(value):
