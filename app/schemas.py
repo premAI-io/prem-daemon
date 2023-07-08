@@ -57,6 +57,7 @@ class ServiceResponse(BaseModel):
     beta: bool = False
     comingSoon: bool = False
     envVariables: list[str] = None
+    execCommands: list[str] = None
     promptTemplate: str = None
 
 
