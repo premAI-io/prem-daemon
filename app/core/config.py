@@ -1,15 +1,16 @@
 import logging
+import os
 
-from starlette.config import Config
+from dotenv import load_dotenv
 from starlette.datastructures import Secret
 
-config = Config(".env")
+load_dotenv(override=True)
 
 # General
 # ------------------------------------------------------------------------------
-DEBUG: bool = config("DEBUG", cast=bool, default=False)
-SECRET_KEY: Secret = config("SECRET_KEY", cast=Secret, default="")
-PROJECT_NAME: str = config("PROJECT_NAME", default="Prem Daemon")
+DEBUG: bool = os.getenv("DEBUG", False)
+SECRET_KEY: Secret = Secret(os.getenv("SECRET_KEY", ""))
+PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Prem Daemon")
 
 # APIs
 # ------------------------------------------------------------------------------
@@ -18,9 +19,9 @@ API_VERSION = "0.1.0"
 
 # Prem Registry
 # ------------------------------------------------------------------------------
-PREM_REGISTRY_URL: str = config(
+PREM_REGISTRY_URL: str = os.getenv(
     "PREM_REGISTRY_URL",
-    default="https://raw.githubusercontent.com/premAI-io/prem-registry/main/manifests.json",
+    "https://raw.githubusercontent.com/premAI-io/prem-registry/main/manifests.json",
 )
 
 # Logging
