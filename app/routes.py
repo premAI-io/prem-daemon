@@ -20,13 +20,60 @@ async def health():
 
 
 @router.get("/interfaces/", response_model=list[schemas.InterfaceResponse])
-async def apps():
-    return utils.get_apps()
+async def interfaces():
+    return utils.get_interfaces()
+
+
+@router.get("/registries/", response_model=list[schemas.RegistryResponse])
+async def registries_all():
+    return [schemas.RegistryResponse(url=url) for url in services.get_registries()]
+
+
+@router.post(
+    "/registries/",
+    response_model=schemas.RegistryResponse,
+    responses={
+        400: {
+            "model": schemas.ErrorResponse,
+            "description": "Failed to stop container or service not found.",
+        }
+    },
+)
+async def add_registry(body: schemas.RegistryInput):
+    try:
+        return schemas.RegistryResponse(url=services.add_registry(body.url))
+    except Exception as error:
+        logger.error(error)
+        raise HTTPException(
+            status_code=400,
+            detail={"message": f"Failed to add registry {error}"},
+        ) from error
 
 
 @router.get("/services/", response_model=list[schemas.ServiceResponse])
 async def services_all():
     return services.get_services()
+
+
+@router.post(
+    "/services/",
+    response_model=schemas.ServiceResponse,
+    responses={
+        400: {
+            "model": schemas.ErrorResponse,
+            "description": "Failed to stop container or service not found.",
+        }
+    },
+)
+async def add_service(body: schemas.ServiceInput):
+    try:
+        return services.add_service(body.dict())
+    except Exception as error:
+        logger.error(error)
+        raise HTTPException(
+            status_code=400,
+            detail={"message": f"Failed to add service {error}"},
+        ) from error
 
 
 @router.get(
@@ -146,7 +193,7 @@ async def download_service_stream_sse(service_id: str, request: Request):
         }
     },
 )
-async def run_service(body: schemas.ServiceInput):
+async def run_service(body: schemas.RunServiceInput):
     service_object = services.get_service_by_id(body.id)
     if service_object["running"]:
         return {
