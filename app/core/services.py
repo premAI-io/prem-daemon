@@ -18,6 +18,11 @@ def get_service_object(service, containers, images, free_memory, total_memory):
     for container in containers:
         if container.name == service["id"]:
             service["running"] = True
+            service["runningPort"] = list(container.ports.values())[0][0]["HostPort"]
+            try:
+                service["volumeName"] = container.attrs["Mounts"][0]["Name"]
+            except Exception:
+                service["volumeName"] = None
 
     if (
         "memoryRequirements" in service["modelInfo"]
