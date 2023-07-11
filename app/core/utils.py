@@ -131,7 +131,11 @@ def is_gpu_available() -> bool:
 def add_services_from_registry(url: str):
     global SERVICES
     response = requests.get(url)
-    SERVICES.extend(response.json())
+
+    service_ids = [service["id"] for service in SERVICES]
+    for service in response.json():
+        if service["id"] not in service_ids:
+            SERVICES.append(service)
 
 
 def get_interfaces():
