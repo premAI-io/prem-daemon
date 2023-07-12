@@ -169,6 +169,7 @@ async def generator(service_object, request):
         Status.VERIFYING_CHECKSUM: lambda _: 97,
         Status.DOWNLOAD_COMPLETE: lambda _: 98,
         Status.EXTRACTING: lambda _: 99,
+        Status.PULL_COMPLETE: lambda _: 100,
     }
     layers = {}
 
