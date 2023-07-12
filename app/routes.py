@@ -179,12 +179,11 @@ async def generator(service_object, request):
         service_object["dockerImage"], stream=True, decode=True
     ):
         status = line["status"]
-        layer_id = line["id"]
-
         if status == Status.ALREADY_EXISTS.value or status.startswith("Pulling from"):
             continue
 
-        if "id" in line and "status" in line and layer_id != "latest":
+        if "id" in line and "status" in line and line["id"] != "latest":
+            layer_id = line["id"]
             get_progress = progress_mapping.get(Status(status), lambda _: 100)
             layers[layer_id] = get_progress(line)
             line["percentage"] = round(sum(layers.values()) / len(layers), 2)
