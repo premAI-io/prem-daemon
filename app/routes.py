@@ -26,6 +26,18 @@ class Status(Enum):
     PULL_COMPLETE = "Pull complete"
 
 
+progress_mapping = {
+    Status.DOWNLOADING: lambda evt: evt["progressDetail"].get("current", 0)
+    / evt["progressDetail"].get("total", 1),
+    Status.PULLING_FS_LAYER: lambda _: 0,
+    Status.WAITING: lambda _: 0,
+    Status.VERIFYING_CHECKSUM: lambda _: 97,
+    Status.DOWNLOAD_COMPLETE: lambda _: 98,
+    Status.EXTRACTING: lambda _: 99,
+    Status.PULL_COMPLETE: lambda _: 100,
+}
+
+
 @router.get("/", response_model=schemas.HealthResponse)
 async def health():
     return schemas.HealthResponse(status=True)
@@ -161,16 +173,6 @@ async def download_service_stream(service_id: str):
 
 
 async def generator(service_object, request):
-    progress_mapping = {
-        Status.DOWNLOADING: lambda evt: evt["progressDetail"].get("current", 0)
-        / evt["progressDetail"].get("total", 1),
-        Status.PULLING_FS_LAYER: lambda _: 0,
-        Status.WAITING: lambda _: 0,
-        Status.VERIFYING_CHECKSUM: lambda _: 97,
-        Status.DOWNLOAD_COMPLETE: lambda _: 98,
-        Status.EXTRACTING: lambda _: 99,
-        Status.PULL_COMPLETE: lambda _: 100,
-    }
     layers = {}
 
     client = utils.get_docker_client()
