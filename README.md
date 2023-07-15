@@ -24,7 +24,7 @@ Prem App sends HTTP requests to Prem Daemon. Prem Daemon is responsible to launc
 
 ## Contributing to Prem Daemon
 
-### Running the Daemon locally
+### Running the Daemon Locally
 
 ```bash
 git clone https://github.com/premAI-io/prem-daemon.git
