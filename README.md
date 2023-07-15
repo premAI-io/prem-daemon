@@ -69,7 +69,7 @@ Prem is fully open source, you can specify whatever url you prefer that contains
 
 You just need to run `premd` with `PREM_REGISTRY_URL` env variable.
 
-### Running the test cases
+### Running the Test Cases
 
 ```bash
 pytest
