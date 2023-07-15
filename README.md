@@ -22,7 +22,7 @@ The information flow works as following:
 
 Prem App sends HTTP requests to Prem Daemon. Prem Daemon is responsible to launch the requested service and to return the response to Prem App. Prem Daemon using Docker SDK starts the requested service as a Docker container. Based on the interface exposed by the service, Prem App can directly interact with the service or it can use Prem Daemon as a proxy.
 
-## Contributing to Prem Daemon
+## Contributing Guide
 
 ### Running the Daemon Locally
 
