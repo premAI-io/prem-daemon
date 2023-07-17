@@ -1,5 +1,6 @@
 import json
 import logging
+from enum import Enum
 
 import docker
 from fastapi import APIRouter, HTTPException, Request
@@ -12,6 +13,29 @@ from app.core import services, utils
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+class Status(Enum):
+    DOWNLOADING = "Downloading"
+    PULLING_FS_LAYER = "Pulling fs layer"
+    WAITING = "Waiting"
+    VERIFYING_CHECKSUM = "Verifying Checksum"
+    DOWNLOAD_COMPLETE = "Download complete"
+    EXTRACTING = "Extracting"
+    ALREADY_EXISTS = "Already exists"
+    PULL_COMPLETE = "Pull complete"
+
+
+progress_mapping = {
+    Status.DOWNLOADING: lambda evt: evt["progressDetail"].get("current", 0)
+    / evt["progressDetail"].get("total", 1),
+    Status.PULLING_FS_LAYER: lambda _: 0,
+    Status.WAITING: lambda _: 0,
+    Status.VERIFYING_CHECKSUM: lambda _: 97,
+    Status.DOWNLOAD_COMPLETE: lambda _: 98,
+    Status.EXTRACTING: lambda _: 99,
+    Status.PULL_COMPLETE: lambda _: 100,
+}
 
 
 @router.get("/", response_model=schemas.HealthResponse)
@@ -149,26 +173,27 @@ async def download_service_stream(service_id: str):
 
 
 async def generator(service_object, request):
-    total_downloaded = 0
-    partial_downloaded = 0
+    layers = {}
 
     client = utils.get_docker_client()
+
     for line in client.api.pull(
         service_object["dockerImage"], stream=True, decode=True
     ):
-        if (
-            len(line.get("progressDetail", {}).keys()) == 0
-            and line.get("status") == "Download complete"
-        ):
-            total_downloaded += partial_downloaded
-            partial_downloaded = 0
+        status = line["status"]
+        if status == Status.ALREADY_EXISTS.value or status.startswith("Pulling from"):
+            continue
 
-        partial_downloaded = line.get("progressDetail", {}).get("total", 0)
+        if "id" in line and "status" in line and line["id"] != "latest":
+            layer_id = line["id"]
+            get_progress = progress_mapping.get(Status(status), lambda _: 100)
+            layers[layer_id] = get_progress(line)
+            line["percentage"] = round(sum(layers.values()) / len(layers), 2)
+            yield json.dumps(line) + "\n"
 
-        line["percentage"] = round(
-            (total_downloaded / service_object["dockerImageSize"]) * 100, 2
-        )
-        yield (json.dumps(line) + "\n")
+    yield json.dumps(
+        {"status": Status.DOWNLOAD_COMPLETE.value, "percentage": 100}
+    ) + "\n"
 
 
 @router.get("/download-service-stream-sse/{service_id}")
