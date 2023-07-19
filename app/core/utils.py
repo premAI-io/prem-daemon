@@ -100,6 +100,15 @@ When the service is running and the extension installed, you can use the command
         "icon": "/assets/apps/diffuser.svg",
     },
     {
+        "id": "upscaler",
+        "name": "Upscaler",
+        "playground": True,
+        "documentation": """
+        # Prem Upscaler
+        """,
+        "icon": "/assets/apps/upscaler.svg",
+    },
+    {
         "id": "text-to-audio",
         "name": "Text to Audio",
         "playground": True,
