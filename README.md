@@ -1,5 +1,8 @@
 # 🏃Prem Daemon
 
+[![image:premd](https://img.shields.io/github/actions/workflow/status/premAI-io/prem-daemon/on-tag.yml?logo=docker&label=premd
+)](https://github.com/premAI-io/prem-daemon/pkgs/container/premd)
+
 ## Prem Architecture
 
 Prem ecosystem is based on multiple repositories and components that are developed and maintained by Prem team.
@@ -46,6 +49,9 @@ python main.py
 ```
 
 ### Mock Registry
+
+[![image:mock](https://img.shields.io/github/actions/workflow/status/premAI-io/prem-daemon/on-main.yml?logo=docker&label=mock%20images
+)](https://github.com/orgs/premAI-io/packages?tab=packages&q=mock)
 
 In order to use the mock registry, you can specify the `REGISTRY_URL` environment variable as following:
 
