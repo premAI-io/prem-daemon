@@ -17,7 +17,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ github.token }}
     - name: Build & push prem
       run:  >-
         docker buildx build --push
@@ -27,3 +27,5 @@ jobs:
         --platform linux/arm64,linux/amd64 .
     - name: Release
       run: gh release create --generate-notes "${GITHUB_REF#refs/tags/}"
+      env:
+        GH_TOKEN: ${{ github.token }}
