@@ -151,10 +151,10 @@ def delete_services_from_registry(url: str):
     global SERVICES
     response = requests.get(url)
 
-    service_ids = [service["id"] for service in SERVICES]
-    for service in response.json():
-        if service["id"] in service_ids:
-            SERVICES.remove(service)
+    service_ids_to_remove = {service["id"] for service in response.json()}
+    SERVICES = [
+        service for service in SERVICES if service["id"] not in service_ids_to_remove
+    ]
 
 
 def get_interfaces():
