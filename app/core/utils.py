@@ -147,6 +147,16 @@ def add_services_from_registry(url: str):
             SERVICES.append(service)
 
 
+def delete_services_from_registry(url: str):
+    global SERVICES
+    response = requests.get(url)
+
+    service_ids = [service["id"] for service in SERVICES]
+    for service in response.json():
+        if service["id"] in service_ids:
+            SERVICES.remove(service)
+
+
 def get_interfaces():
     return INTERFACES
 

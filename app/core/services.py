@@ -115,6 +115,12 @@ def add_registry(url: str):
     return url
 
 
+def delete_registry(url: str):
+    utils.delete_services_from_registry(url)
+    utils.REGISTRIES.remove(url)
+    return url
+
+
 def stop_all_running_services():
     client = utils.get_docker_client()
     containers = client.containers.list()

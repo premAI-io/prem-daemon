@@ -74,6 +74,28 @@ async def add_registry(body: schemas.RegistryInput):
         ) from error
 
 
+@router.post(
+    "/delete-registry/",
+    response_model=schemas.SuccessResponse,
+    responses={
+        400: {
+            "model": schemas.ErrorResponse,
+            "description": "Registry not found.",
+        }
+    },
+)
+async def remove_registry(body: schemas.RegistryInput):
+    try:
+        services.delete_registry(body.url)
+    except Exception as error:
+        logger.error(error)
+        raise HTTPException(
+            status_code=400,
+            detail={"message": f"Failed to remove registry {body.url}"},
+        ) from error
+    return {"message": f"Registry {body.url} removed successfully."}
+
+
 @router.get("/services/", response_model=list[schemas.ServiceResponse])
 async def services_all():
     return services.get_services()
