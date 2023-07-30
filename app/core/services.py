@@ -9,11 +9,14 @@ from app.core import utils
 logger = logging.getLogger(__name__)
 
 
-def get_service_object(service, containers, images, free_memory, total_memory):
+def get_service_object(
+    service, containers, images, free_memory, total_memory, free_storage
+):
     service["running"] = False
     service["downloaded"] = False
     service["enoughMemory"] = True
     service["enoughSystemMemory"] = True
+    service["enoughStorage"] = True
 
     for container in containers:
         if container.name == service["id"]:
@@ -50,6 +53,9 @@ def get_service_object(service, containers, images, free_memory, total_memory):
         service["dockerImageSize"] = 0
         service["supported"] = False
 
+    if service["dockerImageSize"] > free_storage * (2**30):
+        service["enoughStorage"] = False
+
     service_image = service["dockerImage"].split(":")[0]
 
     service_tags = []
@@ -75,6 +81,7 @@ def get_services(interface_id: str = None) -> dict:
     docker_client = utils.get_docker_client()
 
     free_memory, total_memory = get_free_total_memory()
+    free_storage = get_free_storage()
 
     images = docker_client.images.list()
     containers = docker_client.containers.list()
@@ -88,6 +95,7 @@ def get_services(interface_id: str = None) -> dict:
                 images=images,
                 free_memory=free_memory,
                 total_memory=total_memory,
+                free_storage=free_storage,
             )
             rich_services.append(service_object)
 
@@ -249,3 +257,9 @@ def get_free_total_memory():
         values = get_system_stats_all()
         free_memory = values["memory_limit"] - values["memory_usage"]
         return free_memory, values["memory_limit"]
+
+
+def get_free_storage():
+    values = get_system_stats_all()
+    free_storage = values["storage_limit"] - values["storage_usage"]
+    return free_storage
