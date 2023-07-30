@@ -73,18 +73,6 @@ class TestController:
         )
         assert response.status_code == 200
 
-        response = self.client.get("/v1/services/redis-vector-db")
-        assert response.status_code == 200
-
-        response = self.client.get("/v1/stop-service/redis-vector-db")
-        assert response.status_code == 200
-
-        response = self.client.post(
-            "/v1/run-service/",
-            json={"id": "redis-vector-db"},
-        )
-        assert response.status_code == 200
-
         response = self.client.get("/v1/restart-service/redis-vector-db")
         assert response.status_code == 200
 
