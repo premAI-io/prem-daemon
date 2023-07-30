@@ -62,7 +62,6 @@ class TestController:
 
         response = self.client.get("/v1/remove-volume/prem-redis-vector-db-data")
         assert response.status_code == 200
-        assert response.status_code == 200
 
     def test_run_restart_service(self) -> None:
         response = self.client.get("/v1/download-service/redis-vector-db")
