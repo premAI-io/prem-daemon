@@ -91,3 +91,9 @@ target/
 /models/*.bin
 
 /venv/
+
+# VScode specific
+/.devcontainer
+/.vscode/launch.json
+/.vscode/settings.json
+app/routes.py

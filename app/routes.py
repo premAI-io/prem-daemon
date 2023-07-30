@@ -278,6 +278,42 @@ async def stop_service(service_id: str):
     return {"message": f"Service {service_object['id']} successfully."}
 
 
+@router.post(
+    "/restart-service/",
+    response_model=schemas.SuccessResponse,
+    responses={
+        400: {
+            "model": schemas.ErrorResponse,
+            "description": "Failed to restart container or service not found.",
+        }
+    },
+)
+async def restart_service(body: schemas.RunServiceInput):
+    service_object = services.get_service_by_id(body.id)
+
+    if service_object is None:
+        raise HTTPException(
+            status_code=400,
+            detail={"message": "Service not found."},
+        )
+
+    if not service_object["running"]:
+        return {"message": f"Service {service_object['id']} not running."}
+
+    port = services.restart_container_with_retries(service_object)
+    if port is None:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": f"Failed to restart container for {service_object['id']}"
+            },
+        )
+
+    return {
+        "message": f"Service restarted successfully. Container running on port {port}."
+    }
+
+
 @router.get(
     "/stop-all-services/",
     response_model=schemas.SuccessResponse,

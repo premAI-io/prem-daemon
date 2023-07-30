@@ -178,6 +178,36 @@ def run_container_with_retries(service_object):
     return None
 
 
+def restart_container_with_retries(service_object):
+    client = utils.get_docker_client()
+
+    port = service_object["defaultExternalPort"]
+
+    # volumes = {}
+    # if volume_path := service_object.get("volumePath"):
+    #     try:
+    #         volume_name = f"prem-{service_object['id']}-data"
+    #         volume = client.volumes.create(name=volume_name)
+    #         volumes = {volume.id: {"bind": volume_path, "mode": "rw"}}
+    #     except Exception as error:
+    #         logger.error(f"Failed to create volume {error}")
+
+    exec_commands = service_object.get("execCommands", [])
+
+    for _ in range(10):
+        try:
+            container = client.containers.get(service_object["id"])
+            container.restart()
+            logger.info(f"Restart container {container.name}")
+            for command in exec_commands:
+                container.exec_run(command)
+            return port
+        except Exception as error:
+            logger.error(f"Failed to start {error}")
+            port += 1
+    return None
+
+
 def get_docker_stats(container_name: str):
     total, _, _ = shutil.disk_usage("/")
 
