@@ -298,7 +298,11 @@ async def restart_service(service_id: str):
 
     client = utils.get_docker_client()
     try:
-        client.containers.get(service_object["id"]).restart()
+        container = client.containers.get(service_object["id"])
+        container.restart()
+        exec_commands = service_object.get("execCommands", [])
+        for command in exec_commands:
+            container.exec_run(command)
     except Exception as error:
         if isinstance(error, docker.errors.ImageNotFound):
             logger.warning(error)
