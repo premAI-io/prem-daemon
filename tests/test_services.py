@@ -62,6 +62,38 @@ class TestController:
 
         response = self.client.get("/v1/remove-volume/prem-redis-vector-db-data")
         assert response.status_code == 200
+        assert response.status_code == 200
+
+    def test_run_restart_service(self) -> None:
+        response = self.client.get("/v1/download-service/redis-vector-db")
+        assert response.status_code == 200
+
+        response = self.client.post(
+            "/v1/run-service/",
+            json={"id": "redis-vector-db"},
+        )
+        assert response.status_code == 200
+
+        response = self.client.get("/v1/services/redis-vector-db")
+        assert response.status_code == 200
+
+        response = self.client.get("/v1/stop-service/redis-vector-db")
+        assert response.status_code == 200
+
+        response = self.client.post(
+            "/v1/run-service/",
+            json={"id": "redis-vector-db"},
+        )
+        assert response.status_code == 200
+
+        response = self.client.get("/v1/restart-service/redis-vector-db")
+        assert response.status_code == 200
+
+        response = self.client.get("/v1/stop-service/redis-vector-db")
+        assert response.status_code == 200
+
+        response = self.client.get("/v1/remove-volume/prem-redis-vector-db-data")
+        assert response.status_code == 200
 
     def test_run_stop_all_services(self) -> None:
         response = self.client.get("/v1/download-service/redis-vector-db")
