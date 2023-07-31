@@ -109,8 +109,12 @@ def get_service_by_id(service_id: str) -> dict:
 
 
 def add_service(data: dict):
-    utils.SERVICES.append(data)
-    return get_service_by_id(data["id"])
+    service_ids = [service["id"] for service in utils.SERVICES]
+    if data["id"] not in service_ids:
+        utils.SERVICES.append(data)
+        return get_service_by_id(data["id"])
+    else:
+        return None
 
 
 def get_registries():

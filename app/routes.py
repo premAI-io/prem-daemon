@@ -98,7 +98,15 @@ async def services_all():
 )
 async def add_service(body: schemas.ServiceInput):
     try:
-        return services.add_service(body.dict())
+        service = body.dict()
+        response = services.add_service(service)
+        if response is not None:
+            return response
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail={"message": f"Service {service['id']} already exists!"},
+            )
     except Exception as error:
         logger.error(error)
         raise HTTPException(

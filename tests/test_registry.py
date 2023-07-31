@@ -44,7 +44,9 @@ class TestController:
 
         response = client.get("/v1/services/")
         assert response.status_code == 200
-        assert len(response.json()) > number_of_services
+        services = response.json()
+        assert len(services) > number_of_services
+        assert len(services) == len({service["id"] for service in services})
 
     def test_add_custom_service(self, client) -> None:
         response = client.get("/v1/services/")
@@ -73,6 +75,21 @@ class TestController:
         response = client.get("/v1/services/")
         assert response.status_code == 200
         assert len(response.json()) == number_of_services + 1
+
+    def test_add_existing_service(self, client) -> None:
+        response = client.get("/v1/services/")
+        assert response.status_code == 200
+        number_of_services = len(response.json())
+
+        response = client.post(
+            "/v1/services/",
+            json=response.json()[-1],
+        )
+        assert response.status_code != 200
+
+        response = client.get("/v1/services/")
+        assert response.status_code == 200
+        assert len(response.json()) == number_of_services
 
     def test_multiple_registries(self, multiple_registries_client):
         response = multiple_registries_client.get("/v1/registries/")
