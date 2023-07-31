@@ -11,7 +11,7 @@ from app.core import config
 logger = logging.getLogger(__name__)
 
 SERVICES = []
-REGISTRIES = config.PREM_REGISTRY_URL.split(" ")
+REGISTRIES = config.PREM_REGISTRY_URL.strip().split()
 INTERFACES = [
     {
         "id": "chat",
