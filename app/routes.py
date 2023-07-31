@@ -301,6 +301,43 @@ async def stop_service(service_id: str):
 
 
 @router.get(
+    "/restart-service/{service_id}",
+    response_model=schemas.SuccessResponse,
+    responses={
+        400: {
+            "model": schemas.ErrorResponse,
+            "description": "Failed to restart container or service not found.",
+        }
+    },
+)
+async def restart_service(service_id: str):
+    service_object = services.get_service_by_id(service_id)
+    if service_object is None:
+        raise HTTPException(
+            status_code=400,
+            detail={"message": "Service not found."},
+        )
+
+    client = utils.get_docker_client()
+    try:
+        container = client.containers.get(service_object["id"])
+        container.restart()
+        exec_commands = service_object.get("execCommands", [])
+        for command in exec_commands:
+            container.exec_run(command)
+    except Exception as error:
+        if isinstance(error, docker.errors.ImageNotFound):
+            logger.warning(error)
+            return {"message": f"Container {service_object['id']} not found."}
+        logger.error(error)
+        raise HTTPException(
+            status_code=400,
+            detail={"message": f"Failed to restart container {error}"},
+        ) from error
+    return {"message": f"Service {service_object['id']} restarted successfully."}
+
+
+@router.get(
     "/stop-all-services/",
     response_model=schemas.SuccessResponse,
     responses={

@@ -54,6 +54,7 @@ class ServiceResponse(BaseModel):
     supported: bool
     enoughMemory: bool = True
     enoughSystemMemory: bool = True
+    enoughStorage: bool = True
     beta: bool = False
     comingSoon: bool = False
     envVariables: list[str] = None
