@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 def create_start_app_handler(app: FastAPI):
     def start_app() -> None:
-        utils.add_services_from_registry(config.PREM_REGISTRY_URL)
+        for registry in config.PREM_REGISTRY_URL.split(" "):
+            utils.add_services_from_registry(registry)
 
     return start_app
