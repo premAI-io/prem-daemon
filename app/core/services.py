@@ -118,9 +118,12 @@ def get_registries():
 
 
 def add_registry(url: str):
-    utils.REGISTRIES.append(url)
-    utils.add_services_from_registry(url)
-    return url
+    if url not in utils.REGISTRIES:
+        utils.REGISTRIES.append(url)
+        utils.add_services_from_registry(url)
+        return url
+    else:
+        return None
 
 
 def stop_all_running_services():
