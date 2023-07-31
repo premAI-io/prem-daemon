@@ -15,9 +15,11 @@ def client():
 
 @pytest.fixture
 def multiple_registries_client():
-    os.environ["PREM_REGISTRY_URL"] = (
-        "https://raw.githubusercontent.com/premAI-io/prem-registry/main/manifests.json "
-        "https://raw.githubusercontent.com/premAI-io/prem-daemon/main/resources/mocks/manifests.json"
+    os.environ["PREM_REGISTRY_URL"] = " ".join(
+        (
+            "https://raw.githubusercontent.com/premAI-io/prem-registry/main/manifests.json",
+            "https://raw.githubusercontent.com/premAI-io/prem-daemon/main/resources/mocks/manifests.json",
+        )
     )
     app = get_application()
     [event() for event in app.router.on_startup]
