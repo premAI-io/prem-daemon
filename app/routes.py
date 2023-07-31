@@ -59,13 +59,20 @@ async def registries_all():
     responses={
         400: {
             "model": schemas.ErrorResponse,
-            "description": "Failed to stop container or service not found.",
+            "description": "Failed to add registry.",
         }
     },
 )
 async def add_registry(body: schemas.RegistryInput):
     try:
-        return schemas.RegistryResponse(url=services.add_registry(body.url))
+        response = schemas.RegistryResponse(url=services.add_registry(body.url))
+        if response is not None:
+            return response
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail={"message": f"Registry {body.url} already exists!"},
+            )
     except Exception as error:
         logger.error(error)
         raise HTTPException(

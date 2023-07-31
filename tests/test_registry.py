@@ -1,24 +1,40 @@
+import os
+
+import pytest
 from fastapi.testclient import TestClient
 
 from main import get_application
 
 
-class TestController:
-    def setup_method(self):
-        app = get_application()
-        [event() for event in app.router.on_startup]
-        self.client = TestClient(app)
+@pytest.fixture
+def client():
+    app = get_application()
+    [event() for event in app.router.on_startup]
+    return TestClient(app)
 
-    def test_get_registries(self) -> None:
-        response = self.client.get("/v1/registries/")
+
+@pytest.fixture
+def multiple_registries_client():
+    os.environ["PREM_REGISTRY_URL"] = (
+        "https://raw.githubusercontent.com/premAI-io/prem-registry/main/manifests.json "
+        "https://raw.githubusercontent.com/premAI-io/prem-daemon/main/resources/mocks/manifests.json"
+    )
+    app = get_application()
+    [event() for event in app.router.on_startup]
+    return TestClient(app)
+
+
+class TestController:
+    def test_get_registries(self, client) -> None:
+        response = client.get("/v1/registries/")
         assert response.status_code == 200
 
-    def test_add_registry(self) -> None:
-        response = self.client.get("/v1/services/")
+    def test_add_registry(self, client) -> None:
+        response = client.get("/v1/services/")
         assert response.status_code == 200
         number_of_services = len(response.json())
 
-        response = self.client.post(
+        response = client.post(
             "/v1/registries/",
             json={
                 "url": "https://raw.githubusercontent.com/premAI-io/prem-daemon/main/resources/mocks/manifests.json"
@@ -26,18 +42,18 @@ class TestController:
         )
         assert response.status_code == 200
 
-        response = self.client.get("/v1/services/")
+        response = client.get("/v1/services/")
         assert response.status_code == 200
         services = response.json()
         assert len(services) > number_of_services
         assert len(services) == len({service["id"] for service in services})
 
-    def test_add_custom_service(self) -> None:
-        response = self.client.get("/v1/services/")
+    def test_add_custom_service(self, client) -> None:
+        response = client.get("/v1/services/")
         assert response.status_code == 200
         number_of_services = len(response.json())
 
-        response = self.client.post(
+        response = client.post(
             "/v1/services/",
             json={
                 "id": "whisper-tiny-mock",
@@ -56,7 +72,7 @@ class TestController:
         )
         assert response.status_code == 200
 
-        response = self.client.get("/v1/services/")
+        response = client.get("/v1/services/")
         assert response.status_code == 200
         assert len(response.json()) == number_of_services + 1
 
@@ -74,3 +90,8 @@ class TestController:
         response = self.client.get("/v1/services/")
         assert response.status_code == 200
         assert len(response.json()) == number_of_services
+
+    def test_multiple_registries(self, multiple_registries_client):
+        response = multiple_registries_client.get("/v1/registries/")
+        assert response.status_code == 200
+        assert len(response.json()) == 2
