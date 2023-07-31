@@ -86,7 +86,14 @@ async def add_registry(body: schemas.RegistryInput):
 )
 async def remove_registry(url: str):
     try:
-        services.delete_registry(url)
+        response = services.delete_registry(url)
+        if response is None:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "message": f"Cannot to remove registry {url} because it does not exists!"
+                },
+            )
     except Exception as error:
         logger.error(error)
         raise HTTPException(

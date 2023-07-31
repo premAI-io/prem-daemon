@@ -124,9 +124,12 @@ def add_registry(url: str):
 
 
 def delete_registry(url: str):
-    utils.delete_services_from_registry(url)
-    utils.REGISTRIES.remove(url)
-    return url
+    if url in utils.REGISTRIES:
+        utils.delete_services_from_registry(url)
+        utils.REGISTRIES.remove(url)
+        return url
+    else:
+        return None
 
 
 def stop_all_running_services():
