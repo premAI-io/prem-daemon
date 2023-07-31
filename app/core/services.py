@@ -113,8 +113,6 @@ def add_service(data: dict):
     if data["id"] not in service_ids:
         utils.SERVICES.append(data)
         return get_service_by_id(data["id"])
-    else:
-        return None
 
 
 def get_registries():
@@ -126,8 +124,6 @@ def add_registry(url: str):
         utils.REGISTRIES.append(url)
         utils.add_services_from_registry(url)
         return url
-    else:
-        return None
 
 
 def delete_registry(url: str):
@@ -135,8 +131,6 @@ def delete_registry(url: str):
         utils.delete_services_from_registry(url)
         utils.REGISTRIES.remove(url)
         return url
-    else:
-        return None
 
 
 def stop_all_running_services():
@@ -199,7 +193,6 @@ def run_container_with_retries(service_object):
         except Exception as error:
             logger.error(f"Failed to start {error}")
             port += 1
-    return None
 
 
 def get_docker_stats(container_name: str):
