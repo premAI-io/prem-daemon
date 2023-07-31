@@ -48,6 +48,39 @@ class TestController:
         assert len(services) > number_of_services
         assert len(services) == len({service["id"] for service in services})
 
+    def test_delete_registry(self, client) -> None:
+        response = client.get("/v1/services/")
+        assert response.status_code == 200
+        number_of_services = len(response.json())
+
+        response = client.get("/v1/registries/")
+        assert response.status_code == 200
+        number_of_registries = len(response.json())
+
+        response = client.delete(
+            "/v1/registries/",
+            params={
+                "url": "https://raw.githubusercontent.com/premAI-io/prem-daemon/main/resources/mocks/manifests.json"
+            },
+        )
+        assert response.status_code == 200
+
+        response = client.get("/v1/services/")
+        assert response.status_code == 200
+        assert len(response.json()) < number_of_services
+
+        response = client.get("/v1/registries/")
+        assert response.status_code == 200
+        assert len(response.json()) < number_of_registries
+
+        response = client.post(
+            "/v1/registries/",
+            json={
+                "url": "https://raw.githubusercontent.com/premAI-io/prem-daemon/main/resources/mocks/manifests.json"
+            },
+        )
+        assert response.status_code == 200
+
     def test_add_custom_service(self, client) -> None:
         response = client.get("/v1/services/")
         assert response.status_code == 200
