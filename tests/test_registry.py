@@ -47,13 +47,13 @@ class TestController:
         assert response.status_code == 200
         number_of_registries = len(response.json())
 
-        response = self.client.post(
-            "/v1/delete-registry/",
-            json={
+        response = self.client.delete(
+            "/v1/registries/",
+            params={
                 "url": "https://raw.githubusercontent.com/premAI-io/prem-daemon/main/resources/mocks/manifests.json"
             },
         )
-        assert response.status_code == 200
+        assert response.status_code == 200, response.content
 
         response = self.client.get("/v1/services/")
         assert response.status_code == 200
