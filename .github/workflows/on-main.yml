@@ -17,7 +17,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ github.token }}
     - name: Build & push prem
       run:  >-
         docker buildx build --push
