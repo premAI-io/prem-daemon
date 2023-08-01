@@ -45,6 +45,7 @@ class ServiceResponse(BaseModel):
     defaultPort: int
     defaultExternalPort: int
     runningPort: int = None
+    command: str = None
     volumePath: str = None
     volumeName: str = None
     running: bool
