@@ -1,10 +1,12 @@
 import logging
+import re
 import subprocess
 import xml.etree.ElementTree as ET
 
 import docker
 import requests
 import torch
+from bs4 import BeautifulSoup
 
 from app.core import config
 
@@ -197,3 +199,47 @@ def get_gpu_info():
     mem_percentage = (used_memory_value / total_memory_value) * 100
 
     return gpu_name, total_memory_value, used_memory_value, mem_percentage
+
+
+def extract_labels_from_html_file(html_content, class_names):
+    soup = BeautifulSoup(html_content, "html.parser")
+    labels = soup.select(class_names)
+    return [label.get_text() for label in labels]
+
+
+def find_maximum_label(labels):
+    pattern = r"v(\d+)\.(\d+)\.(\d+)"
+    max_label = None
+
+    for label in labels:
+        match = re.match(pattern, label)
+        if match:
+            version = f"v{match.group(1)}.{match.group(2)}.{match.group(3)}"
+            if max_label is None or version > max_label:
+                max_label = version
+
+    return max_label
+
+
+def get_premd_last_tag(owner, repository, package):
+    response = requests.get(
+        f"https://github.com/{owner}/{repository}/pkgs/container/{package}"
+    )
+    class_names = ".Label.mr-1.mb-2.text-normal"
+    try:
+        labels = extract_labels_from_html_file(response.content, class_names)
+        if labels:
+            return find_maximum_label(labels)
+    except Exception as e:
+        logger.info(f"Unexpected error: {e}")
+
+
+def get_local_docker_image_tags(owner, repository):
+    image_name = f"ghcr.io/{owner}/{repository}"
+    try:
+        client = get_docker_client()
+        image = client.images.get(image_name)
+        return image.tags
+    except Exception as e:
+        logger.info(f"Unexpected error: {e}")
+        return []
