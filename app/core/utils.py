@@ -1,6 +1,7 @@
 import logging
 import re
 import subprocess
+import time
 import xml.etree.ElementTree as ET
 
 import docker
@@ -12,6 +13,8 @@ from app.core import config
 
 logger = logging.getLogger(__name__)
 
+PREMD_IMAGE = config.PREMD_IMAGE
+DEFAULT_PORT = config.DEFAULT_PORT
 SERVICES = []
 REGISTRIES = config.PREM_REGISTRY_URL.strip().split()
 INTERFACES = [
@@ -243,3 +246,100 @@ def get_local_docker_image_tags(owner, repository):
     except Exception as e:
         logger.info(f"Unexpected error: {e}")
         return []
+
+
+def generate_container_name(prefix):
+    client = get_docker_client()
+
+    containers = client.containers.list(
+        all=True, filters={"name": f"^{prefix}", "status": "running"}
+    )
+    latest_suffix = -1
+    for container in containers:
+        match = re.match(rf"{prefix}_(\d+)", container.name)
+        if match and container.status == "running":
+            suffix = int(match.group(1))
+            if suffix > latest_suffix:
+                latest_suffix = suffix
+
+    if latest_suffix == -1:
+        return prefix, f"{prefix}_1"
+    else:
+        return f"{prefix}_{latest_suffix}", f"{prefix}_{latest_suffix+1}"
+
+
+def create_new_container(
+    image_name, image_tag, new_container_name, old_container_name, host_port
+):
+    client = get_docker_client()
+    old_container = client.containers.get(old_container_name)
+
+    if is_gpu_available():
+        device_requests = [
+            docker.types.DeviceRequest(device_ids=["all"], capabilities=[["gpu"]])
+        ]
+    else:
+        device_requests = []
+
+    volumes = {}
+    for mount in old_container.attrs["Mounts"]:
+        source = mount["Source"]
+        target = mount["Destination"]
+        mode = mount["Mode"]
+        volumes[source] = {"bind": target, "mode": mode}
+
+    current_ports = old_container.attrs["HostConfig"]["PortBindings"]
+    current_port_key = list(current_ports.keys())[0]
+
+    logger.info(
+        f"Starting new container {new_container_name} with image {image_name}:{image_tag} at port {host_port}"
+    )
+    new_container = client.containers.run(
+        image=f"{image_name}:{image_tag}",
+        name=new_container_name,
+        ports={f"{current_port_key}/tcp": [{"HostIp": "", "HostPort": host_port}]},
+        volumes=volumes,
+        environment=old_container.attrs["Config"]["Env"],
+        device_requests=device_requests,
+        network_mode=old_container.attrs["HostConfig"]["NetworkMode"],
+        detach=True,
+    )
+    return new_container
+
+
+def update_and_remove_old_container(old_container_name):
+    client = get_docker_client()
+    logger.info(f"Stopping {old_container_name}")
+    old_container = client.containers.get(old_container_name)
+    old_container.stop()
+    old_container.remove(force=True)
+    client.system.prune()
+
+
+def update_container(host_port):
+    container_name, new_container_name = generate_container_name("premd")
+    create_new_container(
+        PREMD_IMAGE, "latest", new_container_name, container_name, host_port
+    )
+    update_and_remove_old_container(container_name)
+
+
+def check_host_port_availability(host_port, timeout=30):
+    start_time = time.time()
+    client = docker.from_env()
+
+    while True:
+        if time.time() - start_time > timeout:
+            return False
+
+        containers = client.containers.list()
+        port_used = any(
+            f"{host_port}/tcp" in container.ports
+            for container in containers
+            if container.status == "running"
+        )
+
+        if not port_used:
+            return True
+
+        time.sleep(1)

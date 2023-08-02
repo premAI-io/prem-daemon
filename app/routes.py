@@ -46,13 +46,20 @@ async def health():
 @router.get("/update-available/", response_model=schemas.UpdateAvailableResponse)
 async def update_available():
     owner = "premAI-io"
-    remote_image = f"ghcr.io/premai-io/premd:{utils.get_premd_last_tag(owner, 'prem-daemon', 'premd')}"
+    remote_image = (
+        f"{utils.PREMD_IMAGE}:{utils.get_premd_last_tag(owner, 'prem-daemon', 'premd')}"
+    )
     local_tags = utils.get_local_docker_image_tags(owner.lower(), "premd")
     return {
         "remote_image": remote_image,
         "local_images": local_tags,
         "update": remote_image not in local_tags,
     }
+
+
+@router.get("/update-daemon/")
+async def trigger_update():
+    utils.update_container(utils.DEFAULT_PORT + 1)
 
 
 @router.get("/interfaces/", response_model=list[schemas.InterfaceResponse])
