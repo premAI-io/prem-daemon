@@ -326,7 +326,7 @@ def update_container(host_port):
 
 def check_host_port_availability(host_port, timeout=30):
     start_time = time.time()
-    client = docker.from_env()
+    client = get_docker_client()
 
     while True:
         if time.time() - start_time > timeout:

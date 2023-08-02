@@ -43,23 +43,53 @@ async def health():
     return schemas.HealthResponse(status=True)
 
 
-@router.get("/update-available/", response_model=schemas.UpdateAvailableResponse)
+@router.get(
+    "/update-available/",
+    responses={
+        400: {
+            "model": schemas.ErrorResponse,
+            "description": "Failed to check update available.",
+        }
+    },
+    response_model=schemas.UpdateAvailableResponse,
+)
 async def update_available():
-    owner = "premAI-io"
-    remote_image = (
-        f"{utils.PREMD_IMAGE}:{utils.get_premd_last_tag(owner, 'prem-daemon', 'premd')}"
-    )
-    local_tags = utils.get_local_docker_image_tags(owner.lower(), "premd")
-    return {
-        "remote_image": remote_image,
-        "local_images": local_tags,
-        "update": remote_image not in local_tags,
-    }
+    try:
+        owner = "premAI-io"
+        remote_image = f"{utils.PREMD_IMAGE}:{utils.get_premd_last_tag(owner, 'prem-daemon', 'premd')}"
+        local_tags = utils.get_local_docker_image_tags(owner.lower(), "premd")
+        return {
+            "remote_image": remote_image,
+            "local_images": local_tags,
+            "update": remote_image not in local_tags,
+        }
+    except Exception as error:
+        logger.error(error)
+        raise HTTPException(
+            status_code=400,
+            detail={"message": f"Failed to check update available {error}."},
+        ) from error
 
 
-@router.get("/update-daemon/")
+@router.get(
+    "/update-daemon/",
+    responses={
+        400: {
+            "model": schemas.ErrorResponse,
+            "description": "Failed to update.",
+        }
+    },
+    response_model=schemas.UpdateAvailableResponse,
+)
 async def trigger_update():
-    utils.update_container(utils.DEFAULT_PORT + 1)
+    try:
+        utils.update_container(utils.DEFAULT_PORT + 1)
+    except Exception as error:
+        logger.error(error)
+        raise HTTPException(
+            status_code=400,
+            detail={"message": f"Failed to update {error}."},
+        ) from error
 
 
 @router.get("/interfaces/", response_model=list[schemas.InterfaceResponse])
