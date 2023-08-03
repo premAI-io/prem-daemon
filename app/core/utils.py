@@ -332,3 +332,15 @@ def check_host_port_availability(host_port, timeout=30):
             return True
 
         time.sleep(1)
+
+
+def container_exists(container_name):
+    try:
+        client = get_docker_client()
+        _ = client.containers.get(container_name)
+        return True
+    except docker.errors.NotFound:
+        return False
+    except docker.errors.APIError as e:
+        logging.error(f"Error checking container existence: {e}")
+        return False
