@@ -68,7 +68,7 @@ Vector Store are all the services that expose a vector database. A vector databa
 
 ## Installation & Usage
 
-We don't have a standard interface for what concerns Prem Store. However, we suggest to connect to the services using [Langchain](https://python.langchain.com/en/latest/index.html) python library or [Llama Index](https://gpt-index.readthedocs.io/en/latest/index.html).
+We don't have a standard interface for what concerns Vector Store services. However, we suggest to connect to the services using [Langchain](https://python.langchain.com/en/latest/index.html) python library or [Llama Index](https://gpt-index.readthedocs.io/en/latest/index.html).
 """,  # noqa E501
         "icon": "/assets/apps/store.svg",
     },
@@ -79,14 +79,13 @@ We don't have a standard interface for what concerns Prem Store. However, we sug
         "documentation": """
 # Coder
 
-## Installation
+## Description
 
-In order to use Coder, you will need to use Tabby extension. You can find the extension [here](https://marketplace.visualstudio.com/items?itemName=TabbyML.vscode-tabby).
+Coder are all the services that expose endpoints for code completion functionalities. As an example, you can think about GitHub Copilot as the main centralized alternative.
 
-When the service is running and the extension installed, you can use the command: `Tabby: Set URL of Tabby Server` to connect the extension to your service.
+## Installation & Usage
 
-> We plan to support the official Github Copilot extension in the future.
-
+We don't have a standard interface for what concerns Coder services. However, right now we mostly support services based on Tabby Docker images. In order to use Tabby services, you will need to install and use Tabby extension. You can find the extension [here](https://marketplace.visualstudio.com/items?itemName=TabbyML.vscode-tabby).
 """,  # noqa E501
         "icon": "/assets/apps/coder.svg",
     },
