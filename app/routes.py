@@ -28,7 +28,8 @@ class Status(Enum):
 
 progress_mapping = {
     Status.DOWNLOADING: lambda evt: evt["progressDetail"].get("current", 0)
-    / evt["progressDetail"].get("total", 1),
+    / evt["progressDetail"].get("total", 1)
+    * 100,
     Status.PULLING_FS_LAYER: lambda _: 0,
     Status.WAITING: lambda _: 0,
     Status.VERIFYING_CHECKSUM: lambda _: 97,
@@ -274,7 +275,12 @@ async def generator(service_object, request):
         service_object["dockerImage"], stream=True, decode=True
     ):
         status = line["status"]
-        if status == Status.ALREADY_EXISTS.value or status.startswith("Pulling from"):
+        if (
+            status == Status.ALREADY_EXISTS.value
+            or status == Status.DOWNLOAD_COMPLETE.value
+            or status.startswith("Pulling from")
+            or status.startswith("Pulling fs layer")
+        ):
             continue
 
         if "id" in line and "status" in line and line["id"] != "latest":

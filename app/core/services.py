@@ -18,6 +18,9 @@ def get_service_object(
     service["enoughSystemMemory"] = True
     service["enoughStorage"] = True
 
+    if "command" not in service:
+        service["command"] = None
+
     for container in containers:
         if container.name == service["id"]:
             service["running"] = True
@@ -177,6 +180,7 @@ def run_container_with_retries(service_object):
         try:
             container = client.containers.run(
                 service_object["downloadedDockerImage"],
+                command=service_object["command"],
                 auto_remove=True,
                 detach=True,
                 ports={f"{service_object['defaultPort']}/tcp": port},
