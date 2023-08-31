@@ -196,3 +196,33 @@ def get_gpu_info():
     mem_percentage = (used_memory_value / total_memory_value) * 100
 
     return gpu_name, total_memory_value, used_memory_value, mem_percentage
+
+
+cached_domain = None
+
+
+def check_dns_exists():
+    global cached_domain
+
+    if cached_domain is not None:
+        return cached_domain
+
+    url = "http://dnsd:8080/dns/existing"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200 and response.content:
+            json_response = response.json()
+            if "domain" in json_response:
+                cached_domain = json_response["domain"]
+                return cached_domain
+            else:
+                print("Domain field not found in response.")
+                return None
+        else:
+            print(
+                f"Failed to get a valid response. Status Code: {response.status_code}"
+            )
+            return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None

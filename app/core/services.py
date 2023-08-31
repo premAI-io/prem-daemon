@@ -1,4 +1,5 @@
 import logging
+import os
 import shutil
 
 import docker
@@ -77,6 +78,15 @@ def get_service_object(
     else:
         service["downloaded"] = False
 
+    proxy_enabled = os.environ.get("PROXY_ENABLED", "false").lower() == "true"
+
+    if proxy_enabled:
+        domain = utils.check_dns_exists()
+
+        service["fullURL"] = f"{service['id']}.docker.localhost"
+        if domain:
+            service["fullURL"] = f"{service['id']}.{domain}"
+
     return service
 
 
@@ -149,13 +159,15 @@ def stop_all_running_services():
 
 def run_container_with_retries(service_object):
     client = utils.get_docker_client()
+    service_id = service_object["id"]  # Assuming the service ID is in service_object
 
     try:
-        client.containers.get(service_object["id"]).remove(force=True)
+        client.containers.get(service_id).remove(force=True)
     except Exception as error:
         logger.info(f"Failed to remove container {error}.")
 
     port = service_object["defaultExternalPort"]
+    proxy_enabled = os.environ.get("PROXY_ENABLED", "false").lower() == "true"
 
     if utils.is_gpu_available():
         device_requests = [
@@ -167,7 +179,7 @@ def run_container_with_retries(service_object):
     volumes = {}
     if volume_path := service_object.get("volumePath"):
         try:
-            volume_name = f"prem-{service_object['id']}-data"
+            volume_name = f"prem-{service_id}-data"
             volume = client.volumes.create(name=volume_name)
             volumes = {volume.id: {"bind": volume_path, "mode": "rw"}}
         except Exception as error:
@@ -175,6 +187,22 @@ def run_container_with_retries(service_object):
 
     env_variables = service_object.get("envVariables", [])
     exec_commands = service_object.get("execCommands", [])
+
+    labels = {}
+    if proxy_enabled:
+        dns_exists = utils.check_dns_exists()
+        if dns_exists:
+            labels = {
+                "traefik.enable": "true",
+                f"traefik.http.routers.{service_id}.rule": f"Host(`{service_id}.domain`)",
+                f"traefik.http.routers.{service_id}.entrypoints": "websecure",
+                f"traefik.http.routers.{service_id}.tls.certresolver": "myresolver",
+            }
+        else:
+            labels = {
+                "traefik.enable": "true",
+                f"traefik.http.routers.{service_id}.rule": f"Host({service_id}.docker.localhost)",
+            }
 
     for _ in range(10):
         try:
@@ -184,10 +212,11 @@ def run_container_with_retries(service_object):
                 auto_remove=True,
                 detach=True,
                 ports={f"{service_object['defaultPort']}/tcp": port},
-                name=service_object["id"],
+                name=service_id,
                 volumes=volumes,
                 environment=env_variables,
                 device_requests=device_requests,
+                labels=labels,  # Add this line
             )
             logger.info(f"Started container {container.name}")
 
