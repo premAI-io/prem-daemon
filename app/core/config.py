@@ -12,6 +12,11 @@ DEBUG: bool = os.getenv("DEBUG", False)
 SECRET_KEY: Secret = Secret(os.getenv("SECRET_KEY", ""))
 PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Prem Daemon")
 
+# PROXY
+# ------------------------------------------------------------------------------
+PROXY_ENABLED: bool = os.getenv("PROXY_ENABLED", False)
+DNSD_URL: str = os.getenv("DNSD_URL", "http://dnsd:8080")
+
 # APIs
 # ------------------------------------------------------------------------------
 API_PREFIX = "/v1"
@@ -31,3 +36,11 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S",
 )
+
+# Constants
+# ------------------------------------------------------------------------------
+DNSD_DNS_EXIST_PATH = "/dns/existing"
+
+
+def dns_exists_url() -> str:
+    return f"{DNSD_URL}{DNSD_DNS_EXIST_PATH}"
