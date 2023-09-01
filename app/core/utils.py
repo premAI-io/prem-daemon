@@ -207,7 +207,7 @@ def check_dns_exists():
     if cached_domain is not None:
         return cached_domain
 
-    url = "http://dnsd:8080/dns/existing"
+    url = config.dns_exists_url()
     try:
         response = requests.get(url)
         if response.status_code == 200 and response.content:

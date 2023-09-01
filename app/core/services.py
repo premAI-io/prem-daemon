@@ -1,11 +1,10 @@
 import logging
-import os
 import shutil
 
 import docker
 import psutil
 
-from app.core import utils
+from app.core import config, utils
 
 logger = logging.getLogger(__name__)
 
@@ -78,9 +77,7 @@ def get_service_object(
     else:
         service["downloaded"] = False
 
-    proxy_enabled = os.environ.get("PROXY_ENABLED", "false").lower() == "true"
-
-    if proxy_enabled:
+    if config.python_enabled():
         domain = utils.check_dns_exists()
 
         service["fullURL"] = f"{service['id']}.docker.localhost"
@@ -167,7 +164,6 @@ def run_container_with_retries(service_object):
         logger.info(f"Failed to remove container {error}.")
 
     port = service_object["defaultExternalPort"]
-    proxy_enabled = os.environ.get("PROXY_ENABLED", "false").lower() == "true"
 
     if utils.is_gpu_available():
         device_requests = [
@@ -189,7 +185,7 @@ def run_container_with_retries(service_object):
     exec_commands = service_object.get("execCommands", [])
 
     labels = {}
-    if proxy_enabled:
+    if config.python_enabled():
         dns_exists = utils.check_dns_exists()
         if dns_exists:
             labels = {
