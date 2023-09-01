@@ -14,7 +14,7 @@ PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Prem Daemon")
 
 # PROXY
 # ------------------------------------------------------------------------------
-PROXY_ENABLED: str = os.getenv("PROXY_ENABLED", "false")
+PROXY_ENABLED: bool = os.getenv("PROXY_ENABLED", False)
 DNSD_URL: str = os.getenv("DNSD_URL", "http://dnsd:8080")
 
 # APIs
@@ -44,7 +44,3 @@ DNSD_DNS_EXIST_PATH = "/dns/existing"
 
 def dns_exists_url() -> str:
     return f"{DNSD_URL}{DNSD_DNS_EXIST_PATH}"
-
-
-def python_enabled() -> bool:
-    return os.getenv("PYTHON_ENABLED", "false").lower() == "true"

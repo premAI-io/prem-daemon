@@ -77,7 +77,7 @@ def get_service_object(
     else:
         service["downloaded"] = False
 
-    if config.python_enabled():
+    if config.PROXY_ENABLED:
         domain = utils.check_dns_exists()
 
         service["fullURL"] = f"{service['id']}.docker.localhost"
@@ -185,7 +185,7 @@ def run_container_with_retries(service_object):
     exec_commands = service_object.get("execCommands", [])
 
     labels = {}
-    if config.python_enabled():
+    if config.PROXY_ENABLED:
         dns_exists = utils.check_dns_exists()
         if dns_exists:
             labels = {
