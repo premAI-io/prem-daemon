@@ -240,9 +240,7 @@ def get_local_docker_image_tags(owner, repository):
         return []
 
 
-def create_new_container(
-    image_name, image_tag, new_container_name, old_container_name
-):
+def create_new_container(image_name, image_tag, new_container_name, old_container_name):
     client = get_docker_client()
     old_container = client.containers.get(old_container_name)
 
@@ -269,7 +267,7 @@ def create_new_container(
     new_container = client.containers.create(
         image=f"{image_name}:{image_tag}",
         name=new_container_name,
-        ports={f"{current_port[0]}/tcp": [{"HostIp": "", "HostPort": current_port[1]}]},
+        ports={current_port[0]: current_port[1]},
         volumes=volumes,
         environment=old_container.attrs["Config"]["Env"],
         device_requests=device_requests,
@@ -287,12 +285,12 @@ def update_and_remove_old_container(old_container_name):
 
 
 def update_container():
-    container_name, new_container_name = generate_container_name("premd")
     new_container = create_new_container(
-        PREMD_IMAGE, "latest", new_container_name, container_name
+        PREMD_IMAGE, "latest", "new_container", "premd"
     )
-    update_and_remove_old_container(container_name)
+    update_and_remove_old_container("premd")
     new_container.start()
+    new_container.rename("premd")
 
 
 def check_host_port_availability(host_port, timeout=30):
