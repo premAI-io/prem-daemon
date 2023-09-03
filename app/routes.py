@@ -83,7 +83,7 @@ async def update_available():
 )
 async def trigger_update():
     try:
-        utils.update_container(utils.DEFAULT_PORT + 1)
+        utils.update_container()
     except Exception as error:
         logger.error(error)
         raise HTTPException(
