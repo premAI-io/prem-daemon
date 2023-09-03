@@ -18,7 +18,7 @@ def create_start_app_handler(app: FastAPI):
             ]
             if host_port != f"{utils.DEFAULT_PORT}":
                 utils.check_host_port_availability(utils.DEFAULT_PORT)
-                _ = utils.create_new_container(
+                new_container = utils.create_new_container(
                     utils.PREMD_IMAGE,
                     "latest",
                     new_container_name,
@@ -26,6 +26,7 @@ def create_start_app_handler(app: FastAPI):
                     utils.DEFAULT_PORT,
                 )
                 utils.update_and_remove_old_container(container_name)
+                new_container.start()
         for registry in config.PREM_REGISTRY_URL.strip().split():
             utils.add_services_from_registry(registry)
 

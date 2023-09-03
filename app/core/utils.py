@@ -8,6 +8,7 @@ import docker
 import requests
 import torch
 from bs4 import BeautifulSoup
+from packaging.version import parse as parse_version
 
 from app.core import config
 
@@ -211,7 +212,7 @@ def extract_labels_from_html_file(html_content, class_names):
 
 def find_maximum_label(labels):
     pattern = re.compile(r"v\d+\.\d+\.\d+$")
-    return max(filter(pattern.match, labels), default=None)
+    return max(filter(pattern.match, labels), default=None, key=parse_version)
 
 
 def get_premd_last_tag(owner, repository, package):
@@ -224,6 +225,7 @@ def get_premd_last_tag(owner, repository, package):
         )
     except Exception as e:
         logger.info(f"Unexpected error: {e}")
+        return "latest"
     else:
         return find_maximum_label(labels)
 
@@ -238,28 +240,8 @@ def get_local_docker_image_tags(owner, repository):
         return []
 
 
-def generate_container_name(prefix):
-    client = get_docker_client()
-
-    containers = client.containers.list(
-        all=True, filters={"name": f"^{prefix}", "status": "running"}
-    )
-    latest_suffix = -1
-    for container in containers:
-        match = re.match(rf"{prefix}_(\d+)", container.name)
-        if match:
-            suffix = int(match.group(1))
-            if suffix > latest_suffix:
-                latest_suffix = suffix
-
-    if latest_suffix == -1:
-        return prefix, f"{prefix}_1"
-    else:
-        return f"{prefix}_{latest_suffix}", f"{prefix}_{latest_suffix+1}"
-
-
 def create_new_container(
-    image_name, image_tag, new_container_name, old_container_name, host_port
+    image_name, image_tag, new_container_name, old_container_name
 ):
     client = get_docker_client()
     old_container = client.containers.get(old_container_name)
@@ -279,15 +261,15 @@ def create_new_container(
         volumes[source] = {"bind": target, "mode": mode}
 
     current_ports = old_container.attrs["HostConfig"]["PortBindings"]
-    current_port_key = list(current_ports.keys())[0]
+    current_port = list(current_ports.items())[0]
 
     logger.info(
-        f"Starting new container {new_container_name} with image {image_name}:{image_tag} at port {host_port}"
+        f"Starting new container {new_container_name} with image {image_name}:{image_tag} at port {current_port[0]}"
     )
-    new_container = client.containers.run(
+    new_container = client.containers.create(
         image=f"{image_name}:{image_tag}",
         name=new_container_name,
-        ports={f"{current_port_key}/tcp": [{"HostIp": "", "HostPort": host_port}]},
+        ports={f"{current_port[0]}/tcp": [{"HostIp": "", "HostPort": current_port[1]}]},
         volumes=volumes,
         environment=old_container.attrs["Config"]["Env"],
         device_requests=device_requests,
@@ -304,12 +286,13 @@ def update_and_remove_old_container(old_container_name):
     old_container.stop()
 
 
-def update_container(host_port):
+def update_container():
     container_name, new_container_name = generate_container_name("premd")
-    create_new_container(
-        PREMD_IMAGE, "latest", new_container_name, container_name, host_port
+    new_container = create_new_container(
+        PREMD_IMAGE, "latest", new_container_name, container_name
     )
     update_and_remove_old_container(container_name)
+    new_container.start()
 
 
 def check_host_port_availability(host_port, timeout=30):
