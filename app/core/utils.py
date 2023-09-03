@@ -324,3 +324,33 @@ def container_exists(container_name):
     except docker.errors.APIError as e:
         logging.error(f"Error checking container existence: {e}")
         return False
+
+
+cached_domain = None
+
+
+def check_dns_exists():
+    global cached_domain
+
+    if cached_domain is not None:
+        return cached_domain
+
+    url = config.dns_exists_url()
+    try:
+        response = requests.get(url)
+        if response.status_code == 200 and response.content:
+            json_response = response.json()
+            if "domain" in json_response:
+                cached_domain = json_response["domain"]
+                return cached_domain
+            else:
+                print("Domain field not found in response.")
+                return None
+        else:
+            print(
+                f"Failed to get a valid response. Status Code: {response.status_code}"
+            )
+            return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
