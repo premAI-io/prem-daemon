@@ -1,6 +1,7 @@
 import json
 import logging
 from enum import Enum
+from http import HTTPStatus
 
 import docker
 from fastapi import APIRouter, HTTPException, Request
@@ -58,7 +59,7 @@ async def registries_all():
     "/registries/",
     response_model=schemas.RegistryResponse,
     responses={
-        400: {
+        HTTPStatus.BAD_REQUEST: {
             "model": schemas.ErrorResponse,
             "description": "Failed to add registry.",
         }
@@ -71,13 +72,13 @@ async def add_registry(body: schemas.RegistryInput):
             return response
         else:
             raise HTTPException(
-                status_code=400,
+                status_code=HTTPStatus.BAD_REQUEST,
                 detail={"message": f"Registry {body.url} already exists!"},
             )
     except Exception as error:
         logger.error(error)
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": f"Failed to add registry {error}"},
         ) from error
 
@@ -86,7 +87,7 @@ async def add_registry(body: schemas.RegistryInput):
     "/registries/",
     response_model=schemas.SuccessResponse,
     responses={
-        400: {
+        HTTPStatus.BAD_REQUEST: {
             "model": schemas.ErrorResponse,
             "description": "Registry not found.",
         }
@@ -97,7 +98,7 @@ async def remove_registry(url: str):
         response = services.delete_registry(url)
         if response is None:
             raise HTTPException(
-                status_code=400,
+                status_code=HTTPStatus.BAD_REQUEST,
                 detail={
                     "message": f"Cannot to remove registry {url} because it does not exists!"
                 },
@@ -105,7 +106,7 @@ async def remove_registry(url: str):
     except Exception as error:
         logger.error(error)
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": f"Failed to remove registry {url}"},
         ) from error
     return {"message": f"Registry {url} removed successfully."}
@@ -120,7 +121,7 @@ async def services_all():
     "/services/",
     response_model=schemas.ServiceResponse,
     responses={
-        400: {
+        HTTPStatus.BAD_REQUEST: {
             "model": schemas.ErrorResponse,
             "description": "Failed to stop container or service not found.",
         }
@@ -134,13 +135,13 @@ async def add_service(body: schemas.ServiceInput):
             return response
         else:
             raise HTTPException(
-                status_code=400,
+                status_code=HTTPStatus.BAD_REQUEST,
                 detail={"message": f"Service {service['id']} already exists!"},
             )
     except Exception as error:
         logger.error(error)
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": f"Failed to add service {error}"},
         ) from error
 
@@ -149,13 +150,18 @@ async def add_service(body: schemas.ServiceInput):
     "/services/{service_id}",
     response_model=schemas.ServiceResponse,
     responses={
-        400: {"model": schemas.ErrorResponse, "description": "Service not found."}
+        HTTPStatus.BAD_REQUEST: {
+            "model": schemas.ErrorResponse,
+            "description": "Service not found.",
+        }
     },
 )
 async def service_by_id(service_id: str):
     service_object = services.get_service_by_id(service_id)
     if service_object is None:
-        raise HTTPException(status_code=400, detail={"message": "Service not found."})
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST, detail={"message": "Service not found."}
+        )
     return service_object
 
 
@@ -171,7 +177,7 @@ async def services_by_interface(interface_id: str):
     "/download-service/{service_id}",
     response_model=schemas.SuccessResponse,
     responses={
-        400: {
+        HTTPStatus.BAD_REQUEST: {
             "model": schemas.ErrorResponse,
             "description": "Failed to download image or service not found.",
         }
@@ -181,7 +187,7 @@ async def download_service(service_id: str):
     service_object = services.get_service_by_id(service_id)
     if service_object is None:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": "Service not found."},
         )
 
@@ -191,7 +197,7 @@ async def download_service(service_id: str):
     except Exception as error:
         logger.error(error)
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": f"Failed to download image {error}"},
         ) from error
     return {"message": "Download image successfully."}
@@ -202,7 +208,7 @@ async def download_service_stream(service_id: str):
     service_object = services.get_service_by_id(service_id)
     if service_object is None:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": "Service not found."},
         )
 
@@ -251,7 +257,7 @@ async def download_service_stream_sse(service_id: str, request: Request):
     service_object = services.get_service_by_id(service_id)
     if service_object is None:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": "Service not found."},
         )
     event_generator = generator(service_object, request)
@@ -262,7 +268,7 @@ async def download_service_stream_sse(service_id: str, request: Request):
     "/run-service/",
     response_model=schemas.SuccessResponse,
     responses={
-        400: {
+        HTTPStatus.BAD_REQUEST: {
             "model": schemas.ErrorResponse,
             "description": "Failed to start container or service not found.",
         }
@@ -277,14 +283,14 @@ async def run_service(body: schemas.RunServiceInput):
 
     if service_object is None:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": "Service not found."},
         )
 
     port = services.run_container_with_retries(service_object)
     if port is None:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={
                 "message": f"Failed to create container for {service_object['id']}"
             },
@@ -299,7 +305,7 @@ async def run_service(body: schemas.RunServiceInput):
     "/stop-service/{service_id}",
     response_model=schemas.SuccessResponse,
     responses={
-        400: {
+        HTTPStatus.BAD_REQUEST: {
             "model": schemas.ErrorResponse,
             "description": "Failed to stop container or service not found.",
         }
@@ -309,7 +315,7 @@ async def stop_service(service_id: str):
     service_object = services.get_service_by_id(service_id)
     if service_object is None:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": "Service not found."},
         )
 
@@ -322,7 +328,7 @@ async def stop_service(service_id: str):
             return {"message": f"Container {service_object['id']} not found."}
         logger.error(error)
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": f"Failed to stop container {error}"},
         ) from error
     return {"message": f"Service {service_object['id']} successfully."}
@@ -332,7 +338,7 @@ async def stop_service(service_id: str):
     "/restart-service/{service_id}",
     response_model=schemas.SuccessResponse,
     responses={
-        400: {
+        HTTPStatus.BAD_REQUEST: {
             "model": schemas.ErrorResponse,
             "description": "Failed to restart container or service not found.",
         }
@@ -342,7 +348,7 @@ async def restart_service(service_id: str):
     service_object = services.get_service_by_id(service_id)
     if service_object is None:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": "Service not found."},
         )
 
@@ -359,7 +365,7 @@ async def restart_service(service_id: str):
             return {"message": f"Container {service_object['id']} not found."}
         logger.error(error)
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": f"Failed to restart container {error}"},
         ) from error
     return {"message": f"Service {service_object['id']} restarted successfully."}
@@ -369,7 +375,7 @@ async def restart_service(service_id: str):
     "/stop-all-services/",
     response_model=schemas.SuccessResponse,
     responses={
-        400: {
+        HTTPStatus.BAD_REQUEST: {
             "model": schemas.ErrorResponse,
             "description": "Failed to stop container or service not found.",
         }
@@ -380,7 +386,7 @@ async def stop_all_services():
         services.stop_all_running_services()
     except Exception as error:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": f"Failed to stop container {error}"},
         ) from error
     return {"message": "All services stopped successfully."}
@@ -391,7 +397,7 @@ async def remove_service(service_id):
     service_object = services.get_service_by_id(service_id)
     if service_object is None:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": "Service not found."},
         )
 
@@ -403,7 +409,7 @@ async def remove_service(service_id):
             logger.warning(error)
             return {"message": f"Image {service_object['dockerImage']} not found."}
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": f"Failed to remove image {error}"},
         ) from error
     return {"message": f"Service {service_object['id']} removed successfully."}
@@ -417,7 +423,7 @@ async def remove_volume(volume_name):
     except Exception as error:
         logger.error(error)
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": f"Failed to remove image {error}"},
         ) from error
     return {"message": f"Volume {volume_name} removed successfully."}
@@ -430,7 +436,7 @@ async def system_prune():
     except Exception as error:
         logger.error(error)
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": f"Failed to prune docker {error}"},
         ) from error
     return {"message": "System pruned successfully."}
@@ -440,7 +446,7 @@ async def system_prune():
     "/stats/{service_id}",
     response_model=schemas.ContainerStatsResponse,
     responses={
-        400: {
+        HTTPStatus.BAD_REQUEST: {
             "model": schemas.ErrorResponse,
             "description": "Failed to get stats or service not found.",
         }
@@ -450,7 +456,7 @@ async def stats_by_service(service_id: str):
     service_object = services.get_service_by_id(service_id)
     if service_object is None:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": "Service not found."},
         )
 
@@ -461,7 +467,7 @@ async def stats_by_service(service_id: str):
     except Exception as error:
         logger.error(error)
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail={"message": f"Failed to remove image {error}"},
         ) from error
 

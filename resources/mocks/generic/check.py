@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 import requests
 
 response = requests.post(
@@ -8,6 +10,6 @@ response = requests.post(
     },
     stream=True,
 )
-if response.status_code == 200:
+if response.status_code == HTTPStatus.OK:
     for chunk in response.iter_content(chunk_size=1024):
         print(chunk)

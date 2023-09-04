@@ -1,6 +1,7 @@
 import logging
 import subprocess
 import xml.etree.ElementTree as ET
+from http import HTTPStatus
 
 import docker
 import requests
@@ -210,7 +211,7 @@ def check_dns_exists():
     url = config.dns_exists_url()
     try:
         response = requests.get(url)
-        if response.status_code == 200 and response.content:
+        if response.status_code == HTTPStatus.OK and response.content:
             json_response = response.json()
             if "domain" in json_response:
                 cached_domain = json_response["domain"]
