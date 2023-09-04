@@ -42,9 +42,6 @@ class ServiceResponse(BaseModel):
     interfaces: list[str]
     dockerImage: str
     dockerImageSize: int
-    defaultPort: int
-    defaultExternalPort: int
-    runningPort: int = None
     command: str = None
     volumePath: str = None
     volumeName: str = None
@@ -61,6 +58,7 @@ class ServiceResponse(BaseModel):
     envVariables: list[str] = None
     execCommands: list[str] = None
     promptTemplate: str = None
+    invokeMethod: dict
 
 
 class RegistryInput(BaseModel):

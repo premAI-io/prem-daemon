@@ -76,14 +76,19 @@ def get_service_object(
             service["downloadedDockerImage"] = service["dockerImage"]
     else:
         service["downloaded"] = False
-
     if config.PROXY_ENABLED:
         domain = utils.check_dns_exists()
-
-        service["fullURL"] = f"{service['id']}.docker.localhost"
         if domain:
-            service["fullURL"] = f"{service['id']}.{domain}"
-
+            service["invokeMethod"] = {
+                "header": None,
+                "sendTo": f"{service['id']}.{domain}",
+            }
+        else:
+            ip = utils.get_deployment_ip()
+            service["invokeMethod"] = {
+                "header": f"X-Host-Override:{service['id']}",
+                "sendTo": ip,
+            }
     return service
 
 
@@ -186,18 +191,25 @@ def run_container_with_retries(service_object):
 
     labels = {}
     if config.PROXY_ENABLED:
-        dns_exists = utils.check_dns_exists()
-        if dns_exists:
+        dns = utils.check_dns_exists()
+        if dns:
+            runningPort = service_object["runningPort"]
             labels = {
                 "traefik.enable": "true",
-                f"traefik.http.routers.{service_id}.rule": f"Host(`{service_id}.domain`)",
-                f"traefik.http.routers.{service_id}.entrypoints": "websecure",
-                f"traefik.http.routers.{service_id}.tls.certresolver": "myresolver",
+                f"traefik.http.routers.{service_id}-http.rule": f"Host(`{service_id}.{dns}`)",
+                f"traefik.http.routers.{service_id}-http.entrypoints": "web",
+                f"traefik.http.routers.{service_id}-https.rule": f"Host(`{service_id}.{dns}`)",
+                f"traefik.http.routers.{service_id}-https.entrypoints": "websecure",
+                f"traefik.http.routers.{service_id}-https.tls.certresolver": "myresolver",
+                "traefik.http.middlewares.http-to-https.redirectscheme.scheme": "https",
+                f"traefik.http.routers.{service_id}-http.middlewares": "http-to-https",
+                f"traefik.http.services.{service_id}.loadbalancer.server.port": f"{runningPort}",
             }
         else:
             labels = {
                 "traefik.enable": "true",
-                f"traefik.http.routers.{service_id}.rule": f"Host({service_id}.docker.localhost)",
+                f"traefik.http.routers.{service_id}.rule": f"HeadersRegexp(`X-Host-Override`,`{service_id}`) && "
+                f"PathPrefix(`/`)",
             }
 
     for _ in range(10):
