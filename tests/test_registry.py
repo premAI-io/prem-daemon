@@ -1,4 +1,5 @@
 import os
+from http import HTTPStatus
 
 import pytest
 from fastapi.testclient import TestClient
@@ -29,11 +30,11 @@ def multiple_registries_client():
 class TestController:
     def test_get_registries(self, client) -> None:
         response = client.get("/v1/registries/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
     def test_add_registry(self, client) -> None:
         response = client.get("/v1/services/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         number_of_services = len(response.json())
 
         response = client.post(
@@ -42,21 +43,21 @@ class TestController:
                 "url": "https://raw.githubusercontent.com/premAI-io/prem-daemon/main/resources/mocks/manifests.json"
             },
         )
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
         response = client.get("/v1/services/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         services = response.json()
         assert len(services) > number_of_services
         assert len(services) == len({service["id"] for service in services})
 
     def test_delete_registry(self, client) -> None:
         response = client.get("/v1/services/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         number_of_services = len(response.json())
 
         response = client.get("/v1/registries/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         number_of_registries = len(response.json())
 
         response = client.delete(
@@ -65,14 +66,14 @@ class TestController:
                 "url": "https://raw.githubusercontent.com/premAI-io/prem-daemon/main/resources/mocks/manifests.json"
             },
         )
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
         response = client.get("/v1/services/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert len(response.json()) < number_of_services
 
         response = client.get("/v1/registries/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert len(response.json()) < number_of_registries
 
         response = client.post(
@@ -81,11 +82,11 @@ class TestController:
                 "url": "https://raw.githubusercontent.com/premAI-io/prem-daemon/main/resources/mocks/manifests.json"
             },
         )
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
     def test_add_custom_service(self, client) -> None:
         response = client.get("/v1/services/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         number_of_services = len(response.json())
 
         response = client.post(
@@ -105,28 +106,28 @@ class TestController:
                 "defaultExternalPort": 10111,
             },
         )
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
 
         response = client.get("/v1/services/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert len(response.json()) == number_of_services + 1
 
     def test_add_existing_service(self, client) -> None:
         response = client.get("/v1/services/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         number_of_services = len(response.json())
 
         response = client.post(
             "/v1/services/",
             json=response.json()[-1],
         )
-        assert response.status_code != 200
+        assert response.status_code != HTTPStatus.OK
 
         response = client.get("/v1/services/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert len(response.json()) == number_of_services
 
     def test_multiple_registries(self, multiple_registries_client):
         response = multiple_registries_client.get("/v1/registries/")
-        assert response.status_code == 200
+        assert response.status_code == HTTPStatus.OK
         assert len(response.json()) == 2
