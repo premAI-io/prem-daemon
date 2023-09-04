@@ -1,4 +1,4 @@
-pre-commit==3.3.1
+pre-commit==3.4.0
 fastapi==0.99.1
 aiohttp==3.8.4
 sse-starlette==1.6.1
