@@ -131,8 +131,8 @@ def get_registries():
 
 def add_registry(url: str):
     if url not in utils.REGISTRIES:
-        utils.REGISTRIES.append(url)
         utils.add_services_from_registry(url)
+        utils.REGISTRIES.append(url)
         return url
 
 
