@@ -226,3 +226,18 @@ def check_dns_exists():
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
+
+
+def get_deployment_ip():
+    url = config.dns_ip()
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            # Strip the newline character at the end of the IP
+            return response.text.strip()
+        else:
+            print(f"Failed to get the IP. Status Code: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
