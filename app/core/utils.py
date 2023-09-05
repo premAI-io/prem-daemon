@@ -216,15 +216,15 @@ def check_dns_exists():
                 cached_domain = json_response["domain"]
                 return cached_domain
             else:
-                print("Domain field not found in response.")
+                logger.error("Domain field not found in response.")
                 return None
         else:
-            print(
+            logger.error(
                 f"Failed to get a valid response. Status Code: {response.status_code}"
             )
             return None
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred: {e}")
         return None
 
 
@@ -236,8 +236,8 @@ def get_deployment_ip():
             # Strip the newline character at the end of the IP
             return response.text.strip()
         else:
-            print(f"Failed to get the IP. Status Code: {response.status_code}")
+            logger.error(f"Failed to get the IP. Status Code: {response.status_code}")
             return None
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred: {e}")
         return None
