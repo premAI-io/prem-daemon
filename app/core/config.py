@@ -40,7 +40,12 @@ logging.basicConfig(
 # Constants
 # ------------------------------------------------------------------------------
 DNSD_DNS_EXIST_PATH = "/dns/existing"
+DNSD_IP = "/dns/ip"
 
 
 def dns_exists_url() -> str:
     return f"{DNSD_URL}{DNSD_DNS_EXIST_PATH}"
+
+
+def dns_ip() -> str:
+    return f"{DNSD_URL}{DNSD_IP}"
