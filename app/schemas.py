@@ -42,6 +42,9 @@ class ServiceResponse(BaseModel):
     interfaces: list[str]
     dockerImage: str
     dockerImageSize: int
+    defaultPort: int
+    defaultExternalPort: int
+    runningPort: int = None
     command: str = None
     volumePath: str = None
     volumeName: str = None
