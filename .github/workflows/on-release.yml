@@ -1,0 +1,31 @@
+name: Release binaries
+on:
+  push: # TODO: remove?
+  release: {types: created}
+jobs:
+  binaries:
+    strategy:
+      matrix:
+        os: [ubuntu, windows, macos]
+        python: ['3.10']
+    runs-on: ${{ matrix.os }}-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python }}
+    - name: Build binary
+      id: bin
+      run: |
+        pip install -r requirements.txt pyinstaller
+        pyinstaller --onefile --name=daemon_${{ matrix.os }} main.py
+        # --paths $(python${{ matrix.python }}-config  --prefix)/lib/python${{ matrix.python }}/site-packages
+        echo "file=daemon_${{ matrix.os }}${{ matrix.os == 'windows' && '.exe' || '' }}" >> $GITHUB_OUTPUT
+    - if: github.event_name == 'release'
+      name: Upload release binaries
+      run: gh release upload "${{ github.event.release.tag_name }}" "${{ steps.bin.outputs.file }}"
+      env:
+        GH_TOKEN: ${{ github.token }}
