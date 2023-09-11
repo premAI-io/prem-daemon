@@ -233,7 +233,6 @@ def get_deployment_ip():
     try:
         response = requests.get(url)
         if response.status_code == 200:
-            # Strip the newline character at the end of the IP
             return response.text.strip()
         else:
             logger.error(f"Failed to get the IP. Status Code: {response.status_code}")
