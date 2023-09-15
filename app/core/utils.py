@@ -133,15 +133,7 @@ def get_docker_client():
 
 
 def is_gpu_available() -> bool:
-    devices = GPUtil.getAvailable(
-        order="first",
-        limit=1,
-        maxLoad=0.5,
-        maxMemory=0.5,
-        includeNan=False,
-        excludeID=[],
-        excludeUUID=[],
-    )
+    devices = GPUtil.getGPUs()
     return len(devices) > 0
 
 
