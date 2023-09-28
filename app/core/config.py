@@ -8,13 +8,13 @@ load_dotenv(override=True)
 
 # General
 # ------------------------------------------------------------------------------
-DEBUG: bool = os.getenv("DEBUG", False)
+DEBUG: bool = bool(os.getenv("DEBUG", "False"))
 SECRET_KEY: Secret = Secret(os.getenv("SECRET_KEY", ""))
 PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Prem Daemon")
 
 # PROXY
 # ------------------------------------------------------------------------------
-PROXY_ENABLED: bool = os.getenv("PROXY_ENABLED", False)
+PROXY_ENABLED: bool = bool(os.getenv("PROXY_ENABLED", "False"))
 DNSD_URL: str = os.getenv("DNSD_URL", "http://dnsd:8080")
 
 # APIs
