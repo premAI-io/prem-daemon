@@ -21,14 +21,8 @@ def get_service_object(
     if "command" not in service:
         service["command"] = None
 
-    for container in containers:
-        if container.name == service["id"]:
-            service["running"] = True
-            service["runningPort"] = list(container.ports.values())[0][0]["HostPort"]
-            try:
-                service["volumeName"] = container.attrs["Mounts"][0]["Name"]
-            except Exception:
-                service["volumeName"] = None
+    if "type" not in service:
+        service["type"] = "docker"
 
     if (
         "memoryRequirements" in service["modelInfo"]
@@ -43,39 +37,6 @@ def get_service_object(
     ):
         service["enoughSystemMemory"] = False
 
-    if utils.is_gpu_available() and "gpu" in service["dockerImages"]:
-        service["dockerImage"] = service["dockerImages"]["gpu"]["image"]
-        service["dockerImageSize"] = service["dockerImages"]["gpu"]["size"]
-        service["supported"] = True
-    elif "cpu" in service["dockerImages"]:
-        service["dockerImage"] = service["dockerImages"]["cpu"]["image"]
-        service["dockerImageSize"] = service["dockerImages"]["cpu"]["size"]
-        service["supported"] = True
-    else:
-        service["dockerImage"] = ""
-        service["dockerImageSize"] = 0
-        service["supported"] = False
-
-    if service["dockerImageSize"] > free_storage * (2**30):
-        service["enoughStorage"] = False
-
-    service_image = service["dockerImage"].split(":")[0]
-
-    service_tags = []
-    for image in images:
-        if len(image.tags) > 0 and service_image == image.tags[0].split(":")[0]:
-            service_tags.append(image.tags[0])
-
-    if len(service_tags) > 0:
-        service["downloaded"] = True
-        if service["dockerImage"] not in service_tags:
-            service["needsUpdate"] = True
-            service["downloadedDockerImage"] = service_tags[0]
-        else:
-            service["needsUpdate"] = False
-            service["downloadedDockerImage"] = service["dockerImage"]
-    else:
-        service["downloaded"] = False
     if config.PROXY_ENABLED:
         domain = utils.check_dns_exists()
         if domain:
@@ -89,6 +50,61 @@ def get_service_object(
                 "header": f"X-Host-Override:{service['id']}",
                 "baseUrl": ip,
             }
+
+    # Legacy docker service schema
+    if "version" not in service:
+        for container in containers:
+            if container.name == service["id"]:
+                service["running"] = True
+                service["runningPort"] = list(container.ports.values())[0][0][
+                    "HostPort"
+                ]
+                try:
+                    service["volumeName"] = container.attrs["Mounts"][0]["Name"]
+                except Exception:
+                    service["volumeName"] = None
+
+        if utils.is_gpu_available() and "gpu" in service["dockerImages"]:
+            service["dockerImage"] = service["dockerImages"]["gpu"]["image"]
+            service["dockerImageSize"] = service["dockerImages"]["gpu"]["size"]
+            service["supported"] = True
+        elif "cpu" in service["dockerImages"]:
+            service["dockerImage"] = service["dockerImages"]["cpu"]["image"]
+            service["dockerImageSize"] = service["dockerImages"]["cpu"]["size"]
+            service["supported"] = True
+        else:
+            service["dockerImage"] = ""
+            service["dockerImageSize"] = 0
+            service["supported"] = False
+
+        if service["dockerImageSize"] > free_storage * (2**30):
+            service["enoughStorage"] = False
+
+        service_image = service["dockerImage"].split(":")[0]
+        service_tags = []
+        for image in images:
+            if len(image.tags) > 0 and service_image == image.tags[0].split(":")[0]:
+                service_tags.append(image.tags[0])
+
+        if len(service_tags) > 0:
+            service["downloaded"] = True
+            if service["dockerImage"] not in service_tags:
+                service["needsUpdate"] = True
+                service["downloadedDockerImage"] = service_tags[0]
+            else:
+                service["needsUpdate"] = False
+                service["downloadedDockerImage"] = service["dockerImage"]
+        else:
+            service["downloaded"] = False
+    else:
+        service["dockerImage"] = ""
+        service["dockerImageSize"] = 0
+        service["supported"] = True
+        service[
+            "downloaded"
+        ] = True  # TODO: check in Tauri state if bin has been downloaded
+        service["running"] = False  # TODO: check in Tauri state if bin is running
+
     return service
 
 

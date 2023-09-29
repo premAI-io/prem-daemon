@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
 
@@ -62,6 +64,14 @@ class ServiceResponse(BaseModel):
     execCommands: list[str] = None
     promptTemplate: str = None
     invokeMethod: dict = None
+    # If "type" is not included in service manifest we consider the service is of type docker
+    # So "docker" is a possible value until the registry is cleaned up from legacy services
+    type: Literal["docker", "binary", "process"] = None
+    version: int = None
+    modelUrl: str = None
+    weightsUrl: str = None
+    serveCommand: str = None
+    downloadCommand: str = None
 
 
 class RegistryInput(BaseModel):

@@ -76,7 +76,7 @@ We don't have a standard interface for what concerns Vector Store services. Howe
     {
         "id": "coder",
         "name": "Coder",
-        "playground": False,
+        "playground": True,
         "documentation": """
 # Coder
 
