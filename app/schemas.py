@@ -17,6 +17,12 @@ class RunServiceInput(BaseModel):
     id: str
 
 
+class UpdateAvailableResponse(BaseModel):
+    remote_image: str
+    local_images: list[str]
+    update: bool
+
+
 class ServiceInput(BaseModel):
     id: str
     name: str

@@ -11,6 +11,8 @@ load_dotenv(override=True)
 DEBUG: bool = os.getenv("DEBUG", "False").lower() in ("true", "1")
 SECRET_KEY: Secret = Secret(os.getenv("SECRET_KEY", ""))
 PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Prem Daemon")
+PREMD_IMAGE: str = os.getenv("PREMD_IMAGE", "ghcr.io/premai-io/premd")
+DEFAULT_PORT: int = int(os.getenv("DEFAULT_PORT", "8000"))
 
 # PROXY
 # ------------------------------------------------------------------------------

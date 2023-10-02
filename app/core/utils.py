@@ -1,16 +1,22 @@
 import logging
+import re
 import subprocess
+import time
 import xml.etree.ElementTree as ET
 from http import HTTPStatus
 
 import docker
 import requests
 import torch
+from bs4 import BeautifulSoup
+from packaging.version import parse as parse_version
 
 from app.core import config
 
 logger = logging.getLogger(__name__)
 
+PREMD_IMAGE = config.PREMD_IMAGE
+DEFAULT_PORT = config.DEFAULT_PORT
 SERVICES = []
 REGISTRIES = config.PREM_REGISTRY_URL.strip().split()
 INTERFACES = [
@@ -197,6 +203,128 @@ def get_gpu_info():
     mem_percentage = (used_memory_value / total_memory_value) * 100
 
     return gpu_name, total_memory_value, used_memory_value, mem_percentage
+
+
+def extract_labels_from_html_file(html_content, class_names):
+    soup = BeautifulSoup(html_content, "html.parser")
+    labels = soup.select(class_names)
+    return (label.get_text() for label in labels)
+
+
+def find_maximum_label(labels):
+    pattern = re.compile(r"v\d+\.\d+\.\d+$")
+    return max(filter(pattern.match, labels), default=None, key=parse_version)
+
+
+def get_premd_last_tag(owner, repository, package):
+    response = requests.get(
+        f"https://github.com/{owner}/{repository}/pkgs/container/{package}"
+    )
+    try:
+        labels = extract_labels_from_html_file(
+            response.content, ".Label.mr-1.mb-2.text-normal"
+        )
+    except Exception as e:
+        logger.info(f"Unexpected error: {e}")
+        return "latest"
+    else:
+        return find_maximum_label(labels)
+
+
+def get_local_docker_image_tags(owner, repository):
+    try:
+        client = get_docker_client()
+        image = client.images.get(f"ghcr.io/{owner}/{repository}")
+        return image.tags
+    except Exception as e:
+        logger.info(f"Unexpected error: {e}")
+        return []
+
+
+def create_new_container(image_name, image_tag, new_container_name, old_container_name):
+    client = get_docker_client()
+    old_container = client.containers.get(old_container_name)
+
+    if is_gpu_available():
+        device_requests = [
+            docker.types.DeviceRequest(device_ids=["all"], capabilities=[["gpu"]])
+        ]
+    else:
+        device_requests = []
+
+    volumes = {}
+    for mount in old_container.attrs["Mounts"]:
+        source = mount["Source"]
+        target = mount["Destination"]
+        mode = mount["Mode"]
+        volumes[source] = {"bind": target, "mode": mode}
+
+    current_ports = old_container.attrs["HostConfig"]["PortBindings"]
+    current_port = list(current_ports.items())[0]
+
+    logger.info(
+        f"Starting new container {new_container_name} with image {image_name}:{image_tag} at port {current_port[0]}"
+    )
+    new_container = client.containers.create(
+        image=f"{image_name}:{image_tag}",
+        name=new_container_name,
+        ports={current_port[0]: current_port[1]},
+        volumes=volumes,
+        environment=old_container.attrs["Config"]["Env"],
+        device_requests=device_requests,
+        network_mode=old_container.attrs["HostConfig"]["NetworkMode"],
+        detach=True,
+    )
+    return new_container
+
+
+def update_and_remove_old_container(old_container_name):
+    client = get_docker_client()
+    logger.info(f"Stopping {old_container_name}")
+    old_container = client.containers.get(old_container_name)
+    old_container.stop()
+
+
+def update_container():
+    new_container = create_new_container(
+        PREMD_IMAGE, "latest", "new_container", "premd"
+    )
+    update_and_remove_old_container("premd")
+    new_container.start()
+    new_container.rename("premd")
+
+
+def check_host_port_availability(host_port, timeout=30):
+    start_time = time.time()
+    client = get_docker_client()
+
+    while True:
+        if time.time() - start_time > timeout:
+            return False
+
+        containers = client.containers.list()
+        port_used = any(
+            f"{host_port}/tcp" in container.ports
+            for container in containers
+            if container.status == "running"
+        )
+
+        if not port_used:
+            return True
+
+        time.sleep(1)
+
+
+def container_exists(container_name):
+    try:
+        client = get_docker_client()
+        _ = client.containers.get(container_name)
+        return True
+    except docker.errors.NotFound:
+        return False
+    except docker.errors.APIError as e:
+        logging.error(f"Error checking container existence: {e}")
+        return False
 
 
 cached_domain = None
