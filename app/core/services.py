@@ -197,9 +197,13 @@ def run_container_with_retries(service_object):
                 if dns:
                     labels = {
                         "traefik.enable": "true",
-                        f"traefik.http.routers.{service_id}-http.rule": f"Host(`{service_id}.{dns}`)",
+                        f"traefik.http.routers.{service_id}-http.rule": (
+                            f"PathPrefix(`/`) && Host(`{service_id}.{dns}`)"
+                        ),
                         f"traefik.http.routers.{service_id}-http.entrypoints": "web",
-                        f"traefik.http.routers.{service_id}-https.rule": f"Host(`{service_id}.{dns}`)",
+                        f"traefik.http.routers.{service_id}-https.rule": (
+                            f"PathPrefix(`/`) && Host(`{service_id}.{dns}`)"
+                        ),
                         f"traefik.http.routers.{service_id}-https.entrypoints": "websecure",
                         f"traefik.http.routers.{service_id}-https.tls.certresolver": "myresolver",
                         "traefik.http.middlewares.http-to-https.redirectscheme.scheme": "https",
