@@ -229,7 +229,7 @@ def run_container_with_retries(service_object):
                 environment=env_variables,
                 device_requests=device_requests,
                 labels=labels,  # Add this line
-                network="prem-gateway",
+                network=config.DOCKER_NETWORK,
             )
             logger.info(f"Started container {container.name}")
 
