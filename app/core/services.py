@@ -215,6 +215,7 @@ def run_container_with_retries(service_object):
                         "traefik.enable": "true",
                         f"traefik.http.routers.{service_id}.rule": f"HeadersRegexp(`X-Host-Override`,`{service_id}`)"
                         f" && PathPrefix(`/`)",
+                        f"traefik.http.services.{service_id}.loadbalancer.server.port": f"{port}",
                     }
 
             container = client.containers.run(
