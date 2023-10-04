@@ -194,6 +194,7 @@ def run_container_with_retries(service_object):
             labels = {}
             if config.PROXY_ENABLED:
                 dns = utils.check_dns_exists()
+                default_port = service_object["defaultPort"]
                 if dns:
                     labels = {
                         "traefik.enable": "true",
@@ -208,14 +209,13 @@ def run_container_with_retries(service_object):
                         f"traefik.http.routers.{service_id}-https.tls.certresolver": "myresolver",
                         "traefik.http.middlewares.http-to-https.redirectscheme.scheme": "https",
                         f"traefik.http.routers.{service_id}-http.middlewares": "http-to-https",
-                        f"traefik.http.services.{service_id}.loadbalancer.server.port": f"{port}",
+                        f"traefik.http.services.{service_id}.loadbalancer.server.port": f"{default_port}",
                     }
                 else:
                     labels = {
                         "traefik.enable": "true",
                         f"traefik.http.routers.{service_id}.rule": f"HeadersRegexp(`X-Host-Override`,`{service_id}`)"
                         f" && PathPrefix(`/`)",
-                        f"traefik.http.services.{service_id}.loadbalancer.server.port": f"{port}",
                     }
 
             container = client.containers.run(
@@ -229,6 +229,7 @@ def run_container_with_retries(service_object):
                 environment=env_variables,
                 device_requests=device_requests,
                 labels=labels,  # Add this line
+                network="prem-gateway",
             )
             logger.info(f"Started container {container.name}")
 
