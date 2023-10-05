@@ -79,16 +79,10 @@ def get_service_object(
     if config.PROXY_ENABLED:
         domain = utils.check_dns_exists()
         if domain:
-            service["invokeMethod"] = {
-                "header": None,
-                "baseUrl": f"{service['id']}.{domain}",
-            }
+            service["baseUrl"] = f"https://{service['id']}.{domain}"
         else:
             ip = utils.get_deployment_ip()
-            service["invokeMethod"] = {
-                "header": f"X-Host-Override:{service['id']}",
-                "baseUrl": ip,
-            }
+            service["baseUrl"] = f"http://{ip}/{service['id']}"
     return service
 
 
@@ -214,8 +208,9 @@ def run_container_with_retries(service_object):
                 else:
                     labels = {
                         "traefik.enable": "true",
-                        f"traefik.http.routers.{service_id}.rule": f"HeadersRegexp(`X-Host-Override`,`{service_id}`)"
-                        f" && PathPrefix(`/`)",
+                        f"traefik.http.routers.{service_id}.rule": f"PathPrefix(`/{service_id}`)",
+                        f"traefik.http.middlewares.{service_id}-strip-prefix.stripprefix.prefixes": f"/{service_id}",
+                        f"traefik.http.routers.{service_id}.middlewares": f"{service_id}-strip-prefix",
                     }
 
             container = client.containers.run(

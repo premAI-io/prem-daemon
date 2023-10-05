@@ -61,7 +61,7 @@ class ServiceResponse(BaseModel):
     envVariables: list[str] = None
     execCommands: list[str] = None
     promptTemplate: str = None
-    invokeMethod: dict = None
+    baseUrl: str = None
 
 
 class RegistryInput(BaseModel):
