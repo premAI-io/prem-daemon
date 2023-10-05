@@ -16,6 +16,7 @@ PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Prem Daemon")
 # ------------------------------------------------------------------------------
 PROXY_ENABLED: bool = os.getenv("PROXY_ENABLED", "False").lower() in ("true", "1")
 DNSD_URL: str = os.getenv("DNSD_URL", "http://dnsd:8080")
+DOCKER_NETWORK: str = os.getenv("DOCKER_NETWORK", "bridge")
 
 # APIs
 # ------------------------------------------------------------------------------
