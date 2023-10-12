@@ -213,6 +213,12 @@ def run_container_with_retries(service_object):
                         f"traefik.http.routers.{service_id}.middlewares": f"{service_id}-strip-prefix",
                     }
 
+            restart_policy = {
+                "Name": "always",
+            }
+
+
+
             container = client.containers.run(
                 service_object["downloadedDockerImage"],
                 command=service_object["command"],
@@ -225,6 +231,7 @@ def run_container_with_retries(service_object):
                 device_requests=device_requests,
                 labels=labels,  # Add this line
                 network=config.DOCKER_NETWORK,
+                restart_policy=restart_policy,
             )
             logger.info(f"Started container {container.name}")
 
