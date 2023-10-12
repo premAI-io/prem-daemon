@@ -217,8 +217,6 @@ def run_container_with_retries(service_object):
                 "Name": "always",
             }
 
-
-
             container = client.containers.run(
                 service_object["downloadedDockerImage"],
                 command=service_object["command"],
