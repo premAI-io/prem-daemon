@@ -48,6 +48,18 @@ cp .env.example .env
 python main.py
 ```
 
+### Running the daemon locally with Docker
+#### From source
+```bash
+docker build -t premd .
+docker run -it -v /var/run/docker.sock:/var/run/docker.sock -p 54321:8000 --name premd -e PREM_REGISTRY_URL=https://raw.githubusercontent.com/premAI-io/prem-registry/main/manifests.json --rm premd
+```
+
+#### From DockerHub
+```bash
+docker run -d -v /var/run/docker.sock:/var/run/docker.sock -p 54321:8000 --name premd -e PREM_REGISTRY_URL=https://raw.githubusercontent.com/premAI-io/prem-registry/main/manifests.json --rm ghcr.io/premai-io/premd
+```
+
 ### Mock Registry
 
 [![image:mock](https://img.shields.io/github/actions/workflow/status/premAI-io/prem-daemon/on-main.yml?logo=docker&label=mock%20images
