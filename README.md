@@ -92,3 +92,13 @@ You just need to run `premd` with `PREM_REGISTRY_URL` env variable.
 ```bash
 pytest
 ```
+
+## Compile the Daemon
+
+```bash
+virtualenv venv -p=3.10
+source ./venv/bin/activate
+pip install -r requirements.txt
+pip install pyinstaller
+pyinstaller --onefile --name=daemon --paths ./venv/lib/python3.10/site-packages main.py
+```

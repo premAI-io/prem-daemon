@@ -4,8 +4,8 @@ import xml.etree.ElementTree as ET
 from http import HTTPStatus
 
 import docker
+import GPUtil
 import requests
-import torch
 
 from app.core import config
 
@@ -21,7 +21,7 @@ INTERFACES = [
         "documentation": """
 # Chat
         """,
-        "icon": "/assets/apps/chat.svg",
+        "icon": "https://static.premai.io/daemon/interfaces/chat.svg",
     },
     {
         "id": "embeddings",
@@ -54,7 +54,7 @@ doc_result = embeddings.embed_documents([text])
 ```
 
 """,  # noqa E501
-        "icon": "/assets/apps/embeddings.svg",
+        "icon": "https://static.premai.io/daemon/interfaces/embeddings.svg",
     },
     {
         "id": "vector-store",
@@ -71,7 +71,7 @@ Vector Store are all the services that expose a vector database. A vector databa
 
 We don't have a standard interface for what concerns Vector Store services. However, we suggest to connect to the services using [Langchain](https://python.langchain.com/en/latest/index.html) python library or [Llama Index](https://gpt-index.readthedocs.io/en/latest/index.html).
 """,  # noqa E501
-        "icon": "/assets/apps/store.svg",
+        "icon": "https://static.premai.io/daemon/interfaces/store.svg",
     },
     {
         "id": "coder",
@@ -88,7 +88,7 @@ Coder are all the services that expose endpoints for code completion functionali
 
 We don't have a standard interface for what concerns Coder services. However, right now we mostly support services based on Tabby Docker images. In order to use Tabby services, you will need to install and use Tabby extension. You can find the extension [here](https://marketplace.visualstudio.com/items?itemName=TabbyML.vscode-tabby).
 """,  # noqa E501
-        "icon": "/assets/apps/coder.svg",
+        "icon": "https://static.premai.io/daemon/interfaces/coder.svg",
     },
     {
         "id": "diffuser",
@@ -97,7 +97,7 @@ We don't have a standard interface for what concerns Coder services. However, ri
         "documentation": """
         # Prem Diffuser
         """,
-        "icon": "/assets/apps/diffuser.svg",
+        "icon": "https://static.premai.io/daemon/interfaces/diffuser.svg",
     },
     {
         "id": "upscaler",
@@ -106,7 +106,7 @@ We don't have a standard interface for what concerns Coder services. However, ri
         "documentation": """
         # Prem Upscaler
         """,
-        "icon": "/assets/apps/upscaler.svg",
+        "icon": "https://static.premai.io/daemon/interfaces/upscaler.svg",
     },
     {
         "id": "text-to-audio",
@@ -115,7 +115,7 @@ We don't have a standard interface for what concerns Coder services. However, ri
         "documentation": """
         # Prem Text to Audio
         """,
-        "icon": "/assets/apps/tta.svg",
+        "icon": "https://static.premai.io/daemon/interfaces/tta.svg",
     },
     {
         "id": "audio-to-text",
@@ -124,7 +124,7 @@ We don't have a standard interface for what concerns Coder services. However, ri
         "documentation": """
         # Prem Audio to Text
         """,
-        "icon": "/assets/apps/att.svg",
+        "icon": "https://static.premai.io/daemon/interfaces/att.svg",
     },
 ]
 
@@ -134,7 +134,8 @@ def get_docker_client():
 
 
 def is_gpu_available() -> bool:
-    return torch.cuda.is_available()
+    devices = GPUtil.getGPUs()
+    return len(devices) > 0
 
 
 def add_services_from_registry(url: str):
