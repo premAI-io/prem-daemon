@@ -189,6 +189,7 @@ def run_container_with_retries(service_object):
             if config.PROXY_ENABLED:
                 dns = utils.check_dns_exists()
                 default_port = service_object["defaultPort"]
+                auth = config.auth_verify_url()
                 if dns:
                     labels = {
                         "traefik.enable": "true",
@@ -204,13 +205,16 @@ def run_container_with_retries(service_object):
                         "traefik.http.middlewares.http-to-https.redirectscheme.scheme": "https",
                         f"traefik.http.routers.{service_id}-http.middlewares": "http-to-https",
                         f"traefik.http.services.{service_id}.loadbalancer.server.port": f"{default_port}",
+                        f"traefik.http.routers.{service_id}-https.middlewares": "auth",
+                        "traefik.http.middlewares.auth.forwardauth.address": f"{auth}",
                     }
                 else:
                     labels = {
                         "traefik.enable": "true",
                         f"traefik.http.routers.{service_id}.rule": f"PathPrefix(`/{service_id}`)",
                         f"traefik.http.middlewares.{service_id}-strip-prefix.stripprefix.prefixes": f"/{service_id}",
-                        f"traefik.http.routers.{service_id}.middlewares": f"{service_id}-strip-prefix",
+                        f"traefik.http.routers.{service_id}.middlewares": f"{service_id}-strip-prefix,auth",
+                        "traefik.http.middlewares.auth.forwardauth.address": f"{auth}",
                     }
 
             container = client.containers.run(
