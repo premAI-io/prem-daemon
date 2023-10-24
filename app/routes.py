@@ -1,5 +1,9 @@
 import json
 import logging
+import re
+import shutil
+import signal
+import subprocess
 from enum import Enum
 from http import HTTPStatus
 
@@ -226,26 +230,80 @@ async def download_service_stream(service_id: str):
 async def generator(service_object, request):
     layers = {}
 
-    client = utils.get_docker_client()
+    try:
+        cmd = shutil.which("docker")
+        logger.info("which docker: %r", cmd)
+        if not cmd:
+            logger.info("docker not found (did you forget to install dind?)")
+            raise FileNotFoundError
 
-    for line in client.api.pull(
-        service_object["dockerImage"], stream=True, decode=True
-    ):
-        status = line["status"]
-        if (
-            status == Status.ALREADY_EXISTS.value
-            or status == Status.DOWNLOAD_COMPLETE.value
-            or status.startswith("Pulling from")
-            or status.startswith("Pulling fs layer")
+        RE_LAYERINFO = re.compile(
+            rf"(\w+): ({'|'.join(i.value for i in Status.__members__.values())})"
+        )
+        with subprocess.Popen(
+            [cmd, "pull", service_object["dockerImage"]],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            encoding="utf-8",
+        ) as proc:
+            try:
+                logger.info("docker pull")
+                for line in proc.stdout:
+                    if match := RE_LAYERINFO.match(line):
+                        layer_id, status = match.groups()
+                        get_progress = progress_mapping.get(
+                            Status(status), lambda _: 100
+                        )
+                        layers[layer_id] = get_progress({"progressDetail": 0})
+                        logger.debug(
+                            "status: %s, percentage: %.2f",
+                            status,
+                            sum(layers.values()) / len(layers),
+                        )
+                        yield json.dumps(
+                            {
+                                "status": status,
+                                "percentage": f"{sum(layers.values()) / len(layers):.2f}",
+                            }
+                        ) + "\n"
+            except (KeyboardInterrupt, SystemExit, Exception) as err:
+                # try hard to stop pull (https://github.com/moby/moby/issues/6928)
+                logger.info("interrupting")
+                proc.send_signal(signal.SIGINT)
+                try:
+                    proc.wait(30)
+                except subprocess.TimeoutExpired:
+                    logger.info("terminating")
+                    proc.terminate()
+                    try:
+                        proc.wait(30)
+                    except subprocess.TimeoutExpired:
+                        logger.info("killing")
+                        proc.kill()
+                raise err
+    except Exception:
+        logger.info("docker SDK")
+        client = utils.get_docker_client()
+
+        for line in client.api.pull(
+            service_object["dockerImage"], stream=True, decode=True
         ):
-            continue
+            status = line["status"]
+            if (
+                status == Status.ALREADY_EXISTS.value
+                or status == Status.DOWNLOAD_COMPLETE.value
+                or status.startswith("Pulling from")
+                or status.startswith("Pulling fs layer")
+            ):
+                continue
 
-        if "id" in line and "status" in line and line["id"] != "latest":
-            layer_id = line["id"]
-            get_progress = progress_mapping.get(Status(status), lambda _: 100)
-            layers[layer_id] = get_progress(line)
-            line["percentage"] = round(sum(layers.values()) / len(layers), 2)
-            yield json.dumps(line) + "\n"
+            if "id" in line and "status" in line and line["id"] != "latest":
+                layer_id = line["id"]
+                get_progress = progress_mapping.get(Status(status), lambda _: 100)
+                layers[layer_id] = get_progress(line)
+                line["percentage"] = round(sum(layers.values()) / len(layers), 2)
+                logger.debug(line)
+                yield json.dumps(line) + "\n"
 
     yield json.dumps(
         {"status": Status.DOWNLOAD_COMPLETE.value, "percentage": 100}
