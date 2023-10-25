@@ -213,7 +213,7 @@ def run_container_with_retries(service_object):
                         "traefik.enable": "true",
                         f"traefik.http.routers.{service_id}.rule": f"PathPrefix(`/{service_id}`)",
                         f"traefik.http.middlewares.{service_id}-strip-prefix.stripprefix.prefixes": f"/{service_id}",
-                        f"traefik.http.routers.{service_id}.middlewares": f"{service_id}-strip-prefix,auth",
+                        f"traefik.http.routers.{service_id}.middlewares": f"auth,{service_id}-strip-prefix",
                         "traefik.http.middlewares.auth.forwardauth.address": f"{auth}",
                     }
 
