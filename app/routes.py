@@ -236,7 +236,30 @@ async def generator(service_object, request):
         if not cmd:
             logger.info("docker not found (did you forget to install dind?)")
             raise FileNotFoundError
+    except Exception:
+        logger.info("docker SDK")
+        client = utils.get_docker_client()
 
+        for line in client.api.pull(
+            service_object["dockerImage"], stream=True, decode=True
+        ):
+            status = line["status"]
+            if (
+                status == Status.ALREADY_EXISTS.value
+                or status == Status.DOWNLOAD_COMPLETE.value
+                or status.startswith("Pulling from")
+                or status.startswith("Pulling fs layer")
+            ):
+                continue
+
+            if "id" in line and "status" in line and line["id"] != "latest":
+                layer_id = line["id"]
+                get_progress = progress_mapping.get(Status(status), lambda _: 100)
+                layers[layer_id] = get_progress(line)
+                line["percentage"] = round(sum(layers.values()) / len(layers), 2)
+                logger.debug(line)
+                yield json.dumps(line) + "\n"
+    else:
         RE_LAYERINFO = re.compile(
             rf"(\w+): ({'|'.join(i.value for i in Status.__members__.values())})"
         )
@@ -281,29 +304,6 @@ async def generator(service_object, request):
                         logger.info("killing")
                         proc.kill()
                 raise err
-    except Exception:
-        logger.info("docker SDK")
-        client = utils.get_docker_client()
-
-        for line in client.api.pull(
-            service_object["dockerImage"], stream=True, decode=True
-        ):
-            status = line["status"]
-            if (
-                status == Status.ALREADY_EXISTS.value
-                or status == Status.DOWNLOAD_COMPLETE.value
-                or status.startswith("Pulling from")
-                or status.startswith("Pulling fs layer")
-            ):
-                continue
-
-            if "id" in line and "status" in line and line["id"] != "latest":
-                layer_id = line["id"]
-                get_progress = progress_mapping.get(Status(status), lambda _: 100)
-                layers[layer_id] = get_progress(line)
-                line["percentage"] = round(sum(layers.values()) / len(layers), 2)
-                logger.debug(line)
-                yield json.dumps(line) + "\n"
 
     yield json.dumps(
         {"status": Status.DOWNLOAD_COMPLETE.value, "percentage": 100}
