@@ -2,8 +2,6 @@ import json
 import logging
 import re
 import shutil
-import signal
-import subprocess
 from enum import Enum
 from http import HTTPStatus
 
@@ -263,47 +261,23 @@ async def generator(service_object, request):
         RE_LAYERINFO = re.compile(
             rf"(\w+): ({'|'.join(i.value for i in Status.__members__.values())})"
         )
-        with subprocess.Popen(
-            [cmd, "pull", service_object["dockerImage"]],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            encoding="utf-8",
-        ) as proc:
-            try:
-                logger.info("docker pull")
-                for line in proc.stdout:
-                    if match := RE_LAYERINFO.match(line):
-                        layer_id, status = match.groups()
-                        get_progress = progress_mapping.get(
-                            Status(status), lambda _: 100
-                        )
-                        layers[layer_id] = get_progress({"progressDetail": 0})
-                        logger.debug(
-                            "status: %s, percentage: %.2f",
-                            status,
-                            sum(layers.values()) / len(layers),
-                        )
-                        yield json.dumps(
-                            {
-                                "status": status,
-                                "percentage": f"{sum(layers.values()) / len(layers):.2f}",
-                            }
-                        ) + "\n"
-            except (KeyboardInterrupt, SystemExit, Exception) as err:
-                # try hard to stop pull (https://github.com/moby/moby/issues/6928)
-                logger.info("interrupting")
-                proc.send_signal(signal.SIGINT)
-                try:
-                    proc.wait(30)
-                except subprocess.TimeoutExpired:
-                    logger.info("terminating")
-                    proc.terminate()
-                    try:
-                        proc.wait(30)
-                    except subprocess.TimeoutExpired:
-                        logger.info("killing")
-                        proc.kill()
-                raise err
+        for line in utils.subprocess_tty([cmd, "pull", service_object["dockerImage"]]):
+            logger.info("docker pull")
+            if match := RE_LAYERINFO.match(line):
+                layer_id, status = match.groups()
+                get_progress = progress_mapping.get(Status(status), lambda _: 100)
+                layers[layer_id] = get_progress({"progressDetail": 0})
+                logger.debug(
+                    "status: %s, percentage: %.2f",
+                    status,
+                    sum(layers.values()) / len(layers),
+                )
+                yield json.dumps(
+                    {
+                        "status": status,
+                        "percentage": f"{sum(layers.values()) / len(layers):.2f}",
+                    }
+                ) + "\n"
 
     yield json.dumps(
         {"status": Status.DOWNLOAD_COMPLETE.value, "percentage": 100}
