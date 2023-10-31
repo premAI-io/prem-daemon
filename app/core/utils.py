@@ -1,4 +1,8 @@
+import errno
 import logging
+import os
+import pty
+import signal
 import subprocess
 import xml.etree.ElementTree as ET
 from http import HTTPStatus
@@ -127,6 +131,34 @@ We don't have a standard interface for what concerns Coder services. However, ri
         "icon": "https://static.premai.io/daemon/interfaces/att.svg",
     },
 ]
+
+
+def subprocess_tty(cmd, encoding="utf-8", **kwargs):
+    """`subprocess.Popen` yielding stdout lines acting as a TTY"""
+    m, s = pty.openpty()
+    p = subprocess.Popen(cmd, stdout=s, stderr=s, **kwargs)
+    os.close(s)
+
+    try:
+        for line in open(m, encoding=encoding):
+            if not line:  # EOF
+                break
+            yield line
+    except OSError as e:
+        if errno.EIO != e.errno:  # EIO also means EOF
+            raise
+    finally:
+        if p.poll() is None:
+            p.send_signal(signal.SIGINT)
+            try:
+                p.wait(10)
+            except subprocess.TimeoutExpired:
+                p.terminate()
+                try:
+                    p.wait(10)
+                except subprocess.TimeoutExpired:
+                    p.kill()
+        p.wait()
 
 
 def get_docker_client():

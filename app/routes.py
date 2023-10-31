@@ -1,5 +1,7 @@
 import json
 import logging
+import re
+import shutil
 from enum import Enum
 from http import HTTPStatus
 
@@ -38,6 +40,14 @@ progress_mapping = {
     Status.EXTRACTING: lambda _: 99,
     Status.PULL_COMPLETE: lambda _: 100,
 }
+
+
+def si2float(string, default=None):
+    """e.g. "42k" -> 42000.0"""
+    try:
+        return float(string.replace("k", "e3").replace("M", "e6").replace("G", "e9"))
+    except Exception:
+        return default
 
 
 @router.get("/", response_model=schemas.HealthResponse)
@@ -226,26 +236,57 @@ async def download_service_stream(service_id: str):
 async def generator(service_object, request):
     layers = {}
 
-    client = utils.get_docker_client()
+    try:
+        cmd = shutil.which("docker")
+        if not cmd:
+            logger.info("docker not found (did you forget to install dind?)")
+            raise FileNotFoundError
+        logger.info("which docker: %r", cmd)
+    except FileNotFoundError:
+        logger.info("docker SDK")
+        client = utils.get_docker_client()
 
-    for line in client.api.pull(
-        service_object["dockerImage"], stream=True, decode=True
-    ):
-        status = line["status"]
-        if (
-            status == Status.ALREADY_EXISTS.value
-            or status == Status.DOWNLOAD_COMPLETE.value
-            or status.startswith("Pulling from")
-            or status.startswith("Pulling fs layer")
+        for line in client.api.pull(
+            service_object["dockerImage"], stream=True, decode=True
         ):
-            continue
+            status = line["status"]
+            if (
+                status == Status.ALREADY_EXISTS.value
+                or status == Status.DOWNLOAD_COMPLETE.value
+                or status.startswith("Pulling from")
+                or status.startswith("Pulling fs layer")
+            ):
+                continue
 
-        if "id" in line and "status" in line and line["id"] != "latest":
-            layer_id = line["id"]
-            get_progress = progress_mapping.get(Status(status), lambda _: 100)
-            layers[layer_id] = get_progress(line)
-            line["percentage"] = round(sum(layers.values()) / len(layers), 2)
-            yield json.dumps(line) + "\n"
+            if "id" in line and "status" in line and line["id"] != "latest":
+                layer_id = line["id"]
+                get_progress = progress_mapping.get(Status(status), lambda _: 100)
+                layers[layer_id] = get_progress(line)
+                line["percentage"] = round(sum(layers.values()) / len(layers), 2)
+                yield json.dumps(line) + "\n"
+    else:
+        RE_LAYERINFO = re.compile(
+            rf"(\w+): ({'|'.join(i.value for i in Status.__members__.values())})(?:\s+(.*)B/(.*)B)?"
+        )
+        logger.info("docker pull")
+        for line in utils.subprocess_tty([cmd, "pull", service_object["dockerImage"]]):
+            if match := RE_LAYERINFO.match(line):
+                layer_id, status, current, total = match.groups()
+                get_progress = progress_mapping.get(Status(status), lambda _: 100)
+                layers[layer_id] = get_progress(
+                    {
+                        "progressDetail": {
+                            "current": si2float(current, default=0),
+                            "total": si2float(total, default=1),
+                        }
+                    }
+                )
+                yield json.dumps(
+                    {
+                        "status": status,
+                        "percentage": round(sum(layers.values()) / len(layers), 2),
+                    }
+                ) + "\n"
 
     yield json.dumps(
         {"status": Status.DOWNLOAD_COMPLETE.value, "percentage": 100}
