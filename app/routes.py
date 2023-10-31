@@ -42,6 +42,14 @@ progress_mapping = {
 }
 
 
+def si2float(string, default=None):
+    """e.g. "42k" -> 42000.0"""
+    try:
+        return float(string.replace("k", "e3").replace("M", "e6").replace("G", "e9"))
+    except Exception:
+        return default
+
+
 @router.get("/", response_model=schemas.HealthResponse)
 async def health():
     return schemas.HealthResponse(status=True)
@@ -230,11 +238,11 @@ async def generator(service_object, request):
 
     try:
         cmd = shutil.which("docker")
-        logger.info("which docker: %r", cmd)
         if not cmd:
             logger.info("docker not found (did you forget to install dind?)")
             raise FileNotFoundError
-    except Exception:
+        logger.info("which docker: %r", cmd)
+    except FileNotFoundError:
         logger.info("docker SDK")
         client = utils.get_docker_client()
 
@@ -255,27 +263,28 @@ async def generator(service_object, request):
                 get_progress = progress_mapping.get(Status(status), lambda _: 100)
                 layers[layer_id] = get_progress(line)
                 line["percentage"] = round(sum(layers.values()) / len(layers), 2)
-                logger.debug(line)
                 yield json.dumps(line) + "\n"
     else:
         RE_LAYERINFO = re.compile(
-            rf"(\w+): ({'|'.join(i.value for i in Status.__members__.values())})"
+            rf"(\w+): ({'|'.join(i.value for i in Status.__members__.values())})(?:\s+(.*)B/(.*)B)?"
         )
+        logger.info("docker pull")
         for line in utils.subprocess_tty([cmd, "pull", service_object["dockerImage"]]):
-            logger.info("docker pull")
             if match := RE_LAYERINFO.match(line):
-                layer_id, status = match.groups()
+                layer_id, status, current, total = match.groups()
                 get_progress = progress_mapping.get(Status(status), lambda _: 100)
-                layers[layer_id] = get_progress({"progressDetail": 0})
-                logger.debug(
-                    "status: %s, percentage: %.2f",
-                    status,
-                    sum(layers.values()) / len(layers),
+                layers[layer_id] = get_progress(
+                    {
+                        "progressDetail": {
+                            "current": si2float(current, default=0),
+                            "total": si2float(total, default=1),
+                        }
+                    }
                 )
                 yield json.dumps(
                     {
                         "status": status,
-                        "percentage": f"{sum(layers.values()) / len(layers):.2f}",
+                        "percentage": round(sum(layers.values()) / len(layers), 2),
                     }
                 ) + "\n"
 
