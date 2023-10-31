@@ -9,7 +9,7 @@ jobs:
       DOCKER_CLI_EXPERIMENTAL: enabled
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Create the .env file from example
       run: cp .env.example .env
     - name: Build the Stack
