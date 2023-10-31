@@ -140,15 +140,17 @@ def subprocess_tty(cmd, encoding="utf-8", **kwargs):
     os.close(s)
 
     try:
-        for line in open(m, encoding=encoding):
-            if not line:  # EOF
-                break
-            yield line
+        yield from open(m, encoding=encoding)
     except OSError as e:
+        logger.info("got OSError: %r", e)
         if errno.EIO != e.errno:  # EIO also means EOF
             raise
+    except Exception as e:
+        logger.info("got Exception: %r", e)
+        raise
     finally:
         if p.poll() is None:
+            logger.info("stopping %r", cmd)
             p.send_signal(signal.SIGINT)
             try:
                 p.wait(10)
