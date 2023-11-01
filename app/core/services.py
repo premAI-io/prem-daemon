@@ -288,7 +288,7 @@ def get_gpu_stats_all():
         "free_memory": all_stats["free_memory"],
         "average_utilised_memory": all_stats["average_utilised_memory"],
         "average_load": all_stats["average_load"],
-        "gpus": all_gpus
+        "gpus": all_gpus,
     }
     return stats
 

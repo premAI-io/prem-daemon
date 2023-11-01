@@ -224,7 +224,7 @@ def get_gpu_infos():
                 "used_memory": round(gpu.memoryUsed / 1024, 2),
                 "free_memory": round(gpu.memoryFree / 1024, 2),
                 "utilised_memory": round(gpu.memoryUsed / gpu.memoryTotal, 2),
-                "load": round(gpu.load, 2)
+                "load": round(gpu.load, 2),
             }
             gpu_infos.append(info)
 
@@ -239,11 +239,14 @@ def total_gpu_stats():
         "total_memory": sum(info["total_memory"] for info in infos),
         "used_memory": sum(info["used_memory"] for info in infos),
         "free_memory": sum(info["free_memory"] for info in infos),
-        "average_utilised_memory": round(sum(info["utilised_memory"] for info in infos) / len(infos), 2),
-        "average_load": round(sum(info["load"] for info in infos) / len(infos), 2)
+        "average_utilised_memory": round(
+            sum(info["utilised_memory"] for info in infos) / len(infos), 2
+        ),
+        "average_load": round(sum(info["load"] for info in infos) / len(infos), 2),
     }
 
     return total_stats
+
 
 cached_domain = None
 
