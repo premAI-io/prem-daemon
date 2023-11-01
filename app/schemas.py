@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import BaseModel
 
 
@@ -118,4 +116,4 @@ class GPUStatsResponse(BaseModel):
     free_memory: float = None
     average_utilised_memory: float = None
     average_load: float = None
-    gpus: list[SingleGPUStats]
+    gpus: list[SingleGPUStats] = None
