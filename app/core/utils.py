@@ -213,24 +213,37 @@ def format_stats(value):
     return cpu_percentage, memory_usage, memory_limit, memory_percentage
 
 
-def get_gpu_info():
-    nvidia_smi_xml = subprocess.check_output(["nvidia-smi", "-q", "-x"]).decode()
+def get_gpu_infos():
+    if is_gpu_available():
+        gpus = GPUtil.getGPUs()
+        gpu_infos = []
+        for gpu in gpus:
+            info = {
+                "gpu_name": gpu.name,
+                "total_memory": round(gpu.memoryTotal / 1024, 2),
+                "used_memory": round(gpu.memoryUsed / 1024, 2),
+                "free_memory": round(gpu.memoryFree / 1024, 2),
+                "utilised_memory": round(gpu.memoryUsed / gpu.memoryTotal, 2),
+                "load": round(gpu.load, 2)
+            }
+            gpu_infos.append(info)
 
-    root = ET.fromstring(nvidia_smi_xml)
+        return gpu_infos
+    return {}
 
-    gpu = root.find("gpu")
 
-    gpu_name = gpu.find("product_name").text
-    total_memory = gpu.find("fb_memory_usage/total").text
-    used_memory = gpu.find("fb_memory_usage/used").text
+def total_gpu_stats():
+    infos = get_gpu_infos()
 
-    total_memory_value = int(total_memory[:-4])
-    used_memory_value = int(used_memory[:-4])
+    total_stats = {
+        "total_memory": sum(info["total_memory"] for info in infos),
+        "used_memory": sum(info["used_memory"] for info in infos),
+        "free_memory": sum(info["free_memory"] for info in infos),
+        "average_utilised_memory": round(sum(info["utilised_memory"] for info in infos) / len(infos), 2),
+        "average_load": round(sum(info["load"] for info in infos) / len(infos), 2)
+    }
 
-    mem_percentage = (used_memory_value / total_memory_value) * 100
-
-    return gpu_name, total_memory_value, used_memory_value, mem_percentage
-
+    return total_stats
 
 cached_domain = None
 
