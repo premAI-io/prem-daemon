@@ -272,6 +272,13 @@ async def generator(service_object, request):
         for line in utils.subprocess_tty([cmd, "pull", service_object["dockerImage"]]):
             if match := RE_LAYERINFO.match(line):
                 layer_id, status, current, total = match.groups()
+                if (
+                    status == Status.ALREADY_EXISTS.value
+                    or status == Status.DOWNLOAD_COMPLETE.value
+                    or status.startswith("Pulling from")
+                    or status.startswith("Pulling fs layer")
+                ):
+                    continue
                 get_progress = progress_mapping.get(Status(status), lambda _: 100)
                 layers[layer_id] = get_progress(
                     {
