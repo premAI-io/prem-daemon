@@ -279,15 +279,21 @@ def get_system_stats_all():
 
 
 def get_gpu_stats_all():
-    if utils.is_gpu_available():
-        gpu_name, total_memory, used_memory, memory_percentage = utils.get_gpu_info()
-        return {
-            "gpu_name": gpu_name,
-            "total_memory": round(total_memory / 1024, 2),
-            "used_memory": round(used_memory / 1024, 2),
-            "memory_percentage": memory_percentage,
-        }
-    return {}
+    if not utils.is_gpu_available():
+        return {}
+
+    all_gpus = utils.get_gpu_infos()
+    all_stats = utils.total_gpu_stats(all_gpus)
+
+    stats = {
+        "total_memory": all_stats["total_memory"],
+        "used_memory": all_stats["used_memory"],
+        "free_memory": all_stats["free_memory"],
+        "average_utilised_memory": all_stats["average_utilised_memory"],
+        "average_load": all_stats["average_load"],
+        "gpus": all_gpus,
+    }
+    return stats
 
 
 def system_prune():
@@ -300,9 +306,16 @@ def system_prune():
 
 def get_free_total_memory():
     if utils.is_gpu_available():
-        gpu_values = get_gpu_stats_all()
-        free_memory = gpu_values["total_memory"] - gpu_values["used_memory"]
-        return free_memory, gpu_values["total_memory"]
+        total_memory = 0
+        free_memory = 0
+
+        if utils.is_gpu_available():
+            all_gpu_stats = utils.get_gpu_infos()
+            total_gpu = utils.total_gpu_stats(all_gpu_stats)
+            total_memory = total_gpu["free_memory"]
+            free_memory = total_gpu["total_memory"]
+
+        return total_memory, free_memory
     else:
         values = get_system_stats_all()
         free_memory = values["memory_limit"] - values["memory_usage"]

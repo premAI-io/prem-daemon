@@ -101,8 +101,19 @@ class OSStatsResponse(BaseModel):
     storage_percentage: float
 
 
-class GPUStatsResponse(BaseModel):
+class SingleGPUStats(BaseModel):
     gpu_name: str = None
     total_memory: float = None
     used_memory: float = None
-    memory_percentage: float = None
+    free_memory: float = None
+    utilised_memory: float = None
+    load: float = None
+
+
+class GPUStatsResponse(BaseModel):
+    total_memory: float = None
+    used_memory: float = None
+    free_memory: float = None
+    average_utilised_memory: float = None
+    average_load: float = None
+    gpus: list[SingleGPUStats] = None
