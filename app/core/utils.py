@@ -260,12 +260,16 @@ def check_dns_exists():
     try:
         response = requests.get(url)
         if response.status_code == HTTPStatus.OK and response.content:
-            json_response = response.json()
-            if "domain" in json_response:
-                cached_domain = json_response["domain"]
-                return cached_domain
+            if response.headers["Content-Type"] == "application/json":
+                json_response = response.json()
+                if json_response is not None and "domain" in json_response:
+                    cached_domain = json_response["domain"]
+                    return cached_domain
+                else:
+                    logger.error("Domain field not found in response.")
+                    return None
             else:
-                logger.error("Domain field not found in response.")
+                logger.error("Response is not a valid JSON.")
                 return None
         else:
             logger.error(
