@@ -1,9 +1,11 @@
 import errno
+import functools
 import logging
 import os
 import pty
 import signal
 import subprocess
+import time
 from http import HTTPStatus
 
 import docker
@@ -293,3 +295,22 @@ def get_deployment_ip():
     except Exception as e:
         logger.error(f"An error occurred: {e}")
         return None
+
+
+def cache_ttl(seconds: int = 10, **lru_cache_kwargs):
+    """`functools.lru_cache` but with time-based expiry"""
+
+    def inner(func):
+        """based on https://stackoverflow.com/q/31771286"""
+
+        @functools.lru_cache(**lru_cache_kwargs)
+        def with_timeout(__ttl: float, *args, **kwargs):
+            return func(*args, **kwargs)
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            return with_timeout(time.time() // seconds, *args, **kwargs)
+
+        return wrapper
+
+    return inner
