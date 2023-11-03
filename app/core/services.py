@@ -304,6 +304,7 @@ def system_prune():
     client.networks.prune()
 
 
+@utils.cache_ttl(seconds=10)
 def get_free_total_memory():
     if utils.is_gpu_available():
         total_memory = 0
@@ -322,6 +323,7 @@ def get_free_total_memory():
         return free_memory, values["memory_limit"]
 
 
+@utils.cache_ttl(seconds=10)
 def get_free_storage():
     values = get_system_stats_all()
     free_storage = values["storage_limit"] - values["storage_usage"]
