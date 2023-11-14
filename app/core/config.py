@@ -17,6 +17,7 @@ PROJECT_NAME: str = os.getenv("PROJECT_NAME", "Prem Daemon")
 PROXY_ENABLED: bool = os.getenv("PROXY_ENABLED", "False").lower() in ("true", "1")
 DNSD_URL: str = os.getenv("DNSD_URL", "http://dnsd:8080")
 DOCKER_NETWORK: str = os.getenv("DOCKER_NETWORK", "bridge")
+AUTHD_URL: str = os.getenv("DNSD_URL", "http://authd:8080")
 
 # APIs
 # ------------------------------------------------------------------------------
@@ -42,6 +43,7 @@ logging.basicConfig(
 # ------------------------------------------------------------------------------
 DNSD_DNS_EXIST_PATH = "/dns/existing"
 DNSD_IP = "/dns/ip"
+AUTHD_VERIFY = "/auth/verify"
 
 
 def dns_exists_url() -> str:
@@ -50,3 +52,7 @@ def dns_exists_url() -> str:
 
 def dns_ip() -> str:
     return f"{DNSD_URL}{DNSD_IP}"
+
+
+def auth_verify_url() -> str:
+    return f"{AUTHD_URL}{AUTHD_VERIFY}"
